@@ -47,6 +47,7 @@ members = [
     "battler-wamprat-schema/battler-wamprat-schema-proc-macro",
     "battler-wamp-compat-test-bin",
     "battler-fuzz-test-generator",
+    "bench/battler-bench",
 ]
 
 [workspace.dependencies]

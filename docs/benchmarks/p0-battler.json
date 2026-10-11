@@ -1,0 +1,127 @@
+{
+  "damage": {
+    "note": "battler_calc::simulate::simulate_move on the same (attacker, target, move) triples as Showdown getDamage; input construction excluded; includes by-name data lookups",
+    "per_call": {
+      "max": 13396.113,
+      "median": 136.232,
+      "min": 22.238,
+      "n": 55580,
+      "p90": 195.26100000000002
+    },
+    "probes": 5819,
+    "probes_error": 261,
+    "probes_ok": 5558,
+    "showdown_roll_within_calc_range": {
+      "comparable": 5310,
+      "in_range": 2650,
+      "note": "informational only: one random Showdown roll vs calc [min,max], summed over hits; stat/ruleset differences not controlled"
+    },
+    "top_errors": [
+      {
+        "count": 82,
+        "error": "mon Polteageist-Antique does not exist"
+      },
+      {
+        "count": 21,
+        "error": "mon Furfrou-Heart does not exist"
+      },
+      {
+        "count": 20,
+        "error": "mon Florges-White does not exist"
+      },
+      {
+        "count": 19,
+        "error": "mon Meowstic-M-Mega does not exist"
+      },
+      {
+        "count": 13,
+        "error": "mon Alcremie-Ruby-Cream does not exist"
+      },
+      {
+        "count": 13,
+        "error": "mon Furfrou-La Reine does not exist"
+      },
+      {
+        "count": 13,
+        "error": "mon Meowstic-F-Mega does not exist"
+      },
+      {
+        "count": 12,
+        "error": "mon Alcremie-Lemon-Cream does not exist"
+      },
+      {
+        "count": 12,
+        "error": "mon Vivillon-Sandstorm does not exist"
+      },
+      {
+        "count": 11,
+        "error": "mon Alcremie-Matcha-Cream does not exist"
+      }
+    ],
+    "unit": "us"
+  },
+  "engine": "battler",
+  "positions": 200,
+  "positions_total": 200,
+  "positions_unsupported": [],
+  "reps": 10,
+  "restore_standin": {
+    "first_in_process": {
+      "new_battle_us": 1735.541,
+      "second_battle_new_plus_start_us": 6574.9349999999995,
+      "start_us": 6038.281,
+      "static_data_store_us": 1192282.702
+    },
+    "new_battle": {
+      "max": 9334.691,
+      "median": 1642.609,
+      "min": 1199.936,
+      "n": 2000,
+      "p90": 2228.011
+    },
+    "new_plus_start": {
+      "max": 71913.375,
+      "median": 7085.1050000000005,
+      "min": 4965.482,
+      "n": 2000,
+      "p90": 9698.616
+    },
+    "note": "new battle from the same teams (4 picked mons per side, leads = first two picks) + start(); NOT a restore of the Showdown position",
+    "start": {
+      "max": 68970.23300000001,
+      "median": 5451.021000000001,
+      "min": 3748.3210000000004,
+      "n": 2000,
+      "p90": 7602.789000000001
+    },
+    "unit": "us"
+  },
+  "rollout2": {
+    "advance_per_choice_incl_choice_gen": {
+      "max": 25837.6086,
+      "median": 8014.618750000001,
+      "min": 4331.853833333334,
+      "n": 2000,
+      "p90": 11062.42025
+    },
+    "advance_per_turn_incl_choice_gen": {
+      "max": 64594.0215,
+      "median": 18644.4995,
+      "min": 10519.681499999999,
+      "n": 2000,
+      "p90": 24616.454999999998
+    },
+    "new_start_plus_two_turns": {
+      "max": 164701.302,
+      "median": 44448.81,
+      "min": 26530.176,
+      "n": 2000,
+      "p90": 58044.809
+    },
+    "note": "new battle + start() + 2 turns of engine-side `randomall` choices from turn 1 (not the Showdown position). Choice generation is inside the engine and is not separable.",
+    "rollouts_ended_early": 0,
+    "rollouts_with_errors_skipped": 0,
+    "turns_played": 4000,
+    "unit": "us"
+  }
+}

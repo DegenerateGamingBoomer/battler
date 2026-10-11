@@ -3,8 +3,8 @@ name: Set up Rust
 runs:
   using: "composite"
   steps:
-    - name: Install Rust nightly
+    # The toolchain and its components come from rust-toolchain.toml (a pinned, dated nightly).
+    - name: Install pinned Rust nightly
       uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
-        toolchain: nightly
         components: rustfmt, rust-src

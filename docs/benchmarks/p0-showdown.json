@@ -1,0 +1,88 @@
+{
+  "engine": "pokemon-showdown",
+  "positions": 200,
+  "reps": 10,
+  "restore": {
+    "unit": "us",
+    "first_in_process_us_incl_json_parse": 339947.684,
+    "fromJSON_text": {
+      "n": 2000,
+      "median": 744.012,
+      "p90": 1010.888,
+      "min": 520.382,
+      "max": 3900.778
+    },
+    "fromJSON_object": {
+      "n": 2000,
+      "median": 573.183,
+      "p90": 833.667,
+      "min": 399.08,
+      "max": 17966.234
+    }
+  },
+  "rollout2": {
+    "unit": "us",
+    "note": "Battle.fromJSON(text) + 2 turns of random legal choices (rollouts that end early are included with fewer turns)",
+    "restore_plus_two_turns": {
+      "n": 2000,
+      "median": 8001.724,
+      "p90": 10859.031,
+      "min": 1920.607,
+      "max": 22336.765
+    },
+    "restore_part": {
+      "n": 2000,
+      "median": 963.314,
+      "p90": 1366.772,
+      "min": 739.287,
+      "max": 7598.507
+    },
+    "advance_per_turn_incl_choice_gen": {
+      "n": 1910,
+      "median": 3622.8665,
+      "p90": 5224.763,
+      "min": 1722.9695,
+      "max": 19051.484
+    },
+    "advance_per_choice_incl_choice_gen": {
+      "n": 2000,
+      "median": 1436.37875,
+      "p90": 2033.1921666666667,
+      "min": 490.279,
+      "max": 4762.871
+    },
+    "choice_generation_per_rollout": {
+      "n": 2000,
+      "median": 26,
+      "p90": 45.528,
+      "min": 6.16,
+      "max": 143.851
+    },
+    "engine_advance_per_rollout": {
+      "n": 2000,
+      "median": 6946.363,
+      "p90": 9611.12,
+      "min": 964.295,
+      "max": 20611.352
+    },
+    "rollouts_ended_early": 207,
+    "turns_played": 3703
+  },
+  "damage": {
+    "unit": "us",
+    "note": "battle.actions.getDamage(source, target, move, true), all (attacker, any other active mon, damaging move) triples; getActiveMove construction excluded from per-call timing",
+    "per_call": {
+      "n": 58190,
+      "median": 90.32,
+      "p90": 151.498,
+      "min": 7.232,
+      "max": 4417.096
+    },
+    "calls_measured": 58190
+  },
+  "env": {
+    "node": "v22.22.0",
+    "platform": "linux",
+    "arch": "x64"
+  }
+}

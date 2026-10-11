@@ -1,0 +1,14 @@
+[package]
+name = "battler-bench"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+anyhow = { workspace = true }
+serde_json = { workspace = true }
+
+battler = { workspace = true, features = ["std"] }
+battler-calc = { path = "../../battler-calc" }
+battler-data = { workspace = true, features = ["std"] }
+battler-test-utils = { path = "../../battler-test-utils" }
