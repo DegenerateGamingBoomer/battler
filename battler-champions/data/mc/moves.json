@@ -1,0 +1,298 @@
+{
+ "anchorshot": {
+  "base_power": 90
+ },
+ "appleacid": {
+  "base_power": 90
+ },
+ "astralbarrage": {
+  "base_power": 110
+ },
+ "banefulbunker": {
+  "pp": 5
+ },
+ "beakblast": {
+  "base_power": 120,
+  "pp": 5
+ },
+ "bloodmoon": {
+  "base_power": 130
+ },
+ "boltbeak": {
+  "base_power": 80
+ },
+ "bonerush": {
+  "base_power": 30
+ },
+ "clangoroussoul": {
+  "accuracy": "exempt"
+ },
+ "crabhammer": {
+  "accuracy": 95
+ },
+ "dragonhammer": {
+  "base_power": 100
+ },
+ "firelash": {
+  "base_power": 90
+ },
+ "firstimpression": {
+  "base_power": 100,
+  "effect": {
+   "callbacks": {
+    "on_disable_move": [
+     "if $mon.active_move_actions > 0:",
+     [
+      "disable_move: $mon $this.id"
+     ]
+    ],
+    "on_try_use_move": [
+     "require $user.active_move_actions <= 1"
+    ]
+   }
+  }
+ },
+ "fishiousrend": {
+  "base_power": 80
+ },
+ "geargrind": {
+  "base_power": 60,
+  "accuracy": 90
+ },
+ "gravapple": {
+  "base_power": 90
+ },
+ "growth": {
+  "primary_type": "Grass"
+ },
+ "hyperdrill": {
+  "base_power": 120
+ },
+ "infernalparade": {
+  "base_power": 65
+ },
+ "kingsshield": {
+  "pp": 5
+ },
+ "makeitrain": {
+  "accuracy": 95,
+  "user_effect": {
+   "boosts": {
+    "spa": -2
+   }
+  }
+ },
+ "meteorassault": {
+  "base_power": 170
+ },
+ "milkdrink": {
+  "target": "AdjacentAllyOrUser"
+ },
+ "mountaingale": {
+  "base_power": 120
+ },
+ "nightdaze": {
+  "base_power": 90
+ },
+ "nightslash": {
+  "pp": 20
+ },
+ "obstruct": {
+  "pp": 5
+ },
+ "protect": {
+  "pp": 5
+ },
+ "psyshieldbash": {
+  "base_power": 90
+ },
+ "purify": {
+  "pp": 5
+ },
+ "revelationdance": {
+  "base_power": 100
+ },
+ "sandstorm": {
+  "pp": 5
+ },
+ "shelltrap": {
+  "pp": 10
+ },
+ "slash": {
+  "base_power": 80
+ },
+ "snaptrap": {
+  "primary_type": "Steel"
+ },
+ "snipeshot": {
+  "base_power": 85
+ },
+ "snowscape": {
+  "pp": 5
+ },
+ "spikyshield": {
+  "pp": 5
+ },
+ "spinout": {
+  "pp": 10
+ },
+ "spiritshackle": {
+  "base_power": 90
+ },
+ "strengthsap": {
+  "pp": 5
+ },
+ "syrupbomb": {
+  "accuracy": 90
+ },
+ "tripledive": {
+  "base_power": 35
+ },
+ "tropkick": {
+  "base_power": 85
+ },
+ "wish": {
+  "pp": 5
+ },
+ "crushclaw": {
+  "+flags": [
+   "Slicing"
+  ]
+ },
+ "direclaw": {
+  "+flags": [
+   "Slicing"
+  ]
+ },
+ "dragonclaw": {
+  "+flags": [
+   "Slicing"
+  ]
+ },
+ "metalclaw": {
+  "+flags": [
+   "Slicing"
+  ]
+ },
+ "shadowclaw": {
+  "+flags": [
+   "Slicing"
+  ]
+ },
+ "doubleshock": {
+  "+flags": [
+   "Punch"
+  ]
+ },
+ "howl": {
+  "+flags": [
+   "BypassSubstitute"
+  ]
+ },
+ "toxicthread": {
+  "hit_effect": {
+   "boosts": {
+    "spe": -2
+   }
+  }
+ },
+ "ironhead": {
+  "secondary_effects": [
+   {
+    "chance": "20%",
+    "target": {
+     "volatile_status": "flinch"
+    }
+   }
+  ]
+ },
+ "moonblast": {
+  "secondary_effects": [
+   {
+    "chance": "10%",
+    "target": {
+     "boosts": {
+      "spa": -1
+     }
+    }
+   }
+  ]
+ },
+ "freezedry": {
+  "secondary_effects": []
+ },
+ "belch": {
+  "effect": {
+   "callbacks": {
+    "on_disable_move": null,
+    "on_try_use_move": [
+     "require $user.ate_item"
+    ]
+   }
+  }
+ },
+ "stuffcheeks": {
+  "effect": {
+   "callbacks": {
+    "on_disable_move": null
+   }
+  }
+ },
+ "fakeout": {
+  "effect": {
+   "callbacks": {
+    "on_disable_move": [
+     "if $mon.active_move_actions > 0:",
+     [
+      "disable_move: $mon $this.id"
+     ]
+    ],
+    "on_try_use_move": [
+     "require $user.active_move_actions <= 1"
+    ]
+   }
+  }
+ },
+ "saltcure": {
+  "condition": {
+   "callbacks": {
+    "on_residual": [
+     "$divisor = 16",
+     "if func_call(has_any_type: $target [water, steel]):",
+     [
+      "$divisor = 8"
+     ],
+     "damage: $target expr($target.base_max_hp / $divisor)"
+    ]
+   }
+  }
+ },
+ "trickroom": {
+  "condition": {
+   "callbacks": {
+    "on_modify_action_speed": [
+     "return 65535 - $spe"
+    ]
+   }
+  }
+ },
+ "curse": {
+  "effect": {
+   "callbacks": {
+    "on_try_hit": [
+     "if func_call(has_type: $source ghost):",
+     [
+      "$effect_state.apply_self_damage = true",
+      "return"
+     ],
+     "$effect_state.apply_self_damage = false",
+     "require !func_call(has_volatile: $target $this.id)",
+     "require func_call(can_boost: $source func_call(boost_table: 'spe:-1' 'atk:1' 'def:1')) else return stopfail",
+     "$move.hit_effect.volatile_status = undefined",
+     "$move.user_effect = func_call(hit_effect)",
+     "$move.user_effect.boosts = func_call(boost_table: 'spe:-1' 'atk:1' 'def:1')"
+    ]
+   }
+  }
+ }
+}

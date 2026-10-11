@@ -58,6 +58,7 @@ use crate::{
         SpeedOrderable,
         calculate_hidden_power_type,
         calculate_mon_stats,
+        champions,
         core_battle::{
             CatchEntry,
             FaintEntry,
@@ -876,6 +877,26 @@ impl Mon {
         let base_ability = context.mon().original_base_ability.clone();
         Self::set_base_species(context, &base_species, &base_ability)?;
 
+        if context.battle().engine_options.champions.pp {
+            let mut slots = core::mem::take(&mut context.mon_mut().base_move_slots);
+            for slot in &mut slots {
+                let mov = context.battle().dex.moves.get_by_id(&slot.id)?;
+                let max_pp = if mov.data.no_pp_boosts {
+                    mov.data.pp
+                } else {
+                    champions::max_pp(mov.data.pp)
+                };
+                drop(mov);
+                slot.pp = if slot.pp == slot.max_pp {
+                    max_pp
+                } else {
+                    slot.pp.min(max_pp)
+                };
+                slot.max_pp = max_pp;
+            }
+            context.mon_mut().base_move_slots = slots;
+        }
+
         Self::clear_volatile(context, true)?;
         Self::recalculate_base_stats(
             context,
@@ -942,9 +963,12 @@ impl Mon {
 
 // Basic getters.
 impl Mon {
-    fn health(&self, actual_health: bool, public_base: u32) -> (u32, u32) {
+    fn health(&self, actual_health: bool, public_base: u32, champions: bool) -> (u32, u32) {
         if actual_health {
             return self.actual_health();
+        }
+        if champions && self.hp != 0 && self.max_hp != 0 {
+            return (champions::public_health(self.hp, self.max_hp).0, 100);
         }
         if self.hp == 0 || self.max_hp == 0 {
             return (self.hp as u32, self.max_hp as u32);
@@ -961,8 +985,11 @@ impl Mon {
         (percentage, public_base)
     }
 
-    fn health_string(&self, actual_health: bool, public_base: u32) -> String {
-        let (hp, max_hp) = self.health(actual_health, public_base);
+    fn health_string(&self, actual_health: bool, public_base: u32, champions: bool) -> String {
+        if !actual_health && champions && self.hp != 0 && self.max_hp != 0 {
+            return champions::public_health(self.hp, self.max_hp).1;
+        }
+        let (hp, max_hp) = self.health(actual_health, public_base, champions);
         if hp == 0 || max_hp == 0 {
             return "0".to_owned();
         }
@@ -1074,14 +1101,17 @@ impl Mon {
         context.mon().health(
             context.battle().engine_options.reveal_actual_health,
             context.battle().engine_options.public_health_base,
+            context.battle().engine_options.champions.public_health,
         )
     }
 
     /// The public health of the Mon, always based as a percentage.
     pub fn public_health_percentage(context: &MonContext) -> (u32, u32) {
-        context
-            .mon()
-            .health(false, context.battle().engine_options.public_health_base)
+        context.mon().health(
+            false,
+            context.battle().engine_options.public_health_base,
+            context.battle().engine_options.champions.public_health,
+        )
     }
 
     /// The public health of the Mon.
@@ -1089,6 +1119,7 @@ impl Mon {
         context.mon().health_string(
             context.battle().engine_options.reveal_actual_health,
             context.battle().engine_options.public_health_base,
+            context.battle().engine_options.champions.public_health,
         )
     }
 
@@ -1971,6 +2002,14 @@ impl Mon {
     }
     /// Clears all volatile effects.
     pub fn clear_volatile(context: &mut MonContext, clear_switch_flags: bool) -> Result<()> {
+        if context
+            .battle()
+            .engine_options
+            .champions
+            .reset_times_attacked
+        {
+            context.mon_mut().times_attacked = 0;
+        }
         if clear_switch_flags {
             context.mon_mut().switch_state = MonSwitchState::default();
         }
@@ -2022,6 +2061,7 @@ impl Mon {
             &context.mon().evs,
             context.mon().level,
             context.mon().nature,
+            context.battle().engine_options.champions.stat_points,
         );
         // Forced max HP always overrides stat calculations.
         if let Some(max_hp) = species.data.max_hp {
@@ -2149,6 +2189,7 @@ impl Mon {
             &context.mon().evs,
             context.mon().level,
             context.mon().nature,
+            context.battle().engine_options.champions.stat_points,
         );
         // Forced max HP always overrides stat calculations.
         if let Some(max_hp) = species.data.max_hp {
@@ -2608,7 +2649,18 @@ impl Mon {
         let mut context = context.applying_effect_context(effect, None, None)?;
         core_battle_actions::end_ability_even_if_exiting(&mut context, true)?;
 
-        core_battle_actions::revert_on_exit(&mut context)?;
+        // Champions keeps Mega Evolutions after the Mon faints.
+        let keep_mega = exit_type == MonExitType::Fainted
+            && context
+                .battle()
+                .engine_options
+                .champions
+                .mega_persists_on_faint
+            && context.target().special_forme_change_type
+                == Some(MonSpecialFormeChangeType::MegaEvolution);
+        if !keep_mega {
+            core_battle_actions::revert_on_exit(&mut context)?;
+        }
 
         Self::clear_volatile(&mut context.target_context()?, false)?;
 

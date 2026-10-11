@@ -9,15 +9,24 @@ use battler_data::{
 };
 
 /// Calculates a Mon's actual stats.
+///
+/// If `stat_points` is set, `evs` holds Pokémon Champions stat points instead: a stat is
+/// `base + points + 20` (HP: `base + points + 75`), and IVs and level are ignored.
 pub fn calculate_mon_stats(
     base_stats: &StatTable,
     ivs: &StatTable,
     evs: &StatTable,
     level: u8,
     nature: Nature,
+    stat_points: bool,
 ) -> StatTable {
     let mut stats = StatTable::default();
     for (stat, value) in base_stats {
+        if stat_points {
+            let value = value + evs.get(stat) + if stat == Stat::HP { 75 } else { 20 };
+            stats.set(stat, value);
+            continue;
+        }
         let value = 2 * value + ivs.get(stat) + evs.get(stat) / 4;
         let value = value * (level as u16) / 100;
         let value = if stat == Stat::HP {
@@ -220,9 +229,48 @@ mod calculations_test {
                 &test_case.evs,
                 test_case.level,
                 test_case.nature,
+                false,
             );
             pretty_assertions::assert_eq!(got, test_case.expected, "{test_name} failed");
         }
+    }
+
+    #[test]
+    fn stat_points_replace_evs_ivs_and_level() {
+        let base = StatTable {
+            hp: 80,
+            atk: 100,
+            def: 70,
+            spa: 60,
+            spd: 70,
+            spe: 90,
+        };
+        let points = StatTable {
+            hp: 32,
+            atk: 0,
+            def: 2,
+            spa: 0,
+            spd: 0,
+            spe: 32,
+        };
+        // IVs and level do not matter.
+        let ivs = StatTable::default();
+        let got = calculate_mon_stats(&base, &ivs, &points, 100, Nature::Hardy, true);
+        assert_eq!(
+            got,
+            StatTable {
+                hp: 80 + 32 + 75,
+                atk: 100 + 20,
+                def: 70 + 2 + 20,
+                spa: 60 + 20,
+                spd: 70 + 20,
+                spe: 90 + 32 + 20,
+            }
+        );
+        // Natures truncate: +10% on 142 is 156, -10% on 120 is 108.
+        let got = calculate_mon_stats(&base, &ivs, &points, 50, Nature::Timid, true);
+        assert_eq!(got.spe, 142 * 110 / 100);
+        assert_eq!(got.atk, 120 * 90 / 100);
     }
 
     #[derive(Deserialize)]

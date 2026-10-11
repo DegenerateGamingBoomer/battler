@@ -1,0 +1,68 @@
+{
+ "par": {
+  "condition": {
+   "callbacks": {
+    "on_before_move": {
+     "priority": 1,
+     "program": [
+      "if func_call(chance: 1 8):",
+      [
+       "log_cant",
+       "return stopfail"
+      ]
+     ]
+    }
+   }
+  }
+ },
+ "slp": {
+  "condition": {
+   "callbacks": {
+    "on_start": [
+     "log_status: $this.name",
+     "# 2, 3, or 3 turns.",
+     "$effect_state.total_time = func_call(sample: [2, 3, 3])",
+     "$effect_state.time = +$effect_state.total_time"
+    ]
+   }
+  }
+ },
+ "frz": {
+  "condition": {
+   "callbacks": {
+    "on_start": [
+     "log_status: $this.name",
+     "# At most 3 turns.",
+     "$effect_state.time = 3"
+    ],
+    "on_before_move": {
+     "priority": 10,
+     "program": [
+      "require !func_call(move_has_flag: $move thawing) else return",
+      "$effect_state.time = $effect_state.time - 1",
+      "if $effect_state.time <= 0 or func_call(chance: 1 4):",
+      [
+       "cure_status: $user no_effect",
+       "return"
+      ],
+      "log_cant",
+      "return stopfail"
+     ]
+    }
+   }
+  }
+ },
+ "hpactivatedabilitybase": {
+  "condition": {
+   "callbacks": {
+    "on_after_damage": [
+     "# Delay eating healing berries if we expect the ability to activate for a single-hit move.",
+     "if $effect.is_move and !$effect.multihit:",
+     [
+      "$effect_state.ability_may_activate = true"
+     ]
+    ]
+   }
+  }
+ }
+}

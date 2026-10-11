@@ -1,0 +1,66 @@
+{
+ "healer": {
+  "effect": {
+   "callbacks": {
+    "on_residual": [
+     "foreach $ally in func_call(adjacent_allies: $target):",
+     [
+      "if $ally.status.is_defined and func_call(chance: 1 2):",
+      [
+       "log_activate: with_target",
+       "cure_status: $ally"
+      ]
+     ]
+    ]
+   }
+  }
+ },
+ "runaway": {
+  "effect": {
+   "callbacks": {
+    "on_trap_mon": {
+     "priority": 100,
+     "program": [
+      "return false"
+     ]
+    }
+   }
+  }
+ },
+ "emergencyexit": {
+  "effect": {
+   "callbacks": {
+    "on_activate": {
+     "program": [
+      "require $original_hp.is_defined else return",
+      "require !$battle.ending else return",
+      "require func_call(can_switch: $target.player) else return",
+      "require $target.hp != 0 else return",
+      "require !$target.force_switch else return",
+      "require !$target.needs_switch else return",
+      "require !$target.is_away_from_field else return",
+      "$half = $target.max_hp / 2",
+      "if $original_hp > $half and $target.hp <= $half:",
+      [
+       "log_activate: with_target",
+       "if $target.player.wild_encounter_type.is_defined:",
+       [
+        "escape: $target"
+       ],
+       "else:",
+       [
+        "switch_out: $target"
+       ]
+      ]
+     ]
+    },
+    "on_after_move_secondary_effects_damage": [
+     "# Unlike Berserk and Anger Shell, Emergency Exit is still suppressed by Sheer Force.",
+     "require !$move.ignore_all_secondary_effects else return",
+     "require $damage != 0 else return",
+     "activate_ability: $original_hp"
+    ]
+   }
+  }
+ }
+}

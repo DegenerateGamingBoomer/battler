@@ -2,6 +2,7 @@ mod action;
 mod battle_options;
 mod battle_type;
 mod calculations;
+pub mod champions;
 mod context;
 mod context_cache;
 mod core_battle;
@@ -62,6 +63,7 @@ pub use calculations::{
     calculate_mon_stats,
     modify_32,
 };
+pub use champions::ChampionsRules;
 pub use context::{
     ActiveMoveContext,
     ActiveTargetContext,

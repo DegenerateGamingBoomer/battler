@@ -94,6 +94,12 @@ impl TestBattleBuilder {
             .chain(self.options.side_2.players.iter_mut())
     }
 
+    /// Turns on all engine rule changes made by Pokémon Champions.
+    pub fn with_champions_rules(mut self) -> Self {
+        self.engine_options.champions = battler::ChampionsRules::all();
+        self
+    }
+
     pub fn with_auto_continue(mut self, auto_continue: bool) -> Self {
         self.engine_options.auto_continue = auto_continue;
         self

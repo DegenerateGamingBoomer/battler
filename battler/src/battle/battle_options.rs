@@ -16,6 +16,7 @@ use serde::{
 use crate::{
     battle::{
         BattleType,
+        ChampionsRules,
         FieldData,
         PlayerData,
         SideData,
@@ -212,6 +213,13 @@ pub struct CoreBattleEngineOptions {
     /// If false, a `continue` log will be added instead.
     #[serde(default = "default_true")]
     pub log_time: bool,
+
+    /// Engine rule changes made by Pokémon Champions.
+    ///
+    /// All off by default (mainline behavior). The data side of the Champions rules is applied by
+    /// the `battler-champions` data overlay.
+    #[serde(default)]
+    pub champions: ChampionsRules,
 }
 
 impl Default for CoreBattleEngineOptions {
@@ -233,6 +241,7 @@ impl Default for CoreBattleEngineOptions {
             disambiguate_identical_names: false,
             log_catch_rate: false,
             log_time: true,
+            champions: ChampionsRules::default(),
         }
     }
 }

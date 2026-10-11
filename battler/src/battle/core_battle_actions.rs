@@ -1691,7 +1691,17 @@ fn move_hit_loop(
     CoreBattle::faint_messages(context.as_battle_context_mut())?;
 
     let hits = context.active_move().hit;
-    if context.active_move().data.multihit.is_some() && hits > 0 {
+    let single_parental_bond_hit = context
+        .battle()
+        .engine_options
+        .champions
+        .hide_single_parental_bond_hit_count
+        && hits == 1
+        && matches!(
+            context.active_move().effect_state.get("parental_bond"),
+            Some(fxlang::Value::Boolean(true))
+        );
+    if context.active_move().data.multihit.is_some() && hits > 0 && !single_parental_bond_hit {
         core_battle_logs::hit_count(context.as_battle_context_mut(), hits)?;
     }
 
@@ -1708,8 +1718,19 @@ fn move_hit_loop(
 
             let mut context = context.target_mon_context(target)?;
 
-            context.mon_mut().times_attacked += 1;
-            context.mon_mut().volatile_state.times_attacked += 1;
+            // Champions counts every hit of a multi-hit move.
+            let attacks = if context
+                .battle()
+                .engine_options
+                .champions
+                .reset_times_attacked
+            {
+                hits.max(1) as u64
+            } else {
+                1
+            };
+            context.mon_mut().times_attacked += attacks;
+            context.mon_mut().volatile_state.times_attacked += attacks;
 
             context
                 .mon_mut()
@@ -1728,7 +1749,12 @@ fn move_hit_loop(
     // Trigger effects at the end of each move.
     CoreBattle::update(context.as_battle_context_mut())?;
 
-    if !context.active_move().ignore_all_secondary_effects {
+    let sheer_force_keeps_events = context
+        .battle()
+        .engine_options
+        .champions
+        .sheer_force_keeps_after_secondary_events;
+    if !context.active_move().ignore_all_secondary_effects || sheer_force_keeps_events {
         for target in targets.iter().filter(|target| target.outcome.advance()) {
             core_battle_effects::run_active_move_event::<()>(
                 context,

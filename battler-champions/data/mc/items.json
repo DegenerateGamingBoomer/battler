@@ -1,0 +1,11 @@
+{
+ "ejectbutton": {
+  "effect": {
+   "callbacks": {
+    "on_use": [
+     "switch_out: $mon"
+    ]
+   }
+  }
+ }
+}

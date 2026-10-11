@@ -48,6 +48,7 @@ members = [
     "battler-wamp-compat-test-bin",
     "battler-fuzz-test-generator",
     "bench/battler-bench",
+    "battler-champions",
 ]
 
 [workspace.dependencies]

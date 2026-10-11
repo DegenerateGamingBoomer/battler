@@ -28,6 +28,7 @@ pub mod teams;
 // for users.
 pub use battle::{
     BattleType,
+    ChampionsRules,
     CoreBattleEngineOptions,
     CoreBattleEngineRandomizeBaseDamage,
     CoreBattleEngineSpeedSortTieResolution,
