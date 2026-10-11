@@ -447,16 +447,33 @@ fn move_event_on_target(context: &mut MonContext, event: &str) -> Result<()> {
     )
 }
 
+fn move_event_on_target_with_stages(
+    context: &mut MonContext,
+    event: &str,
+    stages: Option<u8>,
+) -> Result<()> {
+    let activation = EffectActivationContext {
+        target: Some(context.mon_handle()),
+        additional: stages.map(|s| format!("by:{s}")).into_iter().collect(),
+        ..Default::default()
+    };
+    effect_activation(
+        context.as_battle_context_mut(),
+        event.to_owned(),
+        activation,
+    )
+}
+
 pub fn miss(context: &mut MonContext) -> Result<()> {
     move_event_on_target(context, "miss")
 }
 
-pub fn super_effective(context: &mut MonContext) -> Result<()> {
-    move_event_on_target(context, "supereffective")
+pub fn super_effective(context: &mut MonContext, stages: Option<u8>) -> Result<()> {
+    move_event_on_target_with_stages(context, "supereffective", stages)
 }
 
-pub fn resisted(context: &mut MonContext) -> Result<()> {
-    move_event_on_target(context, "resisted")
+pub fn resisted(context: &mut MonContext, stages: Option<u8>) -> Result<()> {
+    move_event_on_target_with_stages(context, "resisted", stages)
 }
 
 pub fn critical_hit(context: &mut MonContext) -> Result<()> {

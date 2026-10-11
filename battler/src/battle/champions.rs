@@ -56,6 +56,17 @@ pub struct ChampionsRules {
     /// A Parental Bond move that only hits once does not log a hit count.
     #[serde(default)]
     pub hide_single_parental_bond_hit_count: bool,
+
+    /// A move that is stopped without a failure message (blocked by Protect, type immunity, ...)
+    /// keeps its target in the log and is not marked `noanim`. Only moves that fail with a failure
+    /// message are, as in Showdown, where `[still]` always accompanies `-fail`.
+    #[serde(default)]
+    pub stopped_moves_keep_animation: bool,
+
+    /// `supereffective` and `resisted` log lines carry `by:1` or `by:2` (double effectiveness), as
+    /// Showdown's Champions mod announces 4x and 0.25x.
+    #[serde(default)]
+    pub effectiveness_stages: bool,
 }
 
 impl ChampionsRules {
@@ -69,6 +80,8 @@ impl ChampionsRules {
             reset_times_attacked: true,
             sheer_force_keeps_after_secondary_events: true,
             hide_single_parental_bond_hit_count: true,
+            stopped_moves_keep_animation: true,
+            effectiveness_stages: true,
         }
     }
 }

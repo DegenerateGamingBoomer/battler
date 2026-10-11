@@ -49,6 +49,7 @@ members = [
     "battler-fuzz-test-generator",
     "bench/battler-bench",
     "battler-champions",
+    "battler-showdown-compat",
 ]
 
 [workspace.dependencies]

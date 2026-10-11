@@ -1,0 +1,26 @@
+[package]
+name = "battler-showdown-compat"
+version = "0.1.0"
+edition = "2024"
+description = "Translation between battler and the Pokémon Showdown protocol, choices, requests and teams."
+authors = ["Jackson Nestelroad <jackson@nestelroad.com>"]
+keywords = ["pokemon", "battle"]
+license = "MIT"
+repository = "https://github.com/jackson-nestelroad/battler/tree/main/battler-showdown-compat"
+
+[dependencies]
+ahash = { workspace = true }
+anyhow = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+battler = { workspace = true, features = ["std"] }
+battler-choice = { workspace = true }
+battler-data = { workspace = true, features = ["std"] }
+
+[dev-dependencies]
+assert_matches = { workspace = true }
+pretty_assertions = { workspace = true }
+
+battler-champions = { path = "../battler-champions" }
+battler-test-utils = { path = "../battler-test-utils" }

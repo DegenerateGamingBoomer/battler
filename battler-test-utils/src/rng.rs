@@ -17,6 +17,7 @@ use battler_prng::{
 pub struct ControlledRandomNumberGenerator {
     count: usize,
     fake_values: HashMap<usize, u64>,
+    constant: Option<u64>,
     real: RealPseudoRandomNumberGenerator,
 }
 
@@ -25,6 +26,7 @@ impl ControlledRandomNumberGenerator {
         Self {
             count: 0,
             fake_values: HashMap::new(),
+            constant: None,
             real: RealPseudoRandomNumberGenerator::new(seed),
         }
     }
@@ -42,7 +44,7 @@ impl PseudoRandomNumberGenerator for ControlledRandomNumberGenerator {
         let fake_entry = self.fake_values.entry(self.count);
         match fake_entry {
             Entry::Occupied(fake_entry) => fake_entry.remove(),
-            Entry::Vacant(_) => next,
+            Entry::Vacant(_) => self.constant.unwrap_or(next),
         }
     }
 
@@ -52,6 +54,11 @@ impl PseudoRandomNumberGenerator for ControlledRandomNumberGenerator {
 }
 
 impl ControlledRandomNumberGenerator {
+    /// Makes every draw without an explicit fake value return `value`.
+    pub fn set_constant(&mut self, value: Option<u64>) {
+        self.constant = value;
+    }
+
     pub fn sequence_count(&self) -> usize {
         self.count
     }

@@ -984,7 +984,7 @@
     "flags": ["Snatch"],
     "hit_effect": {
       "boosts": {
-        "atk": 2,
+        "atk": 1,
         "spe": 2
       }
     },

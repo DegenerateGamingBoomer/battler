@@ -1,0 +1,1930 @@
+{
+ "name": "boosts",
+ "rng": "zero",
+ "format": "gen9championsvgc2026regmc",
+ "gametype": "doubles",
+ "description": "Boost, unboost, set boost, clear boosts and invert boosts.",
+ "teams": [
+  "Dragonite|||InnerFocus|dragondance,bellydrum,splash|Hardy||M|||50|]Gyarados|||Intimidate|splash|Hardy||M|||50|]Blissey|||NaturalCure|splash|Hardy||M|||50|]Snorlax|||Immunity|splash|Hardy||M|||50|",
+  "Alakazam|||MagicGuard|splash,haze,topsyturvy,clearsmog|Hardy||M|||50|]Machamp|||Guts|bulkup,splash|Hardy||M|||50|]Chansey|||NaturalCure|splash|Hardy||M|||50|]Blissey|||NaturalCure|splash|Hardy||M|||50|"
+ ],
+ "steps": [
+  [
+   "team 1234",
+   "team 1234"
+  ],
+  [
+   "move 1, move 1",
+   "move 1, move 1"
+  ],
+  [
+   "move 2, move 1",
+   "move 3 1, move 2"
+  ],
+  [
+   "move 1, move 1",
+   "move 4 1, move 1"
+  ],
+  [
+   "move 3, move 1",
+   "move 2, move 1"
+  ]
+ ],
+ "log": [
+  "|teamsize|p1|4",
+  "|teamsize|p2|4",
+  "|start",
+  "|split|p1",
+  "|switch|p1a: Dragonite|Dragonite, L50, M|166/166",
+  "|switch|p1a: Dragonite|Dragonite, L50, M|100/100",
+  "|split|p1",
+  "|switch|p1b: Gyarados|Gyarados, L50, M|170/170",
+  "|switch|p1b: Gyarados|Gyarados, L50, M|100/100",
+  "|split|p2",
+  "|switch|p2a: Alakazam|Alakazam, L50, M|130/130",
+  "|switch|p2a: Alakazam|Alakazam, L50, M|100/100",
+  "|split|p2",
+  "|switch|p2b: Machamp|Machamp, L50, M|165/165",
+  "|switch|p2b: Machamp|Machamp, L50, M|100/100",
+  "|-ability|p1b: Gyarados|Intimidate|boost",
+  "|-unboost|p2a: Alakazam|atk|1",
+  "|-unboost|p2b: Machamp|atk|1",
+  "|turn|1",
+  "|move|p2a: Alakazam|Splash|p2a: Alakazam",
+  "|-nothing",
+  "|move|p1b: Gyarados|Splash|p1b: Gyarados",
+  "|-nothing",
+  "|move|p1a: Dragonite|Dragon Dance|p1a: Dragonite",
+  "|-boost|p1a: Dragonite|atk|1",
+  "|-boost|p1a: Dragonite|spe|1",
+  "|move|p2b: Machamp|Bulk Up|p2b: Machamp",
+  "|-boost|p2b: Machamp|atk|1",
+  "|-boost|p2b: Machamp|def|1",
+  "|upkeep",
+  "|turn|2",
+  "|move|p1a: Dragonite|Belly Drum|p1a: Dragonite",
+  "|split|p1",
+  "|-damage|p1a: Dragonite|83/166",
+  "|-damage|p1a: Dragonite|50/100y",
+  "|-setboost|p1a: Dragonite|atk|6|[from] move: Belly Drum",
+  "|move|p2a: Alakazam|Topsy-Turvy|p1a: Dragonite",
+  "|-invertboost|p1a: Dragonite|[from] move: Topsy-Turvy",
+  "|move|p1b: Gyarados|Splash|p1b: Gyarados",
+  "|-nothing",
+  "|move|p2b: Machamp|Splash|p2b: Machamp",
+  "|-nothing",
+  "|upkeep",
+  "|turn|3",
+  "|move|p2a: Alakazam|Clear Smog|p1a: Dragonite",
+  "|-crit|p1a: Dragonite",
+  "|split|p1",
+  "|-damage|p1a: Dragonite|38/166",
+  "|-damage|p1a: Dragonite|22/100",
+  "|-clearboost|p1a: Dragonite",
+  "|move|p1b: Gyarados|Splash|p1b: Gyarados",
+  "|-nothing",
+  "|move|p1a: Dragonite|Dragon Dance|p1a: Dragonite",
+  "|-boost|p1a: Dragonite|atk|1",
+  "|-boost|p1a: Dragonite|spe|1",
+  "|move|p2b: Machamp|Bulk Up|p2b: Machamp",
+  "|-boost|p2b: Machamp|atk|1",
+  "|-boost|p2b: Machamp|def|1",
+  "|upkeep",
+  "|turn|4",
+  "|move|p1a: Dragonite|Splash|p1a: Dragonite",
+  "|-nothing",
+  "|move|p2a: Alakazam|Haze|p2a: Alakazam",
+  "|-clearallboost",
+  "|move|p1b: Gyarados|Splash|p1b: Gyarados",
+  "|-nothing",
+  "|move|p2b: Machamp|Bulk Up|p2b: Machamp",
+  "|-boost|p2b: Machamp|atk|1",
+  "|-boost|p2b: Machamp|def|1",
+  "|upkeep",
+  "|turn|5"
+ ],
+ "requests": [
+  [
+   {
+    "teamPreview": true,
+    "maxChosenTeamSize": 4,
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Dragonite",
+       "details": "Dragonite, L50, M",
+       "condition": "166/166",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 115,
+        "spa": 120,
+        "spd": 120,
+        "spe": 100
+       },
+       "moves": [
+        "dragondance",
+        "bellydrum",
+        "splash"
+       ],
+       "baseAbility": "innerfocus",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "innerfocus",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Gyarados",
+       "details": "Gyarados, L50, M",
+       "condition": "170/170",
+       "active": true,
+       "stats": {
+        "atk": 145,
+        "def": 99,
+        "spa": 80,
+        "spd": 120,
+        "spe": 101
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "intimidate",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "intimidate",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Snorlax",
+       "details": "Snorlax, L50, M",
+       "condition": "235/235",
+       "active": false,
+       "stats": {
+        "atk": 130,
+        "def": 85,
+        "spa": 85,
+        "spd": 130,
+        "spe": 50
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "immunity",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "immunity",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "teamPreview": true,
+    "maxChosenTeamSize": 4,
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Alakazam",
+       "details": "Alakazam, L50, M",
+       "condition": "130/130",
+       "active": true,
+       "stats": {
+        "atk": 70,
+        "def": 65,
+        "spa": 155,
+        "spd": 115,
+        "spe": 140
+       },
+       "moves": [
+        "splash",
+        "haze",
+        "topsyturvy",
+        "clearsmog"
+       ],
+       "baseAbility": "magicguard",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "magicguard",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Machamp",
+       "details": "Machamp, L50, M",
+       "condition": "165/165",
+       "active": true,
+       "stats": {
+        "atk": 150,
+        "def": 100,
+        "spa": 85,
+        "spd": 105,
+        "spe": 75
+       },
+       "moves": [
+        "bulkup",
+        "splash"
+       ],
+       "baseAbility": "guts",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "guts",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Chansey",
+       "details": "Chansey, L50, M",
+       "condition": "325/325",
+       "active": false,
+       "stats": {
+        "atk": 25,
+        "def": 25,
+        "spa": 55,
+        "spd": 125,
+        "spe": 70
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Dragon Dance",
+        "id": "dragondance",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Belly Drum",
+        "id": "bellydrum",
+        "pp": 12,
+        "maxpp": 12,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Dragonite",
+       "details": "Dragonite, L50, M",
+       "condition": "166/166",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 115,
+        "spa": 120,
+        "spd": 120,
+        "spe": 100
+       },
+       "moves": [
+        "dragondance",
+        "bellydrum",
+        "splash"
+       ],
+       "baseAbility": "innerfocus",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "innerfocus",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Gyarados",
+       "details": "Gyarados, L50, M",
+       "condition": "170/170",
+       "active": true,
+       "stats": {
+        "atk": 145,
+        "def": 99,
+        "spa": 80,
+        "spd": 120,
+        "spe": 101
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "intimidate",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "intimidate",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Snorlax",
+       "details": "Snorlax, L50, M",
+       "condition": "235/235",
+       "active": false,
+       "stats": {
+        "atk": 130,
+        "def": 85,
+        "spa": 85,
+        "spd": 130,
+        "spe": 50
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "immunity",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "immunity",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Haze",
+        "id": "haze",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "all",
+        "disabled": false
+       },
+       {
+        "move": "Topsy-Turvy",
+        "id": "topsyturvy",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Clear Smog",
+        "id": "clearsmog",
+        "pp": 16,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Bulk Up",
+        "id": "bulkup",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Alakazam",
+       "details": "Alakazam, L50, M",
+       "condition": "130/130",
+       "active": true,
+       "stats": {
+        "atk": 70,
+        "def": 65,
+        "spa": 155,
+        "spd": 115,
+        "spe": 140
+       },
+       "moves": [
+        "splash",
+        "haze",
+        "topsyturvy",
+        "clearsmog"
+       ],
+       "baseAbility": "magicguard",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "magicguard",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Machamp",
+       "details": "Machamp, L50, M",
+       "condition": "165/165",
+       "active": true,
+       "stats": {
+        "atk": 150,
+        "def": 100,
+        "spa": 85,
+        "spd": 105,
+        "spe": 75
+       },
+       "moves": [
+        "bulkup",
+        "splash"
+       ],
+       "baseAbility": "guts",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "guts",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Chansey",
+       "details": "Chansey, L50, M",
+       "condition": "325/325",
+       "active": false,
+       "stats": {
+        "atk": 25,
+        "def": 25,
+        "spa": 55,
+        "spd": 125,
+        "spe": 70
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Dragon Dance",
+        "id": "dragondance",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Belly Drum",
+        "id": "bellydrum",
+        "pp": 12,
+        "maxpp": 12,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Dragonite",
+       "details": "Dragonite, L50, M",
+       "condition": "166/166",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 115,
+        "spa": 120,
+        "spd": 120,
+        "spe": 100
+       },
+       "moves": [
+        "dragondance",
+        "bellydrum",
+        "splash"
+       ],
+       "baseAbility": "innerfocus",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "innerfocus",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Gyarados",
+       "details": "Gyarados, L50, M",
+       "condition": "170/170",
+       "active": true,
+       "stats": {
+        "atk": 145,
+        "def": 99,
+        "spa": 80,
+        "spd": 120,
+        "spe": 101
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "intimidate",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "intimidate",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Snorlax",
+       "details": "Snorlax, L50, M",
+       "condition": "235/235",
+       "active": false,
+       "stats": {
+        "atk": 130,
+        "def": 85,
+        "spa": 85,
+        "spd": 130,
+        "spe": 50
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "immunity",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "immunity",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Haze",
+        "id": "haze",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "all",
+        "disabled": false
+       },
+       {
+        "move": "Topsy-Turvy",
+        "id": "topsyturvy",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Clear Smog",
+        "id": "clearsmog",
+        "pp": 16,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Bulk Up",
+        "id": "bulkup",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Alakazam",
+       "details": "Alakazam, L50, M",
+       "condition": "130/130",
+       "active": true,
+       "stats": {
+        "atk": 70,
+        "def": 65,
+        "spa": 155,
+        "spd": 115,
+        "spe": 140
+       },
+       "moves": [
+        "splash",
+        "haze",
+        "topsyturvy",
+        "clearsmog"
+       ],
+       "baseAbility": "magicguard",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "magicguard",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Machamp",
+       "details": "Machamp, L50, M",
+       "condition": "165/165",
+       "active": true,
+       "stats": {
+        "atk": 150,
+        "def": 100,
+        "spa": 85,
+        "spd": 105,
+        "spe": 75
+       },
+       "moves": [
+        "bulkup",
+        "splash"
+       ],
+       "baseAbility": "guts",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "guts",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Chansey",
+       "details": "Chansey, L50, M",
+       "condition": "325/325",
+       "active": false,
+       "stats": {
+        "atk": 25,
+        "def": 25,
+        "spa": 55,
+        "spd": 125,
+        "spe": 70
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Dragon Dance",
+        "id": "dragondance",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Belly Drum",
+        "id": "bellydrum",
+        "pp": 11,
+        "maxpp": 12,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 18,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Dragonite",
+       "details": "Dragonite, L50, M",
+       "condition": "83/166",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 115,
+        "spa": 120,
+        "spd": 120,
+        "spe": 100
+       },
+       "moves": [
+        "dragondance",
+        "bellydrum",
+        "splash"
+       ],
+       "baseAbility": "innerfocus",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "innerfocus",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Gyarados",
+       "details": "Gyarados, L50, M",
+       "condition": "170/170",
+       "active": true,
+       "stats": {
+        "atk": 145,
+        "def": 99,
+        "spa": 80,
+        "spd": 120,
+        "spe": 101
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "intimidate",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "intimidate",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Snorlax",
+       "details": "Snorlax, L50, M",
+       "condition": "235/235",
+       "active": false,
+       "stats": {
+        "atk": 130,
+        "def": 85,
+        "spa": 85,
+        "spd": 130,
+        "spe": 50
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "immunity",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "immunity",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Haze",
+        "id": "haze",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "all",
+        "disabled": false
+       },
+       {
+        "move": "Topsy-Turvy",
+        "id": "topsyturvy",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Clear Smog",
+        "id": "clearsmog",
+        "pp": 16,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Bulk Up",
+        "id": "bulkup",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Alakazam",
+       "details": "Alakazam, L50, M",
+       "condition": "130/130",
+       "active": true,
+       "stats": {
+        "atk": 70,
+        "def": 65,
+        "spa": 155,
+        "spd": 115,
+        "spe": 140
+       },
+       "moves": [
+        "splash",
+        "haze",
+        "topsyturvy",
+        "clearsmog"
+       ],
+       "baseAbility": "magicguard",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "magicguard",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Machamp",
+       "details": "Machamp, L50, M",
+       "condition": "165/165",
+       "active": true,
+       "stats": {
+        "atk": 150,
+        "def": 100,
+        "spa": 85,
+        "spd": 105,
+        "spe": 75
+       },
+       "moves": [
+        "bulkup",
+        "splash"
+       ],
+       "baseAbility": "guts",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "guts",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Chansey",
+       "details": "Chansey, L50, M",
+       "condition": "325/325",
+       "active": false,
+       "stats": {
+        "atk": 25,
+        "def": 25,
+        "spa": 55,
+        "spd": 125,
+        "spe": 70
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Dragon Dance",
+        "id": "dragondance",
+        "pp": 18,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Belly Drum",
+        "id": "bellydrum",
+        "pp": 11,
+        "maxpp": 12,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 17,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Dragonite",
+       "details": "Dragonite, L50, M",
+       "condition": "38/166",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 115,
+        "spa": 120,
+        "spd": 120,
+        "spe": 100
+       },
+       "moves": [
+        "dragondance",
+        "bellydrum",
+        "splash"
+       ],
+       "baseAbility": "innerfocus",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "innerfocus",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Gyarados",
+       "details": "Gyarados, L50, M",
+       "condition": "170/170",
+       "active": true,
+       "stats": {
+        "atk": 145,
+        "def": 99,
+        "spa": 80,
+        "spd": 120,
+        "spe": 101
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "intimidate",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "intimidate",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Snorlax",
+       "details": "Snorlax, L50, M",
+       "condition": "235/235",
+       "active": false,
+       "stats": {
+        "atk": 130,
+        "def": 85,
+        "spa": 85,
+        "spd": 130,
+        "spe": 50
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "immunity",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "immunity",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Haze",
+        "id": "haze",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "all",
+        "disabled": false
+       },
+       {
+        "move": "Topsy-Turvy",
+        "id": "topsyturvy",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Clear Smog",
+        "id": "clearsmog",
+        "pp": 15,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Bulk Up",
+        "id": "bulkup",
+        "pp": 18,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Alakazam",
+       "details": "Alakazam, L50, M",
+       "condition": "130/130",
+       "active": true,
+       "stats": {
+        "atk": 70,
+        "def": 65,
+        "spa": 155,
+        "spd": 115,
+        "spe": 140
+       },
+       "moves": [
+        "splash",
+        "haze",
+        "topsyturvy",
+        "clearsmog"
+       ],
+       "baseAbility": "magicguard",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "magicguard",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Machamp",
+       "details": "Machamp, L50, M",
+       "condition": "165/165",
+       "active": true,
+       "stats": {
+        "atk": 150,
+        "def": 100,
+        "spa": 85,
+        "spd": 105,
+        "spe": 75
+       },
+       "moves": [
+        "bulkup",
+        "splash"
+       ],
+       "baseAbility": "guts",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "guts",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Chansey",
+       "details": "Chansey, L50, M",
+       "condition": "325/325",
+       "active": false,
+       "stats": {
+        "atk": 25,
+        "def": 25,
+        "spa": 55,
+        "spd": 125,
+        "spe": 70
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Dragon Dance",
+        "id": "dragondance",
+        "pp": 18,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Belly Drum",
+        "id": "bellydrum",
+        "pp": 11,
+        "maxpp": 12,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 16,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Dragonite",
+       "details": "Dragonite, L50, M",
+       "condition": "38/166",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 115,
+        "spa": 120,
+        "spd": 120,
+        "spe": 100
+       },
+       "moves": [
+        "dragondance",
+        "bellydrum",
+        "splash"
+       ],
+       "baseAbility": "innerfocus",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "innerfocus",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Gyarados",
+       "details": "Gyarados, L50, M",
+       "condition": "170/170",
+       "active": true,
+       "stats": {
+        "atk": 145,
+        "def": 99,
+        "spa": 80,
+        "spd": 120,
+        "spe": 101
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "intimidate",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "intimidate",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Snorlax",
+       "details": "Snorlax, L50, M",
+       "condition": "235/235",
+       "active": false,
+       "stats": {
+        "atk": 130,
+        "def": 85,
+        "spa": 85,
+        "spd": 130,
+        "spe": 50
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "immunity",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "immunity",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Haze",
+        "id": "haze",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "all",
+        "disabled": false
+       },
+       {
+        "move": "Topsy-Turvy",
+        "id": "topsyturvy",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Clear Smog",
+        "id": "clearsmog",
+        "pp": 15,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Bulk Up",
+        "id": "bulkup",
+        "pp": 17,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Alakazam",
+       "details": "Alakazam, L50, M",
+       "condition": "130/130",
+       "active": true,
+       "stats": {
+        "atk": 70,
+        "def": 65,
+        "spa": 155,
+        "spd": 115,
+        "spe": 140
+       },
+       "moves": [
+        "splash",
+        "haze",
+        "topsyturvy",
+        "clearsmog"
+       ],
+       "baseAbility": "magicguard",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "magicguard",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Machamp",
+       "details": "Machamp, L50, M",
+       "condition": "165/165",
+       "active": true,
+       "stats": {
+        "atk": 150,
+        "def": 100,
+        "spa": 85,
+        "spd": 105,
+        "spe": 75
+       },
+       "moves": [
+        "bulkup",
+        "splash"
+       ],
+       "baseAbility": "guts",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "guts",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Chansey",
+       "details": "Chansey, L50, M",
+       "condition": "325/325",
+       "active": false,
+       "stats": {
+        "atk": 25,
+        "def": 25,
+        "spa": 55,
+        "spd": 125,
+        "spe": 70
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ]
+ ],
+ "ended": false,
+ "rawLog": [
+  "|t:|1791754830",
+  "|gametype|doubles",
+  "|player|p1|p1||",
+  "|player|p2|p2||",
+  "|gen|9",
+  "|tier|[Gen 9 Champions] VGC 2026 Reg M-C",
+  "|rule|Species Clause: Limit one of each Pokémon",
+  "|rule|Item Clause: Limit 1 of each item",
+  "|clearpoke",
+  "|poke|p1|Dragonite, L50, M|",
+  "|poke|p1|Gyarados, L50, M|",
+  "|poke|p1|Blissey, L50, M|",
+  "|poke|p1|Snorlax, L50, M|",
+  "|poke|p2|Alakazam, L50, M|",
+  "|poke|p2|Machamp, L50, M|",
+  "|poke|p2|Chansey, L50, M|",
+  "|poke|p2|Blissey, L50, M|",
+  "|teampreview|4",
+  "|split|p1",
+  "|uhtml|otsrequest|<button name=\"send\" value=\"/acceptopenteamsheets\" class=\"button\" style=\"margin-right: 10px;\"><strong>Accept Open Team Sheets</strong></button><button name=\"send\" value=\"/rejectopenteamsheets\" class=\"button\" style=\"margin-top: 10px\"><strong>Deny Open Team Sheets</strong></button>",
+  "",
+  "|split|p2",
+  "|uhtml|otsrequest|<button name=\"send\" value=\"/acceptopenteamsheets\" class=\"button\" style=\"margin-right: 10px;\"><strong>Accept Open Team Sheets</strong></button><button name=\"send\" value=\"/rejectopenteamsheets\" class=\"button\" style=\"margin-top: 10px\"><strong>Deny Open Team Sheets</strong></button>",
+  "",
+  "|",
+  "|t:|1791754830",
+  "|teamsize|p1|4",
+  "|teamsize|p2|4",
+  "|start",
+  "|split|p1",
+  "|uhtmlchange|otsrequest|",
+  "",
+  "|split|p2",
+  "|uhtmlchange|otsrequest|",
+  "",
+  "|split|p1",
+  "|switch|p1a: Dragonite|Dragonite, L50, M|166/166",
+  "|switch|p1a: Dragonite|Dragonite, L50, M|100/100",
+  "|split|p1",
+  "|switch|p1b: Gyarados|Gyarados, L50, M|170/170",
+  "|switch|p1b: Gyarados|Gyarados, L50, M|100/100",
+  "|split|p2",
+  "|switch|p2a: Alakazam|Alakazam, L50, M|130/130",
+  "|switch|p2a: Alakazam|Alakazam, L50, M|100/100",
+  "|split|p2",
+  "|switch|p2b: Machamp|Machamp, L50, M|165/165",
+  "|switch|p2b: Machamp|Machamp, L50, M|100/100",
+  "|-ability|p1b: Gyarados|Intimidate|boost",
+  "|-unboost|p2a: Alakazam|atk|1",
+  "|-unboost|p2b: Machamp|atk|1",
+  "|turn|1",
+  "|",
+  "|t:|1791754830",
+  "|move|p2a: Alakazam|Splash|p2a: Alakazam",
+  "|-nothing",
+  "|move|p1b: Gyarados|Splash|p1b: Gyarados",
+  "|-nothing",
+  "|move|p1a: Dragonite|Dragon Dance|p1a: Dragonite",
+  "|-boost|p1a: Dragonite|atk|1",
+  "|-boost|p1a: Dragonite|spe|1",
+  "|move|p2b: Machamp|Bulk Up|p2b: Machamp",
+  "|-boost|p2b: Machamp|atk|1",
+  "|-boost|p2b: Machamp|def|1",
+  "|",
+  "|upkeep",
+  "|turn|2",
+  "|",
+  "|t:|1791754830",
+  "|move|p1a: Dragonite|Belly Drum|p1a: Dragonite",
+  "|split|p1",
+  "|-damage|p1a: Dragonite|83/166",
+  "|-damage|p1a: Dragonite|50/100y",
+  "|-setboost|p1a: Dragonite|atk|6|[from] move: Belly Drum",
+  "|move|p2a: Alakazam|Topsy-Turvy|p1a: Dragonite",
+  "|-invertboost|p1a: Dragonite|[from] move: Topsy-Turvy",
+  "|move|p1b: Gyarados|Splash|p1b: Gyarados",
+  "|-nothing",
+  "|move|p2b: Machamp|Splash|p2b: Machamp",
+  "|-nothing",
+  "|",
+  "|upkeep",
+  "|turn|3",
+  "|",
+  "|t:|1791754830",
+  "|move|p2a: Alakazam|Clear Smog|p1a: Dragonite",
+  "|-crit|p1a: Dragonite",
+  "|split|p1",
+  "|-damage|p1a: Dragonite|38/166",
+  "|-damage|p1a: Dragonite|22/100",
+  "|-clearboost|p1a: Dragonite",
+  "|move|p1b: Gyarados|Splash|p1b: Gyarados",
+  "|-nothing",
+  "|move|p1a: Dragonite|Dragon Dance|p1a: Dragonite",
+  "|-boost|p1a: Dragonite|atk|1",
+  "|-boost|p1a: Dragonite|spe|1",
+  "|move|p2b: Machamp|Bulk Up|p2b: Machamp",
+  "|-boost|p2b: Machamp|atk|1",
+  "|-boost|p2b: Machamp|def|1",
+  "|",
+  "|upkeep",
+  "|turn|4",
+  "|",
+  "|t:|1791754830",
+  "|move|p1a: Dragonite|Splash|p1a: Dragonite",
+  "|-nothing",
+  "|move|p2a: Alakazam|Haze|p2a: Alakazam",
+  "|-clearallboost",
+  "|move|p1b: Gyarados|Splash|p1b: Gyarados",
+  "|-nothing",
+  "|move|p2b: Machamp|Bulk Up|p2b: Machamp",
+  "|-boost|p2b: Machamp|atk|1",
+  "|-boost|p2b: Machamp|def|1",
+  "|",
+  "|upkeep",
+  "|turn|5"
+ ]
+}

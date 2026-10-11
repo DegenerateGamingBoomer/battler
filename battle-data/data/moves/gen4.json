@@ -366,7 +366,7 @@
     "user_effect": {
       "boosts": {
         "def": -1,
-        "spa": -1
+        "spd": -1
       }
     }
   },
@@ -1025,7 +1025,7 @@
     "pp": 15,
     "target": "Normal",
     "recoil": {
-      "percent": "1/3"
+      "percent": "33/100"
     },
     "flags": ["Contact", "Mirror", "Protect", "Thawing"],
     "secondary_effects": [
@@ -1306,7 +1306,7 @@
     "pp": 15,
     "target": "Any",
     "recoil": {
-      "percent": "1/3"
+      "percent": "33/100"
     },
     "flags": ["Contact", "Distance", "Mirror", "Protect"]
   },
@@ -2001,7 +2001,7 @@
     "pp": 15,
     "target": "Normal",
     "recoil": {
-      "percent": "1/3"
+      "percent": "33/100"
     },
     "flags": ["Contact", "Mirror", "Protect"]
   },

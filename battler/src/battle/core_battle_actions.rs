@@ -266,6 +266,9 @@ pub fn switch_in(
             }
 
             context.mon_mut().effective_team_position = previous_team_position;
+        } else {
+            // A fainted Mon trades places with its replacement, just like a regular switch.
+            context.mon_mut().effective_team_position = previous_team_position;
         }
     }
 
@@ -1150,7 +1153,11 @@ fn use_active_move_internal(
         );
     }
 
-    if !context.active_move().ignore_all_secondary_effects && context.mon().active {
+    // Effects after the move on its user only apply if the move did something.
+    if outcome.succeeded()
+        && !context.active_move().ignore_all_secondary_effects
+        && context.mon().active
+    {
         core_battle_effects::run_active_move_event_with_input::<_, ()>(
             context,
             fxlang::BattleEvent::AfterMoveSecondaryEffectsUser,
@@ -1329,7 +1336,13 @@ fn handle_move_event_result(context: &mut ActiveMoveContext, result: EventResult
     if context.is_self() || context.is_secondary() {
         return Ok(());
     }
-    if result.do_not_animate() {
+    let stopped_keeps_animation = !result.report_failure()
+        && context
+            .battle()
+            .engine_options
+            .champions
+            .stopped_moves_keep_animation;
+    if result.do_not_animate() && !stopped_keeps_animation {
         core_battle_logs::do_not_animate_last_move(context);
     }
     if result.report_failure() && !context.active_move().fail_reported {
@@ -2281,13 +2294,19 @@ fn modify_damage(context: &mut ActiveTargetContext, mut base_damage: u32) -> Res
         .active_move_mut()
         .hit_data_mut(target_mon_handle)
         .type_modifier = type_modifier;
+    let stages = context
+        .battle()
+        .engine_options
+        .champions
+        .effectiveness_stages
+        .then(|| type_modifier.unsigned_abs().min(2) as u8);
     if type_modifier > 0 {
-        core_battle_logs::super_effective(&mut context.target_mon_context()?)?;
+        core_battle_logs::super_effective(&mut context.target_mon_context()?, stages)?;
         for _ in 0..type_modifier {
             base_damage *= 2;
         }
     } else if type_modifier < 0 {
-        core_battle_logs::resisted(&mut context.target_mon_context()?)?;
+        core_battle_logs::resisted(&mut context.target_mon_context()?, stages)?;
         for _ in 0..-type_modifier {
             base_damage /= 2;
         }
@@ -2315,6 +2334,8 @@ fn calculate_recoil_damage(context: &ActiveMoveContext, damage_dealt: u64) -> u1
         None => return 0,
     };
     let base = match recoil.base {
+        // Recoil from damage dealt requires some damage to have been dealt.
+        RecoilBase::Damage if damage_dealt == 0 => return 0,
         RecoilBase::Damage => damage_dealt,
         RecoilBase::UserMaxHp => context.as_mon_context().mon().max_hp as u64,
         RecoilBase::UserBaseMaxHp => context.as_mon_context().mon().base_max_hp as u64,

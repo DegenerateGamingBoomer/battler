@@ -2,6 +2,54 @@
 
 Spec: `champions-showdown-spec.md`. One section per phase, newest first.
 
+## P1b — Showdown compatibility layer (done, with the gaps listed below)
+
+Crate `battler-showdown-compat` (README inside). Everything below is tested against fixtures
+generated from the pinned Showdown (`compat/gen-fixtures.js`, `compat/scenarios.js`).
+
+**Done**
+- Protocol: `protocol::Translator` handles every line type in the spec (switch, drag, replace,
+  -damage, -heal, -sethp, faint, move, cant, detailschange, -formechange, -mega, -status,
+  -curestatus, the boost family, swap, side/field/weather start and end, -start/-end, -item,
+  -enditem, -ability, -activate, -fail, -miss, -immune, -crit, -supereffective, -resisted, turn,
+  win, tie, upkeep) with `[from]`/`[of]`/`[silent]`/`[upkeep]`/`[spread]`/`[still]`/`[miss]`/
+  `[notarget]` and `|split|pN` pairs. 13 scenarios (doubles, Showdown's constant-0 or constant-max
+  random source on both engines) match byte for byte; every spec line type except `tie` and all
+  8 tags appear in them. `|tie` cannot happen by fainting in gen 9 (the last to faint wins), so it is
+  tested as a single line.
+- Choices: `choice::translate` (1-based → 0-based, `default`, team order, mega, switch/pass).
+- Requests: `request::translate` matches Showdown's request JSON (team preview, move requests with
+  pp/maxpp/target/disabled/trapped/canMegaEvo, forceSwitch, noCancel, wait, `side.pokemon`) at every
+  step of every fixture, for both players.
+- Teams: packed and exported formats → `TeamData`; species/forme mapping incl. cosmetic formes.
+- `compat/allowlist.md`: three rules (R1 spread/side-move target, R2 `-hint`, R3 `[notarget]`
+  target), each with the reason. Nothing else is ignored.
+
+**Engine fixes found on the way** (all with Showdown as the reference): Close Combat dropped the
+wrong stat, Shift Gear boosted Atk by the wrong amount, 33% recoil moves recoiled by 1/3, recoil on
+zero damage, user effects (Life Orb) after a missed move, fainted slots did not swap team position
+with their replacement (affects `side.pokemon` order), `[still]` handling for stopped moves, and
+supereffective/resisted stages under the Champions rules. Tests for those moves were updated to
+Showdown's numbers.
+
+**Test status**: `cargo test -q -p battler -p battler-data -p battler-test-utils -p battler-champions
+-p battler-showdown-compat` all pass (battler: 1425). `cargo check --workspace --all-targets` clean.
+
+**Gaps**
+- Scenarios are doubles only and short; singles, multi-turn volatiles and many abilities are not
+  covered by a reference fixture. The random-battle corpus (40 battles, informational, run with
+  `--ignored`) matches exactly in only 1 battle; the first differences are engine behaviour, not
+  translation (list in `compat/allowlist.md`).
+- Trick/Switcheroo, Leech Seed, Pain Split, Spectral Thief and the herbs are translated by special
+  cases because battler logs them differently; other multi-line Showdown idioms will need the same
+  as P1c finds them.
+- `request::translate` treats Mega/Primal/Ultra as the only permanent formes.
+
+**Open divergences** (engine): speed-tie order (Showdown shuffles), White Herb vs faint order,
+Taunt/Yawn residual order, plus the corpus list above.
+
+**Next step**: P1c (differential harness), starting from the corpus first-difference list.
+
 ## P1a — Champions rules (done, with the gaps listed below)
 
 Branch: `claude/compassionate-albattani-8i2vor`. Done in the same session as P0 because the request

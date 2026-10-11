@@ -90,7 +90,7 @@ fn custap_berry_allows_user_to_move_first() {
             "damage|mon:Snorlax,player-1,1|health:66/178",
             "damage|mon:Snorlax,player-1,1|health:38/100",
             "unboost|mon:Jolteon,player-2,1|stat:def|by:1",
-            "unboost|mon:Jolteon,player-2,1|stat:spa|by:1",
+            "unboost|mon:Jolteon,player-2,1|stat:spd|by:1",
             "residual",
             "turn|turn:2",
             "itemend|mon:Snorlax,player-1,1|item:Custap Berry|eat",

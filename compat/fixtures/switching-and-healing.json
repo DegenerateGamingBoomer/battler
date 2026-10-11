@@ -1,0 +1,1855 @@
+{
+ "name": "switching-and-healing",
+ "rng": "zero",
+ "format": "gen9championsvgc2026regmc",
+ "gametype": "doubles",
+ "description": "Dragging, Pain Split, Ally Switch, healing moves, Leftovers.",
+ "teams": [
+  "Dragonite|||Multiscale|dragontail,roost,splash|Hardy||M|||50|]Alakazam|||MagicGuard|allyswitch,painsplit,splash|Hardy||M|||50|]Blissey|||NaturalCure|splash|Hardy||M|||50|]Snorlax|||Immunity|splash|Hardy||M|||50|",
+  "Tyranitar||Leftovers|SandStream|tackle,splash|Hardy||M|||50|]Gengar|||CursedBody|shadowball,splash|Hardy||M|||50|]Chansey|||NaturalCure|splash|Hardy||M|||50|]Pikachu|||Static|splash|Hardy||M|||50|"
+ ],
+ "steps": [
+  [
+   "team 1234",
+   "team 1234"
+  ],
+  [
+   "move 1 1, move 2 1",
+   "move 1 1, move 2"
+  ],
+  [
+   "move 2, move 1",
+   "move 1, move 1 1"
+  ],
+  [
+   "switch 3, pass",
+   ""
+  ],
+  [
+   "move 1, move 3",
+   "move 1, move 1 2"
+  ]
+ ],
+ "log": [
+  "|teamsize|p1|4",
+  "|teamsize|p2|4",
+  "|start",
+  "|split|p1",
+  "|switch|p1a: Dragonite|Dragonite, L50, M|166/166",
+  "|switch|p1a: Dragonite|Dragonite, L50, M|100/100",
+  "|split|p1",
+  "|switch|p1b: Alakazam|Alakazam, L50, M|130/130",
+  "|switch|p1b: Alakazam|Alakazam, L50, M|100/100",
+  "|split|p2",
+  "|switch|p2a: Tyranitar|Tyranitar, L50, M|175/175",
+  "|switch|p2a: Tyranitar|Tyranitar, L50, M|100/100",
+  "|split|p2",
+  "|switch|p2b: Gengar|Gengar, L50, M|135/135",
+  "|switch|p2b: Gengar|Gengar, L50, M|100/100",
+  "|-weather|Sandstorm|[from] ability: Sand Stream|[of] p2a: Tyranitar",
+  "|turn|1",
+  "|move|p1b: Alakazam|Pain Split|p2a: Tyranitar",
+  "|split|p2",
+  "|-sethp|p2a: Tyranitar|152/175|[from] move: Pain Split|[silent]",
+  "|-sethp|p2a: Tyranitar|86/100|[from] move: Pain Split|[silent]",
+  "|split|p1",
+  "|-sethp|p1b: Alakazam|130/130|[from] move: Pain Split",
+  "|-sethp|p1b: Alakazam|100/100|[from] move: Pain Split",
+  "|move|p2b: Gengar|Splash|p2b: Gengar",
+  "|-nothing",
+  "|move|p2a: Tyranitar|Tackle|p1a: Dragonite",
+  "|-crit|p1a: Dragonite",
+  "|split|p1",
+  "|-damage|p1a: Dragonite|148/166",
+  "|-damage|p1a: Dragonite|89/100",
+  "|move|p1a: Dragonite|Dragon Tail|p2a: Tyranitar",
+  "|-crit|p2a: Tyranitar",
+  "|split|p2",
+  "|-damage|p2a: Tyranitar|79/175",
+  "|-damage|p2a: Tyranitar|45/100",
+  "|split|p2",
+  "|drag|p2a: Chansey|Chansey, L50, M|325/325",
+  "|drag|p2a: Chansey|Chansey, L50, M|100/100",
+  "|-weather|Sandstorm|[upkeep]",
+  "|split|p2",
+  "|-damage|p2b: Gengar|127/135|[from] Sandstorm",
+  "|-damage|p2b: Gengar|94/100|[from] Sandstorm",
+  "|split|p1",
+  "|-damage|p1a: Dragonite|138/166|[from] Sandstorm",
+  "|-damage|p1a: Dragonite|83/100|[from] Sandstorm",
+  "|split|p2",
+  "|-damage|p2a: Chansey|305/325|[from] Sandstorm",
+  "|-damage|p2a: Chansey|93/100|[from] Sandstorm",
+  "|upkeep",
+  "|turn|2",
+  "|move|p1b: Alakazam|Ally Switch|p1b: Alakazam",
+  "|swap|p1b: Alakazam|0|[from] move: Ally Switch",
+  "|move|p2b: Gengar|Shadow Ball|p1a: Alakazam",
+  "|-supereffective|p1a: Alakazam|1",
+  "|-crit|p1a: Alakazam",
+  "|split|p1",
+  "|-damage|p1a: Alakazam|0 fnt",
+  "|-damage|p1a: Alakazam|0 fnt",
+  "|faint|p1a: Alakazam",
+  "|move|p1b: Dragonite|Roost|p1b: Dragonite",
+  "|split|p1",
+  "|-heal|p1b: Dragonite|166/166",
+  "|-heal|p1b: Dragonite|100/100",
+  "|-singleturn|p1b: Dragonite|move: Roost",
+  "|move|p2a: Chansey|Splash|p2a: Chansey",
+  "|-nothing",
+  "|-weather|Sandstorm|[upkeep]",
+  "|split|p2",
+  "|-damage|p2b: Gengar|119/135|[from] Sandstorm",
+  "|-damage|p2b: Gengar|88/100|[from] Sandstorm",
+  "|split|p1",
+  "|-damage|p1b: Dragonite|156/166|[from] Sandstorm",
+  "|-damage|p1b: Dragonite|93/100|[from] Sandstorm",
+  "|split|p2",
+  "|-damage|p2a: Chansey|285/325|[from] Sandstorm",
+  "|-damage|p2a: Chansey|87/100|[from] Sandstorm",
+  "|upkeep",
+  "|split|p1",
+  "|switch|p1a: Blissey|Blissey, L50, M|330/330",
+  "|switch|p1a: Blissey|Blissey, L50, M|100/100",
+  "|turn|3",
+  "|move|p2b: Gengar|Shadow Ball|p1b: Dragonite",
+  "|-crit|p1b: Dragonite",
+  "|split|p1",
+  "|-damage|p1b: Dragonite|53/166",
+  "|-damage|p1b: Dragonite|31/100",
+  "|-unboost|p1b: Dragonite|spd|1",
+  "|move|p1b: Dragonite|Splash|p1b: Dragonite",
+  "|-nothing",
+  "|move|p1a: Blissey|Splash|p1a: Blissey",
+  "|-nothing",
+  "|move|p2a: Chansey|Splash|p2a: Chansey",
+  "|-nothing",
+  "|-weather|Sandstorm|[upkeep]",
+  "|split|p2",
+  "|-damage|p2b: Gengar|111/135|[from] Sandstorm",
+  "|-damage|p2b: Gengar|82/100|[from] Sandstorm",
+  "|split|p1",
+  "|-damage|p1b: Dragonite|43/166|[from] Sandstorm",
+  "|-damage|p1b: Dragonite|25/100|[from] Sandstorm",
+  "|split|p1",
+  "|-damage|p1a: Blissey|310/330|[from] Sandstorm",
+  "|-damage|p1a: Blissey|93/100|[from] Sandstorm",
+  "|split|p2",
+  "|-damage|p2a: Chansey|265/325|[from] Sandstorm",
+  "|-damage|p2a: Chansey|81/100|[from] Sandstorm",
+  "|upkeep",
+  "|turn|4"
+ ],
+ "requests": [
+  [
+   {
+    "teamPreview": true,
+    "maxChosenTeamSize": 4,
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Dragonite",
+       "details": "Dragonite, L50, M",
+       "condition": "166/166",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 115,
+        "spa": 120,
+        "spd": 120,
+        "spe": 100
+       },
+       "moves": [
+        "dragontail",
+        "roost",
+        "splash"
+       ],
+       "baseAbility": "multiscale",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "multiscale",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Alakazam",
+       "details": "Alakazam, L50, M",
+       "condition": "130/130",
+       "active": true,
+       "stats": {
+        "atk": 70,
+        "def": 65,
+        "spa": 155,
+        "spd": 115,
+        "spe": 140
+       },
+       "moves": [
+        "allyswitch",
+        "painsplit",
+        "splash"
+       ],
+       "baseAbility": "magicguard",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "magicguard",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Snorlax",
+       "details": "Snorlax, L50, M",
+       "condition": "235/235",
+       "active": false,
+       "stats": {
+        "atk": 130,
+        "def": 85,
+        "spa": 85,
+        "spd": 130,
+        "spe": 50
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "immunity",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "immunity",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "teamPreview": true,
+    "maxChosenTeamSize": 4,
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Tyranitar",
+       "details": "Tyranitar, L50, M",
+       "condition": "175/175",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 130,
+        "spa": 115,
+        "spd": 120,
+        "spe": 81
+       },
+       "moves": [
+        "tackle",
+        "splash"
+       ],
+       "baseAbility": "sandstream",
+       "item": "leftovers",
+       "pokeball": "pokeball",
+       "ability": "sandstream",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Gengar",
+       "details": "Gengar, L50, M",
+       "condition": "135/135",
+       "active": true,
+       "stats": {
+        "atk": 85,
+        "def": 80,
+        "spa": 150,
+        "spd": 95,
+        "spe": 130
+       },
+       "moves": [
+        "shadowball",
+        "splash"
+       ],
+       "baseAbility": "cursedbody",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "cursedbody",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Chansey",
+       "details": "Chansey, L50, M",
+       "condition": "325/325",
+       "active": false,
+       "stats": {
+        "atk": 25,
+        "def": 25,
+        "spa": 55,
+        "spd": 125,
+        "spe": 70
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Pikachu",
+       "details": "Pikachu, L50, M",
+       "condition": "110/110",
+       "active": false,
+       "stats": {
+        "atk": 75,
+        "def": 60,
+        "spa": 70,
+        "spd": 70,
+        "spe": 110
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "static",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "static",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Dragon Tail",
+        "id": "dragontail",
+        "pp": 12,
+        "maxpp": 12,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Roost",
+        "id": "roost",
+        "pp": 8,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Ally Switch",
+        "id": "allyswitch",
+        "pp": 16,
+        "maxpp": 16,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Pain Split",
+        "id": "painsplit",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Dragonite",
+       "details": "Dragonite, L50, M",
+       "condition": "166/166",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 115,
+        "spa": 120,
+        "spd": 120,
+        "spe": 100
+       },
+       "moves": [
+        "dragontail",
+        "roost",
+        "splash"
+       ],
+       "baseAbility": "multiscale",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "multiscale",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Alakazam",
+       "details": "Alakazam, L50, M",
+       "condition": "130/130",
+       "active": true,
+       "stats": {
+        "atk": 70,
+        "def": 65,
+        "spa": 155,
+        "spd": 115,
+        "spe": 140
+       },
+       "moves": [
+        "allyswitch",
+        "painsplit",
+        "splash"
+       ],
+       "baseAbility": "magicguard",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "magicguard",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Snorlax",
+       "details": "Snorlax, L50, M",
+       "condition": "235/235",
+       "active": false,
+       "stats": {
+        "atk": 130,
+        "def": 85,
+        "spa": 85,
+        "spd": 130,
+        "spe": 50
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "immunity",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "immunity",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Tackle",
+        "id": "tackle",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Shadow Ball",
+        "id": "shadowball",
+        "pp": 16,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Tyranitar",
+       "details": "Tyranitar, L50, M",
+       "condition": "175/175",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 130,
+        "spa": 115,
+        "spd": 120,
+        "spe": 81
+       },
+       "moves": [
+        "tackle",
+        "splash"
+       ],
+       "baseAbility": "sandstream",
+       "item": "leftovers",
+       "pokeball": "pokeball",
+       "ability": "sandstream",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Gengar",
+       "details": "Gengar, L50, M",
+       "condition": "135/135",
+       "active": true,
+       "stats": {
+        "atk": 85,
+        "def": 80,
+        "spa": 150,
+        "spd": 95,
+        "spe": 130
+       },
+       "moves": [
+        "shadowball",
+        "splash"
+       ],
+       "baseAbility": "cursedbody",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "cursedbody",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Chansey",
+       "details": "Chansey, L50, M",
+       "condition": "325/325",
+       "active": false,
+       "stats": {
+        "atk": 25,
+        "def": 25,
+        "spa": 55,
+        "spd": 125,
+        "spe": 70
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Pikachu",
+       "details": "Pikachu, L50, M",
+       "condition": "110/110",
+       "active": false,
+       "stats": {
+        "atk": 75,
+        "def": 60,
+        "spa": 70,
+        "spd": 70,
+        "spe": 110
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "static",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "static",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Dragon Tail",
+        "id": "dragontail",
+        "pp": 11,
+        "maxpp": 12,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Roost",
+        "id": "roost",
+        "pp": 8,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Ally Switch",
+        "id": "allyswitch",
+        "pp": 16,
+        "maxpp": 16,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Pain Split",
+        "id": "painsplit",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Dragonite",
+       "details": "Dragonite, L50, M",
+       "condition": "138/166",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 115,
+        "spa": 120,
+        "spd": 120,
+        "spe": 100
+       },
+       "moves": [
+        "dragontail",
+        "roost",
+        "splash"
+       ],
+       "baseAbility": "multiscale",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "multiscale",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Alakazam",
+       "details": "Alakazam, L50, M",
+       "condition": "130/130",
+       "active": true,
+       "stats": {
+        "atk": 70,
+        "def": 65,
+        "spa": 155,
+        "spd": 115,
+        "spe": 140
+       },
+       "moves": [
+        "allyswitch",
+        "painsplit",
+        "splash"
+       ],
+       "baseAbility": "magicguard",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "magicguard",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Snorlax",
+       "details": "Snorlax, L50, M",
+       "condition": "235/235",
+       "active": false,
+       "stats": {
+        "atk": 130,
+        "def": 85,
+        "spa": 85,
+        "spd": 130,
+        "spe": 50
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "immunity",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "immunity",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Shadow Ball",
+        "id": "shadowball",
+        "pp": 16,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Chansey",
+       "details": "Chansey, L50, M",
+       "condition": "305/325",
+       "active": true,
+       "stats": {
+        "atk": 25,
+        "def": 25,
+        "spa": 55,
+        "spd": 125,
+        "spe": 70
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Gengar",
+       "details": "Gengar, L50, M",
+       "condition": "127/135",
+       "active": true,
+       "stats": {
+        "atk": 85,
+        "def": 80,
+        "spa": 150,
+        "spd": 95,
+        "spe": 130
+       },
+       "moves": [
+        "shadowball",
+        "splash"
+       ],
+       "baseAbility": "cursedbody",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "cursedbody",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Tyranitar",
+       "details": "Tyranitar, L50, M",
+       "condition": "79/175",
+       "active": false,
+       "stats": {
+        "atk": 154,
+        "def": 130,
+        "spa": 115,
+        "spd": 120,
+        "spe": 81
+       },
+       "moves": [
+        "tackle",
+        "splash"
+       ],
+       "baseAbility": "sandstream",
+       "item": "leftovers",
+       "pokeball": "pokeball",
+       "ability": "sandstream",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Pikachu",
+       "details": "Pikachu, L50, M",
+       "condition": "110/110",
+       "active": false,
+       "stats": {
+        "atk": 75,
+        "def": 60,
+        "spa": 70,
+        "spd": 70,
+        "spe": 110
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "static",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "static",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "forceSwitch": [
+     true,
+     false
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Alakazam",
+       "details": "Alakazam, L50, M",
+       "condition": "0 fnt",
+       "active": true,
+       "stats": {
+        "atk": 70,
+        "def": 65,
+        "spa": 155,
+        "spd": 115,
+        "spe": 140
+       },
+       "moves": [
+        "allyswitch",
+        "painsplit",
+        "splash"
+       ],
+       "baseAbility": "magicguard",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "magicguard",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Dragonite",
+       "details": "Dragonite, L50, M",
+       "condition": "156/166",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 115,
+        "spa": 120,
+        "spd": 120,
+        "spe": 100
+       },
+       "moves": [
+        "dragontail",
+        "roost",
+        "splash"
+       ],
+       "baseAbility": "multiscale",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "multiscale",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Snorlax",
+       "details": "Snorlax, L50, M",
+       "condition": "235/235",
+       "active": false,
+       "stats": {
+        "atk": 130,
+        "def": 85,
+        "spa": 85,
+        "spd": 130,
+        "spe": 50
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "immunity",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "immunity",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    },
+    "noCancel": true
+   },
+   {
+    "wait": true,
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Chansey",
+       "details": "Chansey, L50, M",
+       "condition": "285/325",
+       "active": true,
+       "stats": {
+        "atk": 25,
+        "def": 25,
+        "spa": 55,
+        "spd": 125,
+        "spe": 70
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Gengar",
+       "details": "Gengar, L50, M",
+       "condition": "119/135",
+       "active": true,
+       "stats": {
+        "atk": 85,
+        "def": 80,
+        "spa": 150,
+        "spd": 95,
+        "spe": 130
+       },
+       "moves": [
+        "shadowball",
+        "splash"
+       ],
+       "baseAbility": "cursedbody",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "cursedbody",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Tyranitar",
+       "details": "Tyranitar, L50, M",
+       "condition": "79/175",
+       "active": false,
+       "stats": {
+        "atk": 154,
+        "def": 130,
+        "spa": 115,
+        "spd": 120,
+        "spe": 81
+       },
+       "moves": [
+        "tackle",
+        "splash"
+       ],
+       "baseAbility": "sandstream",
+       "item": "leftovers",
+       "pokeball": "pokeball",
+       "ability": "sandstream",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Pikachu",
+       "details": "Pikachu, L50, M",
+       "condition": "110/110",
+       "active": false,
+       "stats": {
+        "atk": 75,
+        "def": 60,
+        "spa": 70,
+        "spd": 70,
+        "spe": 110
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "static",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "static",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Dragon Tail",
+        "id": "dragontail",
+        "pp": 11,
+        "maxpp": 12,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Roost",
+        "id": "roost",
+        "pp": 7,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": true,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Dragonite",
+       "details": "Dragonite, L50, M",
+       "condition": "156/166",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 115,
+        "spa": 120,
+        "spd": 120,
+        "spe": 100
+       },
+       "moves": [
+        "dragontail",
+        "roost",
+        "splash"
+       ],
+       "baseAbility": "multiscale",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "multiscale",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Alakazam",
+       "details": "Alakazam, L50, M",
+       "condition": "0 fnt",
+       "active": false,
+       "stats": {
+        "atk": 70,
+        "def": 65,
+        "spa": 155,
+        "spd": 115,
+        "spe": 140
+       },
+       "moves": [
+        "allyswitch",
+        "painsplit",
+        "splash"
+       ],
+       "baseAbility": "magicguard",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "magicguard",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Snorlax",
+       "details": "Snorlax, L50, M",
+       "condition": "235/235",
+       "active": false,
+       "stats": {
+        "atk": 130,
+        "def": 85,
+        "spa": 85,
+        "spd": 130,
+        "spe": 50
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "immunity",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "immunity",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Shadow Ball",
+        "id": "shadowball",
+        "pp": 15,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Chansey",
+       "details": "Chansey, L50, M",
+       "condition": "285/325",
+       "active": true,
+       "stats": {
+        "atk": 25,
+        "def": 25,
+        "spa": 55,
+        "spd": 125,
+        "spe": 70
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Gengar",
+       "details": "Gengar, L50, M",
+       "condition": "119/135",
+       "active": true,
+       "stats": {
+        "atk": 85,
+        "def": 80,
+        "spa": 150,
+        "spd": 95,
+        "spe": 130
+       },
+       "moves": [
+        "shadowball",
+        "splash"
+       ],
+       "baseAbility": "cursedbody",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "cursedbody",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Tyranitar",
+       "details": "Tyranitar, L50, M",
+       "condition": "79/175",
+       "active": false,
+       "stats": {
+        "atk": 154,
+        "def": 130,
+        "spa": 115,
+        "spd": 120,
+        "spe": 81
+       },
+       "moves": [
+        "tackle",
+        "splash"
+       ],
+       "baseAbility": "sandstream",
+       "item": "leftovers",
+       "pokeball": "pokeball",
+       "ability": "sandstream",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Pikachu",
+       "details": "Pikachu, L50, M",
+       "condition": "110/110",
+       "active": false,
+       "stats": {
+        "atk": 75,
+        "def": 60,
+        "spa": 70,
+        "spd": 70,
+        "spe": 110
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "static",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "static",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Dragon Tail",
+        "id": "dragontail",
+        "pp": 11,
+        "maxpp": 12,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Roost",
+        "id": "roost",
+        "pp": 7,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "310/330",
+       "active": true,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Dragonite",
+       "details": "Dragonite, L50, M",
+       "condition": "43/166",
+       "active": true,
+       "stats": {
+        "atk": 154,
+        "def": 115,
+        "spa": 120,
+        "spd": 120,
+        "spe": 100
+       },
+       "moves": [
+        "dragontail",
+        "roost",
+        "splash"
+       ],
+       "baseAbility": "multiscale",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "multiscale",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Alakazam",
+       "details": "Alakazam, L50, M",
+       "condition": "0 fnt",
+       "active": false,
+       "stats": {
+        "atk": 70,
+        "def": 65,
+        "spa": 155,
+        "spd": 115,
+        "spe": 140
+       },
+       "moves": [
+        "allyswitch",
+        "painsplit",
+        "splash"
+       ],
+       "baseAbility": "magicguard",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "magicguard",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Snorlax",
+       "details": "Snorlax, L50, M",
+       "condition": "235/235",
+       "active": false,
+       "stats": {
+        "atk": 130,
+        "def": 85,
+        "spa": 85,
+        "spd": 130,
+        "spe": 50
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "immunity",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "immunity",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 18,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Shadow Ball",
+        "id": "shadowball",
+        "pp": 14,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 19,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Chansey",
+       "details": "Chansey, L50, M",
+       "condition": "265/325",
+       "active": true,
+       "stats": {
+        "atk": 25,
+        "def": 25,
+        "spa": 55,
+        "spd": 125,
+        "spe": 70
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Gengar",
+       "details": "Gengar, L50, M",
+       "condition": "111/135",
+       "active": true,
+       "stats": {
+        "atk": 85,
+        "def": 80,
+        "spa": 150,
+        "spd": 95,
+        "spe": 130
+       },
+       "moves": [
+        "shadowball",
+        "splash"
+       ],
+       "baseAbility": "cursedbody",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "cursedbody",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Tyranitar",
+       "details": "Tyranitar, L50, M",
+       "condition": "79/175",
+       "active": false,
+       "stats": {
+        "atk": 154,
+        "def": 130,
+        "spa": 115,
+        "spd": 120,
+        "spe": 81
+       },
+       "moves": [
+        "tackle",
+        "splash"
+       ],
+       "baseAbility": "sandstream",
+       "item": "leftovers",
+       "pokeball": "pokeball",
+       "ability": "sandstream",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Pikachu",
+       "details": "Pikachu, L50, M",
+       "condition": "110/110",
+       "active": false,
+       "stats": {
+        "atk": 75,
+        "def": 60,
+        "spa": 70,
+        "spd": 70,
+        "spe": 110
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "static",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "static",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ]
+ ],
+ "ended": false,
+ "rawLog": [
+  "|t:|1791754830",
+  "|gametype|doubles",
+  "|player|p1|p1||",
+  "|player|p2|p2||",
+  "|gen|9",
+  "|tier|[Gen 9 Champions] VGC 2026 Reg M-C",
+  "|rule|Species Clause: Limit one of each Pokémon",
+  "|rule|Item Clause: Limit 1 of each item",
+  "|clearpoke",
+  "|poke|p1|Dragonite, L50, M|",
+  "|poke|p1|Alakazam, L50, M|",
+  "|poke|p1|Blissey, L50, M|",
+  "|poke|p1|Snorlax, L50, M|",
+  "|poke|p2|Tyranitar, L50, M|",
+  "|poke|p2|Gengar, L50, M|",
+  "|poke|p2|Chansey, L50, M|",
+  "|poke|p2|Pikachu, L50, M|",
+  "|teampreview|4",
+  "|split|p1",
+  "|uhtml|otsrequest|<button name=\"send\" value=\"/acceptopenteamsheets\" class=\"button\" style=\"margin-right: 10px;\"><strong>Accept Open Team Sheets</strong></button><button name=\"send\" value=\"/rejectopenteamsheets\" class=\"button\" style=\"margin-top: 10px\"><strong>Deny Open Team Sheets</strong></button>",
+  "",
+  "|split|p2",
+  "|uhtml|otsrequest|<button name=\"send\" value=\"/acceptopenteamsheets\" class=\"button\" style=\"margin-right: 10px;\"><strong>Accept Open Team Sheets</strong></button><button name=\"send\" value=\"/rejectopenteamsheets\" class=\"button\" style=\"margin-top: 10px\"><strong>Deny Open Team Sheets</strong></button>",
+  "",
+  "|",
+  "|t:|1791754830",
+  "|teamsize|p1|4",
+  "|teamsize|p2|4",
+  "|start",
+  "|split|p1",
+  "|uhtmlchange|otsrequest|",
+  "",
+  "|split|p2",
+  "|uhtmlchange|otsrequest|",
+  "",
+  "|split|p1",
+  "|switch|p1a: Dragonite|Dragonite, L50, M|166/166",
+  "|switch|p1a: Dragonite|Dragonite, L50, M|100/100",
+  "|split|p1",
+  "|switch|p1b: Alakazam|Alakazam, L50, M|130/130",
+  "|switch|p1b: Alakazam|Alakazam, L50, M|100/100",
+  "|split|p2",
+  "|switch|p2a: Tyranitar|Tyranitar, L50, M|175/175",
+  "|switch|p2a: Tyranitar|Tyranitar, L50, M|100/100",
+  "|split|p2",
+  "|switch|p2b: Gengar|Gengar, L50, M|135/135",
+  "|switch|p2b: Gengar|Gengar, L50, M|100/100",
+  "|-weather|Sandstorm|[from] ability: Sand Stream|[of] p2a: Tyranitar",
+  "|turn|1",
+  "|",
+  "|t:|1791754830",
+  "|move|p1b: Alakazam|Pain Split|p2a: Tyranitar",
+  "|split|p2",
+  "|-sethp|p2a: Tyranitar|152/175|[from] move: Pain Split|[silent]",
+  "|-sethp|p2a: Tyranitar|86/100|[from] move: Pain Split|[silent]",
+  "|split|p1",
+  "|-sethp|p1b: Alakazam|130/130|[from] move: Pain Split",
+  "|-sethp|p1b: Alakazam|100/100|[from] move: Pain Split",
+  "|move|p2b: Gengar|Splash|p2b: Gengar",
+  "|-nothing",
+  "|move|p2a: Tyranitar|Tackle|p1a: Dragonite",
+  "|-crit|p1a: Dragonite",
+  "|split|p1",
+  "|-damage|p1a: Dragonite|148/166",
+  "|-damage|p1a: Dragonite|89/100",
+  "|move|p1a: Dragonite|Dragon Tail|p2a: Tyranitar",
+  "|-crit|p2a: Tyranitar",
+  "|split|p2",
+  "|-damage|p2a: Tyranitar|79/175",
+  "|-damage|p2a: Tyranitar|45/100",
+  "|split|p2",
+  "|drag|p2a: Chansey|Chansey, L50, M|325/325",
+  "|drag|p2a: Chansey|Chansey, L50, M|100/100",
+  "|",
+  "|-weather|Sandstorm|[upkeep]",
+  "|split|p2",
+  "|-damage|p2b: Gengar|127/135|[from] Sandstorm",
+  "|-damage|p2b: Gengar|94/100|[from] Sandstorm",
+  "|split|p1",
+  "|-damage|p1a: Dragonite|138/166|[from] Sandstorm",
+  "|-damage|p1a: Dragonite|83/100|[from] Sandstorm",
+  "|split|p2",
+  "|-damage|p2a: Chansey|305/325|[from] Sandstorm",
+  "|-damage|p2a: Chansey|93/100|[from] Sandstorm",
+  "|upkeep",
+  "|turn|2",
+  "|",
+  "|t:|1791754830",
+  "|move|p1b: Alakazam|Ally Switch|p1b: Alakazam",
+  "|swap|p1b: Alakazam|0|[from] move: Ally Switch",
+  "|move|p2b: Gengar|Shadow Ball|p1a: Alakazam",
+  "|-supereffective|p1a: Alakazam|1",
+  "|-crit|p1a: Alakazam",
+  "|split|p1",
+  "|-damage|p1a: Alakazam|0 fnt",
+  "|-damage|p1a: Alakazam|0 fnt",
+  "|faint|p1a: Alakazam",
+  "|move|p1b: Dragonite|Roost|p1b: Dragonite",
+  "|split|p1",
+  "|-heal|p1b: Dragonite|166/166",
+  "|-heal|p1b: Dragonite|100/100",
+  "|-singleturn|p1b: Dragonite|move: Roost",
+  "|move|p2a: Chansey|Splash|p2a: Chansey",
+  "|-nothing",
+  "|",
+  "|-weather|Sandstorm|[upkeep]",
+  "|split|p2",
+  "|-damage|p2b: Gengar|119/135|[from] Sandstorm",
+  "|-damage|p2b: Gengar|88/100|[from] Sandstorm",
+  "|split|p1",
+  "|-damage|p1b: Dragonite|156/166|[from] Sandstorm",
+  "|-damage|p1b: Dragonite|93/100|[from] Sandstorm",
+  "|split|p2",
+  "|-damage|p2a: Chansey|285/325|[from] Sandstorm",
+  "|-damage|p2a: Chansey|87/100|[from] Sandstorm",
+  "|upkeep",
+  "|",
+  "|t:|1791754830",
+  "|split|p1",
+  "|switch|p1a: Blissey|Blissey, L50, M|330/330",
+  "|switch|p1a: Blissey|Blissey, L50, M|100/100",
+  "|turn|3",
+  "|",
+  "|t:|1791754830",
+  "|move|p2b: Gengar|Shadow Ball|p1b: Dragonite",
+  "|-crit|p1b: Dragonite",
+  "|split|p1",
+  "|-damage|p1b: Dragonite|53/166",
+  "|-damage|p1b: Dragonite|31/100",
+  "|-unboost|p1b: Dragonite|spd|1",
+  "|move|p1b: Dragonite|Splash|p1b: Dragonite",
+  "|-nothing",
+  "|move|p1a: Blissey|Splash|p1a: Blissey",
+  "|-nothing",
+  "|move|p2a: Chansey|Splash|p2a: Chansey",
+  "|-nothing",
+  "|",
+  "|-weather|Sandstorm|[upkeep]",
+  "|split|p2",
+  "|-damage|p2b: Gengar|111/135|[from] Sandstorm",
+  "|-damage|p2b: Gengar|82/100|[from] Sandstorm",
+  "|split|p1",
+  "|-damage|p1b: Dragonite|43/166|[from] Sandstorm",
+  "|-damage|p1b: Dragonite|25/100|[from] Sandstorm",
+  "|split|p1",
+  "|-damage|p1a: Blissey|310/330|[from] Sandstorm",
+  "|-damage|p1a: Blissey|93/100|[from] Sandstorm",
+  "|split|p2",
+  "|-damage|p2a: Chansey|265/325|[from] Sandstorm",
+  "|-damage|p2a: Chansey|81/100|[from] Sandstorm",
+  "|upkeep",
+  "|turn|4"
+ ]
+}

@@ -1,0 +1,1528 @@
+{
+ "name": "protect-and-misses",
+ "rng": "max",
+ "format": "gen9championsvgc2026regmc",
+ "gametype": "doubles",
+ "description": "Protect, repeated Protect failing, immunity, resistance and misses.",
+ "teams": [
+  "Gengar|||CursedBody|shadowball,protect,thunder|Hardy||M|||50|]Garchomp|||RoughSkin|earthquake,protect,splash|Hardy||M|||50|]Blissey|||NaturalCure|splash|Hardy||M|||50|]Blissey|||NaturalCure|splash|Hardy||M|||50|",
+  "Pikachu|||Static|thunderbolt,protect,splash|Hardy||M|||50|]Skarmory|||Sturdy|splash,protect|Hardy||M|||50|]Blissey|||NaturalCure|splash|Hardy||M|||50|]Blissey|||NaturalCure|splash|Hardy||M|||50|"
+ ],
+ "steps": [
+  [
+   "team 1234",
+   "team 1234"
+  ],
+  [
+   "move 1 1, move 2",
+   "move 2, move 2"
+  ],
+  [
+   "move 1 1, move 2",
+   "move 2, move 2"
+  ],
+  [
+   "move 3 1, move 1",
+   "move 3, move 1"
+  ]
+ ],
+ "log": [
+  "|teamsize|p1|4",
+  "|teamsize|p2|4",
+  "|start",
+  "|split|p1",
+  "|switch|p1a: Gengar|Gengar, L50, M|135/135",
+  "|switch|p1a: Gengar|Gengar, L50, M|100/100",
+  "|split|p1",
+  "|switch|p1b: Garchomp|Garchomp, L50, M|183/183",
+  "|switch|p1b: Garchomp|Garchomp, L50, M|100/100",
+  "|split|p2",
+  "|switch|p2a: Pikachu|Pikachu, L50, M|110/110",
+  "|switch|p2a: Pikachu|Pikachu, L50, M|100/100",
+  "|split|p2",
+  "|switch|p2b: Skarmory|Skarmory, L50, M|140/140",
+  "|switch|p2b: Skarmory|Skarmory, L50, M|100/100",
+  "|turn|1",
+  "|move|p1b: Garchomp|Protect|p1b: Garchomp",
+  "|-singleturn|p1b: Garchomp|Protect",
+  "|move|p2a: Pikachu|Protect|p2a: Pikachu",
+  "|-singleturn|p2a: Pikachu|Protect",
+  "|move|p2b: Skarmory|Protect|p2b: Skarmory",
+  "|-singleturn|p2b: Skarmory|Protect",
+  "|move|p1a: Gengar|Shadow Ball|p2a: Pikachu",
+  "|-activate|p2a: Pikachu|move: Protect",
+  "|upkeep",
+  "|turn|2",
+  "|move|p1b: Garchomp|Protect||[still]",
+  "|-fail|p1b: Garchomp",
+  "|move|p2a: Pikachu|Protect||[still]",
+  "|-fail|p2a: Pikachu",
+  "|move|p2b: Skarmory|Protect||[still]",
+  "|-fail|p2b: Skarmory",
+  "|move|p1a: Gengar|Shadow Ball|p2a: Pikachu",
+  "|split|p2",
+  "|-damage|p2a: Pikachu|13/110",
+  "|-damage|p2a: Pikachu|11/100",
+  "|upkeep",
+  "|turn|3",
+  "|move|p1a: Gengar|Thunder|p2a: Pikachu|[miss]",
+  "|-miss|p1a: Gengar|p2a: Pikachu",
+  "|move|p1b: Garchomp|Earthquake|p2b: Skarmory|[spread] p1a,p2a",
+  "|-immune|p2b: Skarmory",
+  "|-supereffective|p1a: Gengar|1",
+  "|-supereffective|p2a: Pikachu|1",
+  "|split|p1",
+  "|-damage|p1a: Gengar|0 fnt",
+  "|-damage|p1a: Gengar|0 fnt",
+  "|split|p2",
+  "|-damage|p2a: Pikachu|0 fnt",
+  "|-damage|p2a: Pikachu|0 fnt",
+  "|faint|p1a: Gengar",
+  "|faint|p2a: Pikachu",
+  "|move|p2b: Skarmory|Splash|p2b: Skarmory",
+  "|-nothing",
+  "|upkeep"
+ ],
+ "requests": [
+  [
+   {
+    "teamPreview": true,
+    "maxChosenTeamSize": 4,
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Gengar",
+       "details": "Gengar, L50, M",
+       "condition": "135/135",
+       "active": true,
+       "stats": {
+        "atk": 85,
+        "def": 80,
+        "spa": 150,
+        "spd": 95,
+        "spe": 130
+       },
+       "moves": [
+        "shadowball",
+        "protect",
+        "thunder"
+       ],
+       "baseAbility": "cursedbody",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "cursedbody",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Garchomp",
+       "details": "Garchomp, L50, M",
+       "condition": "183/183",
+       "active": true,
+       "stats": {
+        "atk": 150,
+        "def": 115,
+        "spa": 100,
+        "spd": 105,
+        "spe": 122
+       },
+       "moves": [
+        "earthquake",
+        "protect",
+        "splash"
+       ],
+       "baseAbility": "roughskin",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "roughskin",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "teamPreview": true,
+    "maxChosenTeamSize": 4,
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Pikachu",
+       "details": "Pikachu, L50, M",
+       "condition": "110/110",
+       "active": true,
+       "stats": {
+        "atk": 75,
+        "def": 60,
+        "spa": 70,
+        "spd": 70,
+        "spe": 110
+       },
+       "moves": [
+        "thunderbolt",
+        "protect",
+        "splash"
+       ],
+       "baseAbility": "static",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "static",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Skarmory",
+       "details": "Skarmory, L50, M",
+       "condition": "140/140",
+       "active": true,
+       "stats": {
+        "atk": 100,
+        "def": 160,
+        "spa": 60,
+        "spd": 90,
+        "spe": 90
+       },
+       "moves": [
+        "splash",
+        "protect"
+       ],
+       "baseAbility": "sturdy",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "sturdy",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Shadow Ball",
+        "id": "shadowball",
+        "pp": 16,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Protect",
+        "id": "protect",
+        "pp": 8,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Thunder",
+        "id": "thunder",
+        "pp": 12,
+        "maxpp": 12,
+        "target": "normal",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Earthquake",
+        "id": "earthquake",
+        "pp": 12,
+        "maxpp": 12,
+        "target": "allAdjacent",
+        "disabled": false
+       },
+       {
+        "move": "Protect",
+        "id": "protect",
+        "pp": 8,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Gengar",
+       "details": "Gengar, L50, M",
+       "condition": "135/135",
+       "active": true,
+       "stats": {
+        "atk": 85,
+        "def": 80,
+        "spa": 150,
+        "spd": 95,
+        "spe": 130
+       },
+       "moves": [
+        "shadowball",
+        "protect",
+        "thunder"
+       ],
+       "baseAbility": "cursedbody",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "cursedbody",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Garchomp",
+       "details": "Garchomp, L50, M",
+       "condition": "183/183",
+       "active": true,
+       "stats": {
+        "atk": 150,
+        "def": 115,
+        "spa": 100,
+        "spd": 105,
+        "spe": 122
+       },
+       "moves": [
+        "earthquake",
+        "protect",
+        "splash"
+       ],
+       "baseAbility": "roughskin",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "roughskin",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Thunderbolt",
+        "id": "thunderbolt",
+        "pp": 16,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Protect",
+        "id": "protect",
+        "pp": 8,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Protect",
+        "id": "protect",
+        "pp": 8,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Pikachu",
+       "details": "Pikachu, L50, M",
+       "condition": "110/110",
+       "active": true,
+       "stats": {
+        "atk": 75,
+        "def": 60,
+        "spa": 70,
+        "spd": 70,
+        "spe": 110
+       },
+       "moves": [
+        "thunderbolt",
+        "protect",
+        "splash"
+       ],
+       "baseAbility": "static",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "static",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Skarmory",
+       "details": "Skarmory, L50, M",
+       "condition": "140/140",
+       "active": true,
+       "stats": {
+        "atk": 100,
+        "def": 160,
+        "spa": 60,
+        "spd": 90,
+        "spe": 90
+       },
+       "moves": [
+        "splash",
+        "protect"
+       ],
+       "baseAbility": "sturdy",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "sturdy",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Shadow Ball",
+        "id": "shadowball",
+        "pp": 15,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Protect",
+        "id": "protect",
+        "pp": 8,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Thunder",
+        "id": "thunder",
+        "pp": 12,
+        "maxpp": 12,
+        "target": "normal",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Earthquake",
+        "id": "earthquake",
+        "pp": 12,
+        "maxpp": 12,
+        "target": "allAdjacent",
+        "disabled": false
+       },
+       {
+        "move": "Protect",
+        "id": "protect",
+        "pp": 7,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Gengar",
+       "details": "Gengar, L50, M",
+       "condition": "135/135",
+       "active": true,
+       "stats": {
+        "atk": 85,
+        "def": 80,
+        "spa": 150,
+        "spd": 95,
+        "spe": 130
+       },
+       "moves": [
+        "shadowball",
+        "protect",
+        "thunder"
+       ],
+       "baseAbility": "cursedbody",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "cursedbody",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Garchomp",
+       "details": "Garchomp, L50, M",
+       "condition": "183/183",
+       "active": true,
+       "stats": {
+        "atk": 150,
+        "def": 115,
+        "spa": 100,
+        "spd": 105,
+        "spe": 122
+       },
+       "moves": [
+        "earthquake",
+        "protect",
+        "splash"
+       ],
+       "baseAbility": "roughskin",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "roughskin",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Thunderbolt",
+        "id": "thunderbolt",
+        "pp": 16,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Protect",
+        "id": "protect",
+        "pp": 7,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Protect",
+        "id": "protect",
+        "pp": 7,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Pikachu",
+       "details": "Pikachu, L50, M",
+       "condition": "110/110",
+       "active": true,
+       "stats": {
+        "atk": 75,
+        "def": 60,
+        "spa": 70,
+        "spd": 70,
+        "spe": 110
+       },
+       "moves": [
+        "thunderbolt",
+        "protect",
+        "splash"
+       ],
+       "baseAbility": "static",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "static",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Skarmory",
+       "details": "Skarmory, L50, M",
+       "condition": "140/140",
+       "active": true,
+       "stats": {
+        "atk": 100,
+        "def": 160,
+        "spa": 60,
+        "spd": 90,
+        "spe": 90
+       },
+       "moves": [
+        "splash",
+        "protect"
+       ],
+       "baseAbility": "sturdy",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "sturdy",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Shadow Ball",
+        "id": "shadowball",
+        "pp": 14,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Protect",
+        "id": "protect",
+        "pp": 8,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Thunder",
+        "id": "thunder",
+        "pp": 12,
+        "maxpp": 12,
+        "target": "normal",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Earthquake",
+        "id": "earthquake",
+        "pp": 12,
+        "maxpp": 12,
+        "target": "allAdjacent",
+        "disabled": false
+       },
+       {
+        "move": "Protect",
+        "id": "protect",
+        "pp": 6,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Gengar",
+       "details": "Gengar, L50, M",
+       "condition": "135/135",
+       "active": true,
+       "stats": {
+        "atk": 85,
+        "def": 80,
+        "spa": 150,
+        "spd": 95,
+        "spe": 130
+       },
+       "moves": [
+        "shadowball",
+        "protect",
+        "thunder"
+       ],
+       "baseAbility": "cursedbody",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "cursedbody",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Garchomp",
+       "details": "Garchomp, L50, M",
+       "condition": "183/183",
+       "active": true,
+       "stats": {
+        "atk": 150,
+        "def": 115,
+        "spa": 100,
+        "spd": 105,
+        "spe": 122
+       },
+       "moves": [
+        "earthquake",
+        "protect",
+        "splash"
+       ],
+       "baseAbility": "roughskin",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "roughskin",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "active": [
+     {
+      "moves": [
+       {
+        "move": "Thunderbolt",
+        "id": "thunderbolt",
+        "pp": 16,
+        "maxpp": 16,
+        "target": "normal",
+        "disabled": false
+       },
+       {
+        "move": "Protect",
+        "id": "protect",
+        "pp": 6,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     },
+     {
+      "moves": [
+       {
+        "move": "Splash",
+        "id": "splash",
+        "pp": 20,
+        "maxpp": 20,
+        "target": "self",
+        "disabled": false
+       },
+       {
+        "move": "Protect",
+        "id": "protect",
+        "pp": 6,
+        "maxpp": 8,
+        "target": "self",
+        "disabled": false
+       }
+      ]
+     }
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Pikachu",
+       "details": "Pikachu, L50, M",
+       "condition": "13/110",
+       "active": true,
+       "stats": {
+        "atk": 75,
+        "def": 60,
+        "spa": 70,
+        "spd": 70,
+        "spe": 110
+       },
+       "moves": [
+        "thunderbolt",
+        "protect",
+        "splash"
+       ],
+       "baseAbility": "static",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "static",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Skarmory",
+       "details": "Skarmory, L50, M",
+       "condition": "140/140",
+       "active": true,
+       "stats": {
+        "atk": 100,
+        "def": 160,
+        "spa": 60,
+        "spd": 90,
+        "spe": 90
+       },
+       "moves": [
+        "splash",
+        "protect"
+       ],
+       "baseAbility": "sturdy",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "sturdy",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ],
+  [
+   {
+    "forceSwitch": [
+     true,
+     false
+    ],
+    "side": {
+     "name": "p1",
+     "id": "p1",
+     "pokemon": [
+      {
+       "ident": "p1: Gengar",
+       "details": "Gengar, L50, M",
+       "condition": "0 fnt",
+       "active": true,
+       "stats": {
+        "atk": 85,
+        "def": 80,
+        "spa": 150,
+        "spd": 95,
+        "spe": 130
+       },
+       "moves": [
+        "shadowball",
+        "protect",
+        "thunder"
+       ],
+       "baseAbility": "cursedbody",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "cursedbody",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Garchomp",
+       "details": "Garchomp, L50, M",
+       "condition": "183/183",
+       "active": true,
+       "stats": {
+        "atk": 150,
+        "def": 115,
+        "spa": 100,
+        "spd": 105,
+        "spe": 122
+       },
+       "moves": [
+        "earthquake",
+        "protect",
+        "splash"
+       ],
+       "baseAbility": "roughskin",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "roughskin",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p1: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   },
+   {
+    "forceSwitch": [
+     true,
+     false
+    ],
+    "side": {
+     "name": "p2",
+     "id": "p2",
+     "pokemon": [
+      {
+       "ident": "p2: Pikachu",
+       "details": "Pikachu, L50, M",
+       "condition": "0 fnt",
+       "active": true,
+       "stats": {
+        "atk": 75,
+        "def": 60,
+        "spa": 70,
+        "spd": 70,
+        "spe": 110
+       },
+       "moves": [
+        "thunderbolt",
+        "protect",
+        "splash"
+       ],
+       "baseAbility": "static",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "static",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Skarmory",
+       "details": "Skarmory, L50, M",
+       "condition": "140/140",
+       "active": true,
+       "stats": {
+        "atk": 100,
+        "def": 160,
+        "spa": 60,
+        "spd": 90,
+        "spe": 90
+       },
+       "moves": [
+        "splash",
+        "protect"
+       ],
+       "baseAbility": "sturdy",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "sturdy",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      },
+      {
+       "ident": "p2: Blissey",
+       "details": "Blissey, L50, M",
+       "condition": "330/330",
+       "active": false,
+       "stats": {
+        "atk": 30,
+        "def": 30,
+        "spa": 95,
+        "spd": 155,
+        "spe": 75
+       },
+       "moves": [
+        "splash"
+       ],
+       "baseAbility": "naturalcure",
+       "item": "",
+       "pokeball": "pokeball",
+       "ability": "naturalcure",
+       "commanding": false,
+       "reviving": false
+      }
+     ]
+    }
+   }
+  ]
+ ],
+ "ended": false,
+ "rawLog": [
+  "|t:|1791754830",
+  "|gametype|doubles",
+  "|player|p1|p1||",
+  "|player|p2|p2||",
+  "|gen|9",
+  "|tier|[Gen 9 Champions] VGC 2026 Reg M-C",
+  "|rule|Species Clause: Limit one of each Pokémon",
+  "|rule|Item Clause: Limit 1 of each item",
+  "|clearpoke",
+  "|poke|p1|Gengar, L50, M|",
+  "|poke|p1|Garchomp, L50, M|",
+  "|poke|p1|Blissey, L50, M|",
+  "|poke|p1|Blissey, L50, M|",
+  "|poke|p2|Pikachu, L50, M|",
+  "|poke|p2|Skarmory, L50, M|",
+  "|poke|p2|Blissey, L50, M|",
+  "|poke|p2|Blissey, L50, M|",
+  "|teampreview|4",
+  "|split|p1",
+  "|uhtml|otsrequest|<button name=\"send\" value=\"/acceptopenteamsheets\" class=\"button\" style=\"margin-right: 10px;\"><strong>Accept Open Team Sheets</strong></button><button name=\"send\" value=\"/rejectopenteamsheets\" class=\"button\" style=\"margin-top: 10px\"><strong>Deny Open Team Sheets</strong></button>",
+  "",
+  "|split|p2",
+  "|uhtml|otsrequest|<button name=\"send\" value=\"/acceptopenteamsheets\" class=\"button\" style=\"margin-right: 10px;\"><strong>Accept Open Team Sheets</strong></button><button name=\"send\" value=\"/rejectopenteamsheets\" class=\"button\" style=\"margin-top: 10px\"><strong>Deny Open Team Sheets</strong></button>",
+  "",
+  "|",
+  "|t:|1791754830",
+  "|teamsize|p1|4",
+  "|teamsize|p2|4",
+  "|start",
+  "|split|p1",
+  "|uhtmlchange|otsrequest|",
+  "",
+  "|split|p2",
+  "|uhtmlchange|otsrequest|",
+  "",
+  "|split|p1",
+  "|switch|p1a: Gengar|Gengar, L50, M|135/135",
+  "|switch|p1a: Gengar|Gengar, L50, M|100/100",
+  "|split|p1",
+  "|switch|p1b: Garchomp|Garchomp, L50, M|183/183",
+  "|switch|p1b: Garchomp|Garchomp, L50, M|100/100",
+  "|split|p2",
+  "|switch|p2a: Pikachu|Pikachu, L50, M|110/110",
+  "|switch|p2a: Pikachu|Pikachu, L50, M|100/100",
+  "|split|p2",
+  "|switch|p2b: Skarmory|Skarmory, L50, M|140/140",
+  "|switch|p2b: Skarmory|Skarmory, L50, M|100/100",
+  "|turn|1",
+  "|",
+  "|t:|1791754830",
+  "|move|p1b: Garchomp|Protect|p1b: Garchomp",
+  "|-singleturn|p1b: Garchomp|Protect",
+  "|move|p2a: Pikachu|Protect|p2a: Pikachu",
+  "|-singleturn|p2a: Pikachu|Protect",
+  "|move|p2b: Skarmory|Protect|p2b: Skarmory",
+  "|-singleturn|p2b: Skarmory|Protect",
+  "|move|p1a: Gengar|Shadow Ball|p2a: Pikachu",
+  "|-activate|p2a: Pikachu|move: Protect",
+  "|",
+  "|upkeep",
+  "|turn|2",
+  "|",
+  "|t:|1791754830",
+  "|move|p1b: Garchomp|Protect||[still]",
+  "|-fail|p1b: Garchomp",
+  "|move|p2a: Pikachu|Protect||[still]",
+  "|-fail|p2a: Pikachu",
+  "|move|p2b: Skarmory|Protect||[still]",
+  "|-fail|p2b: Skarmory",
+  "|move|p1a: Gengar|Shadow Ball|p2a: Pikachu",
+  "|split|p2",
+  "|-damage|p2a: Pikachu|13/110",
+  "|-damage|p2a: Pikachu|11/100",
+  "|",
+  "|upkeep",
+  "|turn|3",
+  "|",
+  "|t:|1791754830",
+  "|move|p1a: Gengar|Thunder|p2a: Pikachu|[miss]",
+  "|-miss|p1a: Gengar|p2a: Pikachu",
+  "|move|p1b: Garchomp|Earthquake|p2b: Skarmory|[spread] p1a,p2a",
+  "|-immune|p2b: Skarmory",
+  "|-supereffective|p1a: Gengar|1",
+  "|-supereffective|p2a: Pikachu|1",
+  "|split|p1",
+  "|-damage|p1a: Gengar|0 fnt",
+  "|-damage|p1a: Gengar|0 fnt",
+  "|split|p2",
+  "|-damage|p2a: Pikachu|0 fnt",
+  "|-damage|p2a: Pikachu|0 fnt",
+  "|faint|p1a: Gengar",
+  "|faint|p2a: Pikachu",
+  "|move|p2b: Skarmory|Splash|p2b: Skarmory",
+  "|-nothing",
+  "|",
+  "|upkeep"
+ ]
+}

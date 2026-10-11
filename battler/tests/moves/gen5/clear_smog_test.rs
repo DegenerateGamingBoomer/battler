@@ -148,7 +148,7 @@ fn clear_smog_is_blocked_by_immunity() {
     let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
         r#"[
             "move|mon:Klinklang,player-2,1|name:Shift Gear|target:Klinklang,player-2,1",
-            "boost|mon:Klinklang,player-2,1|stat:atk|by:2",
+            "boost|mon:Klinklang,player-2,1|stat:atk|by:1",
             "boost|mon:Klinklang,player-2,1|stat:spe|by:2",
             "residual",
             "turn|turn:2",

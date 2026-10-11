@@ -141,6 +141,30 @@ impl TestBattleBuilder {
         self
     }
 
+    pub fn with_side_condition_logs(mut self, log: bool) -> Self {
+        self.engine_options.log_side_conditions = log;
+        self
+    }
+
+    pub fn with_slot_condition_logs(mut self, log: bool) -> Self {
+        self.engine_options.log_slot_conditions = log;
+        self
+    }
+
+    pub fn with_pseudo_weather_logs(mut self, log: bool) -> Self {
+        self.engine_options.log_pseudo_weathers = log;
+        self
+    }
+
+    /// Turns on every debug log the Showdown translation needs (volatile statuses, side, slot and
+    /// pseudo-weather conditions).
+    pub fn with_showdown_logs(self) -> Self {
+        self.with_volatile_status_logs(true)
+            .with_side_condition_logs(true)
+            .with_slot_condition_logs(true)
+            .with_pseudo_weather_logs(true)
+    }
+
     pub fn with_catch_rate_logs(mut self, log_catch_rate: bool) -> Self {
         self.engine_options.log_catch_rate = log_catch_rate;
         self
