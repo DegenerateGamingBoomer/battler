@@ -33,7 +33,10 @@ use battler_data::{
     ZMoveData,
     ZPower,
 };
-use battler_prng::rand_util;
+use battler_prng::{
+    DrawSite,
+    rand_util,
+};
 use hashbrown::{
     HashMap,
     HashSet,
@@ -173,6 +176,7 @@ pub fn run_function(
         "can_switch" => can_switch(context).map(|val| Some(val)),
         "cancel_action" => cancel_action(context).map(|val| Some(val)),
         "cancel_move" => cancel_move(context).map(|val| Some(val)),
+        "chain_modify" => chain_modify(context).map(|()| None),
         "chance" => chance(context).map(|val| Some(val)),
         "check_immunity" => check_immunity(context).map(|val| Some(val)),
         "check_move_immunity" => check_move_immunity(context).map(|val| Some(val)),
@@ -213,6 +217,7 @@ pub fn run_function(
         "event_result" => event_result(context).map(|val| Some(val)),
         "faint" => faint(context).map(|()| None),
         "faint_messages" => faint_messages(context).map(|()| None),
+        "final_modify" => final_modify(context).map(|val| Some(val)),
         "floor" => floor(context).map(|val| Some(val)),
         "force_fully_heal" => force_fully_heal(context).map(|()| None),
         "force_switch" => force_switch(context).map(|val| Some(val)),
@@ -1514,6 +1519,36 @@ fn log_ohko(mut context: FunctionContext) -> Result<()> {
     core_battle_logs::ohko(&mut context.mon_context(mon_handle)?)
 }
 
+/// The effect and event of the running program, for semantic random sources.
+///
+/// Returns [`None`] without doing any work if the battle has no semantic random source.
+fn effect_draw_site(context: &mut FunctionContext) -> Result<Option<(String, String)>> {
+    if context
+        .battle_context_mut()
+        .battle_mut()
+        .prng
+        .semantic()
+        .is_none()
+    {
+        return Ok(None);
+    }
+    let effect_handle = context.evaluation_context().effect_handle().clone();
+    let effect = match effect_handle.try_id() {
+        Some(id) => id.to_string(),
+        None => CoreBattle::get_effect_by_handle(context.battle_context_mut(), &effect_handle)?
+            .id()
+            .to_string(),
+    };
+    Ok(Some((effect, context.event().to_string())))
+}
+
+fn draw_site<'a>(site: &'a Option<(String, String)>) -> DrawSite<'a> {
+    match site {
+        Some((effect, event)) => DrawSite::Effect { effect, event },
+        None => DrawSite::Engine("effect"),
+    }
+}
+
 /// Generates a random number.
 ///
 /// @param {[`ValueType::UFraction`]} [min] The minimum value.
@@ -1528,21 +1563,71 @@ fn random(mut context: FunctionContext) -> Result<Value> {
         .pop_front()
         .map(|val| val.integer_u64().ok())
         .flatten();
+    let site = effect_draw_site(&mut context)?;
+    let site = draw_site(&site);
     let val = match (a, b) {
         (None, None) => context.battle_context_mut().battle_mut().prng.next(),
-        (Some(max), None) => rand_util::range(
+        (Some(max), None) => rand_util::range_at(
             context.battle_context_mut().battle_mut().prng.as_mut(),
+            site,
             0,
             max,
         ),
-        (Some(min), Some(max)) => rand_util::range(
+        (Some(min), Some(max)) => rand_util::range_at(
             context.battle_context_mut().battle_mut().prng.as_mut(),
+            site,
             min,
             max,
         ),
         _ => return Err(general_error("invalid random arguments")),
     };
     Ok(Value::UFraction(val.into()))
+}
+
+/// Chains a multiplier onto the modifier of the running event, like Pokémon Showdown's
+/// `chainModify`.
+///
+/// The modifier is applied once to the event's numeric result after all callbacks run, instead of
+/// each callback rounding its own product.
+///
+/// @param {[`ValueType::UFraction`]} multiplier The multiplier, or its numerator.
+/// @param {[`ValueType::UFraction`]} [denominator] The denominator of the multiplier.
+fn chain_modify(mut context: FunctionContext) -> Result<()> {
+    let multiplier = context
+        .pop_front()
+        .wrap_expectation("missing multiplier")?
+        .fraction_u64()
+        .wrap_error_with_message("invalid multiplier")?;
+    let (numerator, denominator) = match context.pop_front() {
+        Some(denominator) => (
+            multiplier.floor(),
+            denominator
+                .integer_u64()
+                .wrap_error_with_message("invalid denominator")?,
+        ),
+        None => (multiplier.numerator(), multiplier.denominator()),
+    };
+    if denominator == 0 {
+        return Err(general_error("chain_modify denominator cannot be zero"));
+    }
+    context.event_state().chain_modify(numerator, denominator);
+    Ok(())
+}
+
+/// Applies the modifier chained so far in the running event to a value and resets it, like Pokémon
+/// Showdown's `finalModify`.
+///
+/// @param {[`ValueType::UFraction`]} value The value to modify.
+/// @returns {[`ValueType::UFraction`]} The modified value.
+fn final_modify(mut context: FunctionContext) -> Result<Value> {
+    let value = context
+        .pop_front()
+        .wrap_expectation("missing value")?
+        .integer_u64()
+        .wrap_error_with_message("invalid value")?;
+    Ok(Value::UFraction(
+        context.event_state().final_modify(value).into(),
+    ))
 }
 
 /// Performs a random chance check.
@@ -1559,15 +1644,19 @@ fn chance(mut context: FunctionContext) -> Result<Value> {
         .pop_front()
         .map(|val| val.integer_u64().ok())
         .flatten();
+    let site = effect_draw_site(&mut context)?;
+    let site = draw_site(&site);
     let val = match (a, b) {
         (None, None) => return Err(general_error("chance requires at least one argument")),
-        (Some(den), None) => rand_util::chance(
+        (Some(den), None) => rand_util::chance_at(
             context.battle_context_mut().battle_mut().prng.as_mut(),
+            site,
             1,
             den,
         ),
-        (Some(num), Some(den)) => rand_util::chance(
+        (Some(num), Some(den)) => rand_util::chance_at(
             context.battle_context_mut().battle_mut().prng.as_mut(),
+            site,
             num,
             den,
         ),
@@ -1586,8 +1675,10 @@ fn sample(mut context: FunctionContext) -> Result<Option<Value>> {
         .wrap_expectation("missing list")?
         .list()
         .wrap_error_with_message("invalid list")?;
-    Ok(rand_util::sample_slice(
+    let site = effect_draw_site(&mut context)?;
+    Ok(rand_util::sample_slice_at(
         context.battle_context_mut().battle_mut().prng.as_mut(),
+        draw_site(&site),
         list.as_slice(),
     )
     .cloned())

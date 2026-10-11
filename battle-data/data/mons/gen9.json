@@ -11542,7 +11542,7 @@
     "color": "Gray",
     "primary_type": "Dragon",
     "secondary_type": "Ice",
-    "abilities": [],
+    "abilities": ["Thermal Exchange"],
     "gender_ratio": 127,
     "catch_rate": 10,
     "egg_groups": ["Dragon", "Mineral"],

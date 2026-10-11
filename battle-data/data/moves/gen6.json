@@ -464,9 +464,9 @@
         "on_source_base_power": [
           "$weakened = [earthquake, bulldoze, magnitude]",
           "if $weakened has $move.id:",
-          ["return $base_power * 1/2"],
+          ["chain_modify: 1/2", "return"],
           "if $move.type == grass:",
-          ["return $base_power * 13/10"]
+          ["chain_modify: 5325/4096", "return"]
         ],
         "on_residual": ["heal: $target expr($target.base_max_hp / 16)"]
       }
@@ -500,7 +500,7 @@
           ["log_field_start"]
         ],
         "on_field_end": ["log_field_end"],
-        "on_base_power": ["if $move.type == dragon:", ["return $base_power * 1/2"]],
+        "on_base_power": ["if $move.type == dragon:", ["chain_modify: 1/2", "return"]],
         "on_set_status": [
           "if $effect.id == yawn or ($effect.is_move and !$effect.is_move_secondary):",
           ["log_activate: with_target"],
@@ -1012,7 +1012,10 @@
           "if $volatile.id == yawn:",
           ["log_activate: with_target", "return stopfail"]
         ],
-        "on_source_base_power": ["if $move.type == electric:", ["return $base_power * 13/10"]]
+        "on_source_base_power": [
+          "if $move.type == electric:",
+          ["chain_modify: 5325/4096", "return"]
+        ]
       }
     }
   },

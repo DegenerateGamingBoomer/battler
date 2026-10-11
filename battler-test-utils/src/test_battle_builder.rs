@@ -22,6 +22,7 @@ use battler::{
     TimeOfDay,
     WildPlayerOptions,
 };
+use battler_prng::PseudoRandomNumberGenerator;
 
 use crate::ControlledRandomNumberGenerator;
 
@@ -117,6 +118,15 @@ impl TestBattleBuilder {
 
     pub fn with_controlled_rng(mut self, controlled_rng: bool) -> Self {
         self.controlled_rng = controlled_rng;
+        self
+    }
+
+    /// Uses a custom random number generator. Overridden by [`Self::with_controlled_rng`].
+    pub fn with_rng_factory(
+        mut self,
+        rng_factory: fn(seed: Option<u64>) -> Box<dyn PseudoRandomNumberGenerator>,
+    ) -> Self {
+        self.engine_options.rng_factory = rng_factory;
         self
     }
 

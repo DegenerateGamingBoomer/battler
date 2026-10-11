@@ -37,3 +37,4 @@ battler-dev/
 # Pinned Pokémon Showdown reference (see scripts/fetch-showdown.sh)
 third_party/
 compat/corpus/
+compat/diff/out/

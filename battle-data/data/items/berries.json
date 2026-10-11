@@ -1196,7 +1196,7 @@
       "callbacks": {
         "on_source_modify_accuracy": [
           "if !$move.ohko:",
-          ["remove_volatile: $source $this.id", "return $acc * 6/5"]
+          ["remove_volatile: $source $this.id", "chain_modify: 4915/4096", "return"]
         ]
       }
     }

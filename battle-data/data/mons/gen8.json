@@ -10264,7 +10264,7 @@
     "class": "Formation",
     "color": "Yellow",
     "primary_type": "Fighting",
-    "abilities": [],
+    "abilities": ["Defiant"],
     "gender_ratio": 255,
     "catch_rate": 45,
     "egg_groups": ["Fairy", "Mineral"],

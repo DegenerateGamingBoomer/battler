@@ -437,6 +437,10 @@ impl SpeedOrderable for SpeedOrderableMon {
     fn sub_order(&self) -> u32 {
         self.ability_effect_order
     }
+
+    fn tie_owner(&self) -> Option<u64> {
+        Some(self.mon_handle.tie_owner())
+    }
 }
 
 /// Information about a single attack received by a [`Mon`].

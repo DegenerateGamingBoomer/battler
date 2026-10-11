@@ -264,7 +264,10 @@
           "require !([gust, twister, skyuppercut, thunder, hurricane, smackdown, thousandarrows] has $move.id) else return",
           "return false"
         ],
-        "on_source_modify_damage": ["if [gust, twister] has $move.id:", ["return $damage * 2"]]
+        "on_source_modify_damage": [
+          "if [gust, twister] has $move.id:",
+          ["chain_modify: 2", "return"]
+        ]
       }
     }
   },
@@ -1537,7 +1540,7 @@
         ],
         "on_source_modify_damage": [
           "if [earthquake, magnitude] has $move.id:",
-          ["return $damage * 2"]
+          ["chain_modify: 2", "return"]
         ]
       }
     }
@@ -1555,16 +1558,10 @@
     },
     "effect": {
       "callbacks": {
-        "on_use_move": [
-          "if func_call(has_type: $user poison):",
-          ["$move.accuracy = exempt"]
-        ],
+        "on_use_move": ["if func_call(has_type: $user poison):", ["$move.accuracy = exempt"]],
         "on_invulnerability": {
           "order": 1,
-          "program": [
-            "if func_call(has_type: $source poison):",
-            ["return true"]
-          ]
+          "program": ["if func_call(has_type: $source poison):", ["return true"]]
         }
       }
     },
@@ -1870,7 +1867,7 @@
         ],
         "on_source_modify_damage": [
           "if $effect_state.boosted has $move.id:",
-          ["return $damage * 2"]
+          ["chain_modify: 2", "return"]
         ],
         "on_accuracy_exempt": ["if $effect_state.boosted has $move.id:", ["return false"]]
       }

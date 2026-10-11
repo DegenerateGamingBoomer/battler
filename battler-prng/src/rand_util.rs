@@ -2,7 +2,10 @@
 use alloc::vec::Vec;
 use core::mem;
 
-use crate::PseudoRandomNumberGenerator;
+use crate::{
+    DrawSite,
+    PseudoRandomNumberGenerator,
+};
 
 /// Returns whether a random event occurs.
 pub fn chance(
@@ -58,6 +61,87 @@ pub fn shuffle<T>(prng: &mut dyn PseudoRandomNumberGenerator, items: &mut [T]) {
             let (head, tail) = items.split_at_mut(next as usize);
             mem::swap(&mut head[start as usize], &mut tail[0]);
         }
+        start += 1;
+    }
+}
+
+// The `*_at` variants below name the draw site. They behave exactly like the functions above unless
+// the generator has a semantic random source, which then decides the outcome.
+
+/// Like [`chance`], for a named draw site.
+pub fn chance_at(
+    prng: &mut dyn PseudoRandomNumberGenerator,
+    site: DrawSite,
+    numerator: u64,
+    denominator: u64,
+) -> bool {
+    match prng.semantic() {
+        Some(semantic) => semantic.chance(site, numerator, denominator),
+        None => chance(prng, numerator, denominator),
+    }
+}
+
+/// Like [`range`], for a named draw site.
+pub fn range_at(
+    prng: &mut dyn PseudoRandomNumberGenerator,
+    site: DrawSite,
+    min: u64,
+    max: u64,
+) -> u64 {
+    match prng.semantic() {
+        Some(semantic) => semantic.int(site, max - min) + min,
+        None => range(prng, min, max),
+    }
+}
+
+/// Like [`sample_iter`], for a named draw site.
+#[cfg(feature = "alloc")]
+pub fn sample_iter_at<'a, I, T>(
+    prng: &mut dyn PseudoRandomNumberGenerator,
+    site: DrawSite,
+    iter: I,
+) -> Option<T>
+where
+    I: Iterator<Item = T>,
+    T: Clone,
+{
+    if prng.semantic().is_none() {
+        return sample_iter(prng, iter);
+    }
+    let items = iter.collect::<Vec<_>>();
+    if items.is_empty() {
+        return None;
+    }
+    let index = range_at(prng, site, 0, items.len() as u64);
+    items.get(index as usize).cloned()
+}
+
+/// Like [`sample_slice`], for a named draw site.
+pub fn sample_slice_at<'a, T>(
+    prng: &mut dyn PseudoRandomNumberGenerator,
+    site: DrawSite,
+    slice: &'a [T],
+) -> Option<&'a T> {
+    if prng.semantic().is_none() {
+        return sample_slice(prng, slice);
+    }
+    if slice.is_empty() {
+        return None;
+    }
+    let index = range_at(prng, site, 0, slice.len() as u64);
+    slice.get(index as usize)
+}
+
+/// Like [`shuffle`], for a named draw site.
+pub fn shuffle_at<T>(prng: &mut dyn PseudoRandomNumberGenerator, site: DrawSite, items: &mut [T]) {
+    if prng.semantic().is_none() {
+        return shuffle(prng, items);
+    }
+    let mut start = 0;
+    let end = items.len() as u64;
+    while start + 1 < end {
+        let next = range_at(prng, site, start, end);
+        items.swap(start as usize, next as usize);
         start += 1;
     }
 }

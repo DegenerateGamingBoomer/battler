@@ -37,7 +37,11 @@ pub use eval::{
     ProgramEvalResult,
     VariableInput,
 };
-pub use event_state::EventState;
+pub use event_state::{
+    EventState,
+    NEUTRAL_MODIFIER,
+    modify,
+};
 pub use functions::run_function;
 pub use local_data::LocalData;
 pub use parsed_effect::{

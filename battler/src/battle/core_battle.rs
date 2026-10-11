@@ -29,6 +29,7 @@ use battler_data::{
     TypeEffectiveness,
 };
 use battler_prng::{
+    DrawSite,
     PseudoRandomNumberGenerator,
     rand_util,
 };
@@ -1457,6 +1458,7 @@ impl<'d> CoreBattle<'d> {
                     context.player_mut().clear_team();
                 }
                 context.mon_mut().team_position = action.index;
+                context.mon_mut().effective_team_position = action.index;
                 context.player_mut().add_mon_to_team(action.mon_action.mon);
             }
             Action::Switch(action) => {
@@ -2152,10 +2154,12 @@ impl<'d> CoreBattle<'d> {
         let prng = context.battle_mut().prng.as_mut();
         // SAFETY: PRNG is completely disjoint from the iterator created below.
         let prng = unsafe { mem::transmute(prng) };
-        Ok(
-            rand_util::sample_iter(prng, context.player_context(player)?.player().mon_handles())
-                .cloned(),
+        Ok(rand_util::sample_iter_at(
+            prng,
+            DrawSite::Engine("random-mon"),
+            context.player_context(player)?.player().mon_handles(),
         )
+        .cloned())
     }
 
     /// Selects a random switchable Mon from the player.
@@ -2163,8 +2167,9 @@ impl<'d> CoreBattle<'d> {
         let prng = context.battle_mut().prng.as_mut();
         // SAFETY: PRNG is completely disjoint from the iterator created below.
         let prng = unsafe { mem::transmute(prng) };
-        Ok(rand_util::sample_iter(
+        Ok(rand_util::sample_iter_at(
             prng,
+            DrawSite::Engine("random-switch"),
             Player::switchable_mon_handles(&context.player_context(player)?),
         )
         .cloned())
@@ -2194,7 +2199,10 @@ impl<'d> CoreBattle<'d> {
                 switchables.push(mon_handle);
             }
         }
-        Ok(rand_util::sample_iter(prng, switchables.iter()).cloned())
+        Ok(
+            rand_util::sample_iter_at(prng, DrawSite::Engine("random-switch"), switchables.iter())
+                .cloned(),
+        )
     }
 
     /// Selects a random selectable Mon from the player for the given reason, excluding the given
@@ -2223,7 +2231,10 @@ impl<'d> CoreBattle<'d> {
                 selectables.push(mon_handle);
             }
         }
-        Ok(rand_util::sample_iter(prng, selectables.iter()).cloned())
+        Ok(
+            rand_util::sample_iter_at(prng, DrawSite::Engine("random-select"), selectables.iter())
+                .cloned(),
+        )
     }
 
     /// Selects a random target for the move.
@@ -2260,7 +2271,12 @@ impl<'d> CoreBattle<'d> {
             })
             .collect::<Vec<_>>();
 
-        Ok(rand_util::sample_slice(context.battle_mut().prng.as_mut(), &mons).cloned())
+        Ok(rand_util::sample_slice_at(
+            context.battle_mut().prng.as_mut(),
+            DrawSite::Engine("target"),
+            &mons,
+        )
+        .cloned())
     }
 
     /// Gets the selected target of the move.
@@ -2490,7 +2506,8 @@ impl<'d> CoreBattle<'d> {
     pub fn randomize_base_damage(&mut self, base_damage: u32) -> u32 {
         let random_factor = match self.engine_options.randomize_base_damage {
             CoreBattleEngineRandomizeBaseDamage::Randomize => {
-                rand_util::range(self.prng.as_mut(), 0, 16) as u32
+                rand_util::range_at(self.prng.as_mut(), DrawSite::Engine("damage-roll"), 0, 16)
+                    as u32
             }
             CoreBattleEngineRandomizeBaseDamage::Max => 0,
             CoreBattleEngineRandomizeBaseDamage::Min => 15,

@@ -28,7 +28,10 @@ use battler_data::{
     ItemFlag,
     ItemInput,
 };
-use battler_prng::rand_util;
+use battler_prng::{
+    DrawSite,
+    rand_util,
+};
 use hashbrown::{
     HashMap,
     HashSet,
@@ -1993,8 +1996,9 @@ impl Player {
                 } else if passes == 0 {
                     false
                 } else {
-                    rand_util::chance(
+                    rand_util::chance_at(
                         context.battle_mut().prng.as_mut(),
+                        DrawSite::Engine("auto-choice"),
                         passes as u64,
                         (passes + switches) as u64,
                     )
@@ -2015,8 +2019,9 @@ impl Player {
                 } else if passes == 0 {
                     false
                 } else {
-                    rand_util::chance(
+                    rand_util::chance_at(
                         context.battle_mut().prng.as_mut(),
+                        DrawSite::Engine("auto-choice"),
                         passes as u64,
                         (passes + selections) as u64,
                     )
@@ -2061,8 +2066,9 @@ impl Player {
                     .collect::<BTreeSet<_>>();
 
                 // Pick a random move. If it fails, try again.
-                while let Some(move_slot) = rand_util::sample_iter(
+                while let Some(move_slot) = rand_util::sample_iter_at(
                     context.battle_mut().prng.as_mut(),
+                    DrawSite::Engine("auto-choice"),
                     potential_moves.iter(),
                 )
                 .cloned()

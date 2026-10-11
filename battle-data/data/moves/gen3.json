@@ -462,6 +462,9 @@
     "target": "User",
     "flags": ["Snatch"],
     "hit_effect": {
+      "boosts": {
+        "spd": 1
+      },
       "volatile_status": "charge"
     },
     "z_move": {
@@ -484,7 +487,7 @@
           ["log_start"],
           "return true"
         ],
-        "on_source_base_power": ["if $move.type == electric:", ["return $base_power * 2"]],
+        "on_source_base_power": ["if $move.type == electric:", ["chain_modify: 2", "return"]],
         "on_move_aborted": ["run_event_on_move: AfterMove"],
         "on_after_move": [
           "if $move.type == electric and $move.id != $this.id:",
@@ -563,7 +566,7 @@
           "log_single_turn: with_target with_source",
           "return true"
         ],
-        "on_source_base_power": ["return $base_power * $effect_state.multiplier"]
+        "on_source_base_power": ["chain_modify: $effect_state.multiplier", "return"]
       }
     }
   },
@@ -1155,7 +1158,10 @@
           "require !([surf, whirlpool] has $move.id) else return",
           "return false"
         ],
-        "on_source_modify_damage": ["if [surf, whirlpool] has $move.id:", ["return $damage * 2"]]
+        "on_source_modify_damage": [
+          "if [surf, whirlpool] has $move.id:",
+          ["chain_modify: 2", "return"]
+        ]
       }
     }
   },
@@ -1347,7 +1353,7 @@
       "duration": 5,
       "callbacks": {
         "on_field_start": ["log_field_start: with_source"],
-        "on_base_power": ["if $move.type == electric:", ["return $base_power / 3"]],
+        "on_base_power": ["if $move.type == electric:", ["chain_modify: 1352/4096", "return"]],
         "on_field_end": ["log_field_end"]
       }
     }
@@ -1793,15 +1799,7 @@
     "accuracy": "exempt",
     "pp": 20,
     "target": "Normal",
-    "flags": ["Contact", "Mirror", "Protect", "Punch"],
-    "secondary_effects": [
-      {
-        "target": {
-          "chance": "10%",
-          "volatile_status": "flinch"
-        }
-      }
-    ]
+    "flags": ["Contact", "Mirror", "Protect", "Punch"]
   },
   "extrasensory": {
     "name": "Extrasensory",
@@ -1956,7 +1954,7 @@
     "accuracy": "exempt",
     "pp": 40,
     "target": "Allies",
-    "flags": ["BypassMaxGuard", "Snatch", "Sound"],
+    "flags": ["BypassMaxGuard", "BypassSubstitute", "Snatch", "Sound"],
     "hit_effect": {
       "boosts": {
         "atk": 1
@@ -2155,7 +2153,7 @@
       "duration": 5,
       "callbacks": {
         "on_field_start": ["log_field_start: with_source"],
-        "on_base_power": ["if $move.type == fire:", ["return $base_power / 3"]],
+        "on_base_power": ["if $move.type == fire:", ["chain_modify: 1352/4096", "return"]],
         "on_field_end": ["log_field_end"]
       }
     }

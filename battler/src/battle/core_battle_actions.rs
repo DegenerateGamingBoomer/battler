@@ -39,7 +39,10 @@ use battler_data::{
     ZCrystalData,
     ZCrystalSource,
 };
-use battler_prng::rand_util;
+use battler_prng::{
+    DrawSite,
+    rand_util,
+};
 use hashbrown::{
     HashMap,
     HashSet,
@@ -1660,13 +1663,19 @@ fn move_hit_loop(
         Some(MultihitType::Range(min, max)) => {
             if min == 2 && max == 5 {
                 // 35-35-15-15 for 2-3-4-5 hits.
-                *rand_util::sample_slice(
+                *rand_util::sample_slice_at(
                     context.battle_mut().prng.as_mut(),
+                    DrawSite::Engine("multi-hit"),
                     &[2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5],
                 )
                 .wrap_expectation("expected sample_slice to produce a value")?
             } else {
-                rand_util::range(context.battle_mut().prng.as_mut(), min as u64, max as u64) as u8
+                rand_util::range_at(
+                    context.battle_mut().prng.as_mut(),
+                    DrawSite::Engine("multi-hit"),
+                    min as u64,
+                    max as u64,
+                ) as u8
             }
         }
     };
@@ -1731,8 +1740,11 @@ fn move_hit_loop(
 
             let mut context = context.target_mon_context(target)?;
 
-            // Champions counts every hit of a multi-hit move.
-            let attacks = if context
+            // Champions counts every hit of a multi-hit move. Only hits that dealt damage (or hit a
+            // substitute) count, so status moves do not.
+            let attacks = if !result.dealt_damage() {
+                0
+            } else if context
                 .battle()
                 .engine_options
                 .champions
@@ -2074,7 +2086,12 @@ pub fn calculate_damage(context: &mut ActiveTargetContext) -> Result<Option<u16>
         .hit_data_mut(target_mon_handle)
         .crit = context.active_move().data.will_crit
         || (crit_chance > 0
-            && rand_util::chance(context.battle_mut().prng.as_mut(), 1, crit_chance as u64));
+            && rand_util::chance_at(
+                context.battle_mut().prng.as_mut(),
+                DrawSite::Engine("crit"),
+                1,
+                crit_chance as u64,
+            ));
 
     if context
         .active_move_mut()
@@ -2405,7 +2422,10 @@ mod direct_move_step {
         MoveTarget,
         OhkoType,
     };
-    use battler_prng::rand_util;
+    use battler_prng::{
+        DrawSite,
+        rand_util,
+    };
 
     use super::HitTargetState;
     use crate::{
@@ -2676,9 +2696,12 @@ mod direct_move_step {
         }
 
         let hit = match accuracy {
-            Accuracy::Chance(accuracy) => {
-                rand_util::chance(context.battle_mut().prng.as_mut(), accuracy as u64, 100)
-            }
+            Accuracy::Chance(accuracy) => rand_util::chance_at(
+                context.battle_mut().prng.as_mut(),
+                DrawSite::Engine("accuracy"),
+                accuracy as u64,
+                100,
+            ),
             _ => true,
         };
         if !hit {
@@ -3373,8 +3396,9 @@ fn apply_user_effect(
             // Primary user effect may have a chance to trigger that we must check here. Secondary
             // effect chances are checked elsewhere.
             let apply = if let Some(chance) = context.active_move().data.user_effect_chance {
-                rand_util::chance(
+                rand_util::chance_at(
                     context.battle_mut().prng.as_mut(),
+                    DrawSite::Engine("secondary"),
                     chance.numerator() as u64,
                     chance.denominator() as u64,
                 )
@@ -3456,8 +3480,9 @@ fn apply_secondary_effects(
             }
 
             let secondary_roll = match chance {
-                Some(chance) => rand_util::chance(
+                Some(chance) => rand_util::chance_at(
                     context.battle_mut().prng.as_mut(),
+                    DrawSite::Engine("secondary"),
                     chance.numerator() as u64,
                     chance.denominator() as u64,
                 ),
@@ -4610,7 +4635,12 @@ pub fn try_escape(context: &mut MonContext, force: bool) -> Result<EventResult> 
         let odds = Fraction::from(speed * 32);
         let odds = odds / Fraction::new(foe_speed, 4);
         let odds = odds.floor() + 30 * context.player().escape_attempts as u32;
-        escaped = rand_util::chance(context.battle_mut().prng.as_mut(), odds as u64, 256);
+        escaped = rand_util::chance_at(
+            context.battle_mut().prng.as_mut(),
+            DrawSite::Engine("escape"),
+            odds as u64,
+            256,
+        );
     }
 
     if !escaped {
@@ -6266,7 +6296,12 @@ pub fn try_catch(context: &mut MonContext, target: MonHandle, item: &Id) -> Resu
     let total_shakes = if critical { 1 } else { 4 };
     let mut shakes = 0;
     for _ in 0..total_shakes {
-        let rand = rand_util::range(context.battle_mut().prng.as_mut(), 0, 65536);
+        let rand = rand_util::range_at(
+            context.battle_mut().prng.as_mut(),
+            DrawSite::Engine("catch"),
+            0,
+            65536,
+        );
         if rand < shake_probability {
             shakes += 1;
         } else {
@@ -6376,7 +6411,12 @@ fn check_critical_capture(context: &mut PlayerContext, catch_rate: u64) -> bool 
     let c = Fraction::new(multiplier, 2) * catch_rate;
     let c = c / 6;
     let c = c.floor();
-    let rand = rand_util::range(context.battle_mut().prng.as_mut(), 0, 65536);
+    let rand = rand_util::range_at(
+        context.battle_mut().prng.as_mut(),
+        DrawSite::Engine("catch"),
+        0,
+        65536,
+    );
     rand < c
 }
 

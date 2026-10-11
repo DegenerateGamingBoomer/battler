@@ -196,7 +196,7 @@ fn sheer_force_boosts_clangorous_soulblaze_and_negates_boosts() {
             "damage|mon:Mew 1,player-2,1|health:0",
             "damage|mon:Mew 1,player-2,1|health:0",
             "split|side:1",
-            "damage|mon:Mew 2,player-2,2|health:40/160",
+            "damage|mon:Mew 2,player-2,2|health:39/160",
             "damage|mon:Mew 2,player-2,2|health:25/100",
             "faint|mon:Mew 1,player-2,1",
             "residual",

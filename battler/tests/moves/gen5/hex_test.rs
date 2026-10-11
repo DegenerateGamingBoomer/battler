@@ -61,7 +61,7 @@ fn make_battle(
 
 #[test]
 fn hex_doubles_power_on_status() {
-    let mut battle = make_battle(0, team(), team()).unwrap();
+    let mut battle = make_battle(3, team(), team()).unwrap();
 
     assert_matches::assert_matches!(battle.start(), Ok(()));
 

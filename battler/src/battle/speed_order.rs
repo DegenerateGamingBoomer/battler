@@ -2,6 +2,7 @@ use alloc::vec::Vec;
 use core::cmp::Ordering;
 
 use battler_prng::{
+    DrawSite,
     PseudoRandomNumberGenerator,
     rand_util,
 };
@@ -25,6 +26,13 @@ pub trait SpeedOrderable {
     /// Effect order. Lowest order goes first.
     fn effect_order(&self) -> u32 {
         0
+    }
+    /// The owner of the object (for example, the Mon it belongs to), if known.
+    ///
+    /// Only reported to semantic random sources, which care whether a tie is between different
+    /// owners.
+    fn tie_owner(&self) -> Option<u64> {
+        None
     }
 }
 
@@ -55,6 +63,10 @@ where
     #[inline]
     fn effect_order(&self) -> u32 {
         (*self).effect_order()
+    }
+    #[inline]
+    fn tie_owner(&self) -> Option<u64> {
+        (*self).tie_owner()
     }
 }
 
@@ -98,15 +110,24 @@ fn stable_move_to_position<T>(items: &mut [T], index: usize, target: usize) {
 }
 
 // Selection sort implementation that shuffles tied elements.
-pub fn sort_with_random_ties<T, C>(
+pub fn sort_with_random_ties<T, C, O>(
     items: &mut [T],
     comp: C,
+    owner: O,
     prng: &mut dyn PseudoRandomNumberGenerator,
     tie_resolution: CoreBattleEngineSpeedSortTieResolution,
 ) where
     C: Fn(&T, &T) -> Ordering,
+    O: Fn(&T) -> Option<u64>,
 {
-    let mut shuffler = |items: &mut [T]| rand_util::shuffle(prng, items);
+    let site = DrawSite::Engine("speed-tie");
+    let mut shuffler = |items: &mut [T]| {
+        if let Some(semantic) = prng.semantic() {
+            let owners = items.iter().map(&owner).collect::<Vec<_>>();
+            semantic.ties(site, &owners);
+        }
+        rand_util::shuffle_at(prng, site, items)
+    };
     let mut sorted = 0;
     while sorted + 1 < items.len() {
         // Find all indices that are tied for the smallest elements.
@@ -149,5 +170,11 @@ pub fn speed_sort<T>(
 ) where
     for<'a> &'a T: SpeedOrderable,
 {
-    sort_with_random_ties(items, |a, b| compare_priority(b, a), prng, tie_resolution);
+    sort_with_random_ties(
+        items,
+        |a, b| compare_priority(b, a),
+        |item| item.tie_owner(),
+        prng,
+        tie_resolution,
+    );
 }

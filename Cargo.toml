@@ -50,6 +50,7 @@ members = [
     "bench/battler-bench",
     "battler-champions",
     "battler-showdown-compat",
+    "battler-diff-runner",
 ]
 
 [workspace.dependencies]

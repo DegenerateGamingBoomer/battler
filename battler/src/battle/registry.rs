@@ -28,6 +28,13 @@ use crate::{
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, StrongHandle)]
 pub struct MonHandle(Handle);
 
+impl MonHandle {
+    /// The owner reported to semantic random sources when this Mon is part of a speed tie.
+    pub fn tie_owner(&self) -> u64 {
+        self.0 as u64
+    }
+}
+
 impl Display for MonHandle {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)

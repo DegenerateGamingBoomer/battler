@@ -1956,6 +1956,14 @@ impl BattleEvent {
     ///
     /// This is used for residual events that are suppressed. We keep the callback so that durations
     /// are updated without running the actual callback.
+    /// Whether the event is a residual event, whose default callback counts down durations.
+    pub fn is_residual(&self) -> bool {
+        match self {
+            Self::FieldResidual | Self::SideResidual | Self::Residual => true,
+            _ => false,
+        }
+    }
+
     pub fn force_default_callback(&self) -> bool {
         match self {
             Self::FieldStart | Self::SideStart | Self::SlotStart | Self::Start => true,

@@ -20,6 +20,7 @@ fn request_for(run: &mut Run, player: &str, index: usize) -> Option<Value> {
         name: player.to_owned(),
         active_count: 2,
         multiple_requests,
+        species: Default::default(),
     };
     translate(request.as_ref(), &info, &data, run.battle.ended()).unwrap()
 }

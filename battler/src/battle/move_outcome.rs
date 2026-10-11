@@ -128,6 +128,14 @@ impl MoveOutcomeOnTarget {
         }
     }
 
+    /// Did the move deal damage (possibly zero) to the target or its substitute?
+    pub fn dealt_damage(&self) -> bool {
+        match self {
+            Self::Damage(_) | Self::HitSubstitute => true,
+            _ => false,
+        }
+    }
+
     /// How much damage the move dealt to the target.
     pub fn damage(&self) -> u16 {
         match self {

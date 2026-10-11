@@ -162,11 +162,11 @@
       "callbacks": {
         "on_source_base_power": [
           "if func_call(move_has_flag: $move sound):",
-          ["return $base_power * 13/10"]
+          ["chain_modify: 5325/4096", "return"]
         ],
         "on_source_modify_damage": [
           "if func_call(move_has_flag: $move sound):",
-          ["return $damage / 2"]
+          ["chain_modify: 1/2", "return"]
         ]
       }
     }
@@ -185,7 +185,10 @@
     "flags": ["Breakable"],
     "effect": {
       "callbacks": {
-        "on_source_modify_damage": ["if $move.category == special:", ["return $damage / 2"]]
+        "on_source_modify_damage": [
+          "if $move.category == special:",
+          ["chain_modify: 1/2", "return"]
+        ]
       }
     }
   },
@@ -220,7 +223,7 @@
           "priority": -1,
           "program": [
             "if $effect_state.berry_weaken:",
-            ["$effect_state.berry_weaken = false", "return $damage / 2"]
+            ["$effect_state.berry_weaken = false", "chain_modify: 1/2", "return"]
           ]
         },
         "on_damage": [
@@ -286,7 +289,8 @@
       "callbacks": {
         "on_any_base_power": [
           "require $source != $effect_state.target and func_call(is_ally: $source $effect_state.target) else return",
-          "return $base_power * 13/10"
+          "chain_modify: 5325/4096",
+          "return"
         ]
       }
     }
@@ -344,7 +348,7 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_ally_base_power": ["if $move.type == steel:", ["return $base_power * 3/2"]]
+        "on_ally_base_power": ["if $move.type == steel:", ["chain_modify: 3/2", "return"]]
       }
     }
   },
@@ -533,11 +537,11 @@
       "callbacks": {
         "on_modify_atk": [
           "if $effect.is_defined and $effect.type == electric:",
-          ["return $atk * 13/10"]
+          ["chain_modify: 5325/4096", "return"]
         ],
         "on_modify_spa": [
           "if $effect.is_defined and $effect.type == electric:",
-          ["return $spa * 13/10"]
+          ["chain_modify: 5325/4096", "return"]
         ]
       }
     }
@@ -549,11 +553,11 @@
       "callbacks": {
         "on_modify_atk": [
           "if $effect.is_defined and $effect.type == dragon:",
-          ["return $atk * 13/10"]
+          ["chain_modify: 3/2", "return"]
         ],
         "on_modify_spa": [
           "if $effect.is_defined and $effect.type == dragon:",
-          ["return $spa * 13/10"]
+          ["chain_modify: 3/2", "return"]
         ]
       }
     }

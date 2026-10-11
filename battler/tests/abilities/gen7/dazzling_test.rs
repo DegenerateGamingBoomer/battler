@@ -171,7 +171,7 @@ fn dazzling_prevents_flower_shield() {
 }
 
 #[test]
-fn dazzling_prevents_field_targeting_move() {
+fn dazzling_does_not_prevent_field_targeting_move() {
     let mut battle = make_battle(0, team().unwrap(), team().unwrap()).unwrap();
     assert_matches::assert_matches!(battle.start(), Ok(()));
 
@@ -180,8 +180,8 @@ fn dazzling_prevents_field_targeting_move() {
 
     let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
         r#"[
-            "move|mon:Decidueye,player-1,2|name:Fairy Lock|noanim",
-            "cant|mon:Decidueye,player-1,2|move:Fairy Lock|from:ability:Dazzling|of:Bruxish,player-2,1",
+            "move|mon:Decidueye,player-1,2|name:Fairy Lock",
+            "fieldactivate|move:Fairy Lock",
             "residual",
             "turn|turn:2"
         ]"#,

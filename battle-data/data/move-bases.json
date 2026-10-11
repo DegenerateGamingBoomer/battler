@@ -180,8 +180,9 @@
           "require !func_call(move_crit_target: $move $target) and !$move.effect_state.infiltrates else return",
           "$move.effect_state.screen_weaken = true",
           "if $format.mons_per_side > 1:",
-          ["return $damage * 2 / 3"],
-          "return $damage / 2"
+          ["chain_modify: 2732/4096", "return"],
+          "chain_modify: 1/2",
+          "return"
         ],
         "on_side_start": ["log_side_start"],
         "on_side_end": ["log_side_end"]

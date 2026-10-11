@@ -23,6 +23,42 @@ pub trait PseudoRandomNumberGenerator: Send + Sync {
 
     /// Mutable cast to [`Any`]` for testing.
     fn as_any_mut(&mut self) -> &mut dyn Any;
+
+    /// The semantic random source that should receive draws instead of [`Self::next`], if any.
+    ///
+    /// Ordinary generators return [`None`]. Differential testing uses a semantic source so that two
+    /// engines that draw in different orders still get the same outcome for the same event.
+    fn semantic(&mut self) -> Option<&mut dyn SemanticRandom> {
+        None
+    }
+}
+
+/// Where a random draw comes from.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DrawSite<'a> {
+    /// A draw made by the engine itself, such as `accuracy` or `damage-roll`.
+    Engine(&'static str),
+    /// A draw made by an effect program while handling an event.
+    Effect { effect: &'a str, event: &'a str },
+}
+
+/// A random source that is told what each draw is for.
+///
+/// Implementations decide the outcome from the draw site, so that every engine that makes the same
+/// draw for the same reason gets the same result, regardless of how many unrelated draws happened
+/// before it.
+pub trait SemanticRandom: Send + Sync {
+    /// A `numerator / denominator` chance.
+    fn chance(&mut self, site: DrawSite, numerator: u64, denominator: u64) -> bool;
+
+    /// An integer in `[0, n)`.
+    fn int(&mut self, site: DrawSite, n: u64) -> u64;
+
+    /// Called before the engine shuffles tied items, with an owner for each tied item (for
+    /// example, the Mon an action or effect belongs to), or [`None`] if the owner is unknown.
+    fn ties(&mut self, site: DrawSite, owners: &[Option<u64>]) {
+        let _ = (site, owners);
+    }
 }
 
 /// A real implementation of [`PseudoRandomNumberGenerator`].

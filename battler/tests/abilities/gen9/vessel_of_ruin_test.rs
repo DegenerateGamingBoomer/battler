@@ -165,12 +165,12 @@ fn vessel_of_ruin_decreases_special_attack_except_if_you_have_ability() {
         r#"[
             "move|mon:Ting-Lu,player-1,1|name:Dragon Pulse|target:Ting-Lu,player-2,1",
             "split|side:1",
-            "damage|mon:Ting-Lu,player-2,1|health:187/215",
-            "damage|mon:Ting-Lu,player-2,1|health:87/100",
+            "damage|mon:Ting-Lu,player-2,1|health:178/215",
+            "damage|mon:Ting-Lu,player-2,1|health:83/100",
             "move|mon:Ting-Lu,player-2,1|name:Dragon Pulse|target:Ting-Lu,player-1,1",
             "split|side:0",
-            "damage|mon:Ting-Lu,player-1,1|health:194/215",
-            "damage|mon:Ting-Lu,player-1,1|health:91/100",
+            "damage|mon:Ting-Lu,player-1,1|health:187/215",
+            "damage|mon:Ting-Lu,player-1,1|health:87/100",
             "residual",
             "turn|turn:2"
         ]"#,

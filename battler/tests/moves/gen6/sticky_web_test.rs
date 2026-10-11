@@ -95,6 +95,7 @@ fn sticky_web_reduces_speed_on_switch_in() {
             "split|side:0",
             "damage|mon:Slurpuff,player-1,1|health:235/274",
             "damage|mon:Slurpuff,player-1,1|health:86/100",
+            "boost|mon:Slurpuff,player-2,1|stat:spe|by:1",
             "sideend|side:1|move:Sticky Web",
             "residual",
             "turn|turn:5"

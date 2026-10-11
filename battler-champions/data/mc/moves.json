@@ -294,5 +294,45 @@
     ]
    }
   }
+ },
+ "encore": {
+  "condition": {
+   "callbacks": {
+    "on_start": [
+     "require $target.last_move.is_defined",
+     "$last_move_id = $target.last_move.id",
+     "if $target.last_move.upgraded and $target.last_move.upgraded_base_move.is_defined:",
+     [
+      "$last_move_id = $last_move.upgraded_base_move"
+     ],
+     "$last_move = func_call(get_move: $last_move_id)",
+     "require $last_move.is_defined and !func_call(move_has_flag: $last_move failencore)",
+     "$index = func_call(move_slot_index: $target $last_move.id)",
+     "require $index.is_defined",
+     "$move_slot = func_call(move_slot_at_index: $target $index)",
+     "require $move_slot.is_defined and $move_slot.pp != 0",
+     "$effect_state.move = $last_move.id",
+     "log_start",
+     "# Champions: an Encore that lands before the target moves replaces its queued action.",
+     "$action = func_call(pending_move_action_this_turn: $target)",
+     "if !$action:",
+     [
+      "$effect_state.duration = $effect_state.duration + 1"
+     ],
+     "else if $action.id != $effect_state.move and !func_call(has_item: $target mentalherb):",
+     [
+      "cancel_action: $target",
+      "add_move_action: $target $effect_state.move"
+     ]
+    ],
+    "on_override_move": null
+   }
+  }
+ },
+ "coaching": {
+  "target": "AdjacentAlly"
+ },
+ "dragoncheer": {
+  "target": "AdjacentAlly"
  }
 }

@@ -1,0 +1,22 @@
+[package]
+name = "battler-diff-runner"
+version = "0.1.0"
+edition = "2024"
+description = "battler side of the Showdown differential harness: plays battles under semantic random streams and reports state over JSON lines."
+authors = ["Jackson Nestelroad <jackson@nestelroad.com>"]
+keywords = ["pokemon", "battle"]
+license = "MIT"
+publish = false
+
+[dependencies]
+ahash = { workspace = true }
+anyhow = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+battler = { workspace = true, features = ["std"] }
+battler-prng = { workspace = true }
+battler-champions = { path = "../battler-champions" }
+battler-local-data = { workspace = true }
+battler-showdown-compat = { path = "../battler-showdown-compat" }
+battler-test-utils = { path = "../battler-test-utils" }

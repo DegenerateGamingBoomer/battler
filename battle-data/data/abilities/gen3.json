@@ -102,7 +102,10 @@
     "effect": {
       "callbacks": {
         "on_immunity": ["if $effect.id == sandstormweather:", ["return false"]],
-        "on_modify_accuracy": ["if $field.weather == sandstormweather:", ["return $acc * 4/5"]]
+        "on_modify_accuracy": [
+          "if $field.weather == sandstormweather:",
+          ["chain_modify: 3277/4096", "return"]
+        ]
       }
     }
   },
@@ -191,7 +194,7 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_source_modify_accuracy": ["return $acc * 13/10"]
+        "on_source_modify_accuracy": ["chain_modify: 5325/4096", "return"]
       }
     }
   },
@@ -266,8 +269,14 @@
           "log_start"
         ],
         "on_end": ["log_end: silent"],
-        "on_modify_atk": ["if $effect.is_defined and $effect.type == fire:", ["return $atk * 3/2"]],
-        "on_modify_spa": ["if $effect.is_defined and $effect.type == fire:", ["return $spa * 3/2"]]
+        "on_modify_atk": [
+          "if $effect.is_defined and $effect.type == fire:",
+          ["chain_modify: 3/2", "return"]
+        ],
+        "on_modify_spa": [
+          "if $effect.is_defined and $effect.type == fire:",
+          ["chain_modify: 3/2", "return"]
+        ]
       }
     }
   },
@@ -511,7 +520,7 @@
         "on_modify_spe": [
           "$weather = func_call(effective_weather: $target)",
           "if $weather.is_defined and $weather.is_raining:",
-          ["return $spe * 2"]
+          ["chain_modify: 2", "return"]
         ]
       }
     }
@@ -524,7 +533,7 @@
         "on_modify_spe": [
           "$weather = func_call(effective_weather: $target)",
           "if $weather.is_defined and $weather.is_sunny:",
-          ["return $spe * 2"]
+          ["chain_modify: 2", "return"]
         ]
       }
     }
@@ -561,7 +570,7 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_modify_atk": ["return $atk * 2"]
+        "on_modify_atk": ["chain_modify: 2", "return"]
       }
     }
   },
@@ -675,11 +684,11 @@
       "callbacks": {
         "on_source_modify_atk": [
           "if $effect.is_defined and ($effect.type == ice or $effect.type == fire):",
-          ["return $atk / 2"]
+          ["chain_modify: 1/2", "return"]
         ],
         "on_source_modify_spa": [
           "if $effect.is_defined and ($effect.type == ice or $effect.type == fire):",
-          ["return $spa / 2"]
+          ["chain_modify: 1/2", "return"]
         ]
       }
     }
@@ -798,7 +807,10 @@
     "effect": {
       "callbacks": {
         "on_modify_atk": ["return $atk * 3/2"],
-        "on_source_modify_accuracy": ["if $move.category == physical:", ["return $acc * 4/5"]]
+        "on_source_modify_accuracy": [
+          "if $move.category == physical:",
+          ["chain_modify: 3277/4096", "return"]
+        ]
       }
     }
   },
@@ -823,7 +835,7 @@
           "foreach $ally in func_call(all_active_mons_on_side: $target.side):",
           [
             "if $ally != $target and ($ally.ability == plus or $ally.ability == minus):",
-            ["return $spa * 3/2"]
+            ["chain_modify: 3/2", "return"]
           ]
         ]
       }
@@ -900,7 +912,7 @@
           "priority": 1,
           "program": ["skip_effect_callback: brn"]
         },
-        "on_modify_atk": ["if $target.status.is_defined:", ["return $atk * 2"]]
+        "on_modify_atk": ["if $target.status.is_defined:", ["chain_modify: 3/2", "return"]]
       }
     }
   },
@@ -909,7 +921,7 @@
     "flags": ["Breakable"],
     "effect": {
       "callbacks": {
-        "on_modify_atk": ["if $target.status.is_defined:", ["return $atk * 2"]]
+        "on_modify_def": ["if $target.status.is_defined:", ["chain_modify: 3/2", "return"]]
       }
     }
   },
@@ -932,11 +944,11 @@
       "callbacks": {
         "on_modify_atk": [
           "if $effect.is_defined and $effect.type == grass and $target.hp <= expr($target.max_hp / 3):",
-          ["return $atk * 3/2"]
+          ["chain_modify: 3/2", "return"]
         ],
         "on_modify_spa": [
           "if $effect.is_defined and $effect.type == grass and $target.hp <= expr($target.max_hp / 3):",
-          ["return $spa * 3/2"]
+          ["chain_modify: 3/2", "return"]
         ]
       }
     }
@@ -948,11 +960,11 @@
       "callbacks": {
         "on_modify_atk": [
           "if $effect.is_defined and $effect.type == fire and $target.hp <= expr($target.max_hp / 3):",
-          ["return $atk * 3/2"]
+          ["chain_modify: 3/2", "return"]
         ],
         "on_modify_spa": [
           "if $effect.is_defined and $effect.type == fire and $target.hp <= expr($target.max_hp / 3):",
-          ["return $spa * 3/2"]
+          ["chain_modify: 3/2", "return"]
         ]
       }
     }
@@ -964,11 +976,11 @@
       "callbacks": {
         "on_modify_atk": [
           "if $effect.is_defined and $effect.type == water and $target.hp <= expr($target.max_hp / 3):",
-          ["return $atk * 3/2"]
+          ["chain_modify: 3/2", "return"]
         ],
         "on_modify_spa": [
           "if $effect.is_defined and $effect.type == water and $target.hp <= expr($target.max_hp / 3):",
-          ["return $spa * 3/2"]
+          ["chain_modify: 3/2", "return"]
         ]
       }
     }
@@ -980,11 +992,11 @@
       "callbacks": {
         "on_modify_atk": [
           "if $effect.is_defined and $effect.type == bug and $target.hp <= expr($target.max_hp / 3):",
-          ["return $atk * 3/2"]
+          ["chain_modify: 3/2", "return"]
         ],
         "on_modify_spa": [
           "if $effect.is_defined and $effect.type == bug and $target.hp <= expr($target.max_hp / 3):",
-          ["return $spa * 3/2"]
+          ["chain_modify: 3/2", "return"]
         ]
       }
     }
@@ -1046,7 +1058,7 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_modify_atk": ["return $atk * 2"]
+        "on_modify_atk": ["chain_modify: 2", "return"]
       }
     }
   },

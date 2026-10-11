@@ -114,8 +114,8 @@ fn relic_song_transformation_blocked_by_sheer_force() {
         r#"[
             "move|mon:Meloetta,player-1,1|name:Relic Song",
             "split|side:1",
-            "damage|mon:Meloetta,player-2,1|health:97/160",
-            "damage|mon:Meloetta,player-2,1|health:61/100",
+            "damage|mon:Meloetta,player-2,1|health:96/160",
+            "damage|mon:Meloetta,player-2,1|health:60/100",
             "residual",
             "turn|turn:2"
         ]"#,

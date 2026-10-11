@@ -1135,7 +1135,7 @@ where
         if let Some(result) = result {
             last_result = Some(result.value);
             if result.early_exit {
-                return Ok(last_result);
+                return Ok(last_result.map(|value| apply_event_modifier(value, &event_state)));
             }
         } else {
             last_result = None;
@@ -1144,7 +1144,7 @@ where
 
     // Events that do not relay output across callbacks track the last result here.
     if let Some(last_result) = last_result {
-        return Ok(Some(last_result));
+        return Ok(Some(apply_event_modifier(last_result, &event_state)));
     }
 
     // No result.
@@ -1153,7 +1153,29 @@ where
     }
 
     // For events using relay, the first input variable is returned as the result.
-    Ok(input.get(0).cloned())
+    Ok(input
+        .get(0)
+        .cloned()
+        .map(|value| apply_event_modifier(value, &event_state)))
+}
+
+/// Applies the modifier chained by an event's callbacks to its numeric result, like Showdown's
+/// `runEvent` does for a non-negative integer result.
+fn apply_event_modifier(value: fxlang::Value, event_state: &fxlang::EventState) -> fxlang::Value {
+    let modifier = event_state.modifier();
+    if modifier == fxlang::NEUTRAL_MODIFIER {
+        return value;
+    }
+    let modify = |value: u64| fxlang::modify(value, modifier);
+    match value {
+        fxlang::Value::UFraction(value) if value.is_whole() => {
+            fxlang::Value::UFraction(modify(value.floor()).into())
+        }
+        fxlang::Value::Fraction(value) if value.is_whole() && value.floor() >= 0 => {
+            fxlang::Value::Fraction((modify(value.floor() as u64) as i64).into())
+        }
+        value => value,
+    }
 }
 
 fn run_residual_callbacks_with_errors<'battle, 'data, Context>(
@@ -2040,6 +2062,21 @@ mod callbacks {
         fn effect_order(&self) -> u32 {
             self.effect_order
         }
+
+        fn tie_owner(&self) -> Option<u64> {
+            let location = &self.callback_handle.applied_effect_handle.location;
+            if let Some(mon) = location.mon_handle() {
+                return Some(mon.tie_owner());
+            }
+            Some(match location {
+                AppliedEffectLocation::MonInactiveMove(mon) => mon.tie_owner(),
+                AppliedEffectLocation::Side(side)
+                | AppliedEffectLocation::SideCondition(side)
+                | AppliedEffectLocation::SlotCondition(side, _) => (1 << 32) | *side as u64,
+                AppliedEffectLocation::Player(player) => (2 << 32) | *player as u64,
+                _ => 3 << 32,
+            })
+        }
     }
 
     fn get_speed_orderable_effect_handle_internal(
@@ -2095,6 +2132,22 @@ mod callbacks {
         Ok(Some(result))
     }
 
+    fn default_residual_has_duration(
+        context: &mut Context,
+        callback_handle: &CallbackHandle,
+    ) -> Result<bool> {
+        let Some(effect_state) = callback_handle
+            .applied_effect_handle
+            .effect_state_connector()
+        else {
+            return Ok(false);
+        };
+        if !effect_state.exists(context)? {
+            return Ok(false);
+        }
+        Ok(effect_state.get_mut(context)?.duration().is_some())
+    }
+
     fn get_speed_orderable_effect_handle(
         context: &mut Context,
         event: fxlang::BattleEvent,
@@ -2103,11 +2156,23 @@ mod callbacks {
         match get_speed_orderable_effect_handle_internal(context, event, callback_handle.clone())? {
             Some(handle) => Ok(Some(handle)),
             None => {
-                if callback_handle.event.force_default_callback() {
-                    Ok(Some(SpeedOrderableCallbackHandle::new(callback_handle, 0)))
-                } else {
-                    Ok(None)
+                if !callback_handle.event.force_default_callback() {
+                    return Ok(None);
                 }
+                // The default residual callback only counts down the effect's duration, so it does
+                // nothing for an effect without one.
+                if callback_handle.event.is_residual()
+                    && !default_residual_has_duration(context, &callback_handle)?
+                {
+                    return Ok(None);
+                }
+                // Like any other callback, a default callback is ordered by the speed of the Mon
+                // holding the effect.
+                let speed = callback_handle.speed(context)?;
+                Ok(Some(SpeedOrderableCallbackHandle::new(
+                    callback_handle,
+                    speed,
+                )))
             }
         }
     }

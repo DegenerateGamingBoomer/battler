@@ -48,7 +48,7 @@
           "foreach $mon in func_call(all_active_mons_in_speed_order):",
           ["add_volatile: $mon knockdown"]
         ],
-        "on_modify_accuracy": ["return $acc * 5/3"],
+        "on_modify_accuracy": ["chain_modify: 6840/4096", "return"],
         "on_disable_move": [
           "foreach $move_slot in $mon.move_slots:",
           [
@@ -284,7 +284,7 @@
       "duration": 4,
       "callbacks": {
         "on_side_start": ["log_side_start"],
-        "on_modify_spe": ["return $spe * 2"],
+        "on_modify_spe": ["chain_modify: 2", "return"],
         "on_side_end": ["log_side_end"]
       }
     }
@@ -727,7 +727,7 @@
     "condition": {
       "duration": 1,
       "callbacks": {
-        "on_source_base_power": ["return $base_power * 3/2"]
+        "on_source_base_power": ["chain_modify: 3/2", "return"]
       }
     }
   },
@@ -1729,16 +1729,11 @@
     "pp": 5,
     "target": "Normal",
     "flags": ["Mirror", "Protect"],
-    "secondary_effects": [
-      {
-        "chance": "30%",
-        "target": {
-          "boosts": {
-            "spa": -2
-          }
-        }
+    "user_effect": {
+      "boosts": {
+        "spa": -2
       }
-    ]
+    }
   },
   "powerwhip": {
     "name": "Power Whip",

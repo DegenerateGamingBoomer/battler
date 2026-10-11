@@ -62,6 +62,9 @@ pub struct SideInfo {
     /// Whether more than one side has something to answer. Showdown only forbids cancelling a
     /// choice when the other side is not choosing at the same time.
     pub multiple_requests: bool,
+    /// Showdown's species name by nickname, for formes battler folds into their base species
+    /// (cosmetic formes). Empty if unknown.
+    pub species: ahash::HashMap<String, String>,
 }
 
 /// Whether the Pokémon's current forme is a permanent one (Showdown rewrites its details).
@@ -77,6 +80,10 @@ fn details(mon: &MonBattleData, species_override: Option<&str>) -> String {
         None if permanent_forme(mon) => species_name(&mon.species),
         None => species_name(&mon.summary.species),
     };
+    details_with_species(mon, species)
+}
+
+fn details_with_species(mon: &MonBattleData, species: String) -> String {
     let mut out = species;
     if mon.summary.level != 100 {
         out.push_str(&format!(", L{}", mon.summary.level));
@@ -115,7 +122,10 @@ pub fn side(side: &SideInfo, player: &PlayerBattleData, team_preview: bool) -> V
             let active = if team_preview { i < side.active_count } else { mon.active };
             json!({
                 "ident": format!("{}: {}", side.id, mon.summary.name),
-                "details": details(mon, None),
+                "details": match side.species.get(&mon.summary.name) {
+                    Some(species) if !permanent_forme(mon) => details_with_species(mon, species.clone()),
+                    _ => details(mon, None),
+                },
                 "condition": condition(mon),
                 "active": active,
                 "stats": {

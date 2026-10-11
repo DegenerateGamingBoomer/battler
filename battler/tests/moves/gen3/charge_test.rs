@@ -70,6 +70,7 @@ fn charge_powers_up_next_electric_move() {
             "turn|turn:2",
             "continue",
             "move|mon:Zigzagoon,player-1,1|name:Charge|target:Zigzagoon,player-1,1",
+            "boost|mon:Zigzagoon,player-1,1|stat:spd|by:1",
             "start|mon:Zigzagoon,player-1,1|move:Charge",
             "residual",
             "turn|turn:3",

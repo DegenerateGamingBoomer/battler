@@ -783,7 +783,10 @@
           ["log_field_start"]
         ],
         "on_field_end": ["log_field_end"],
-        "on_source_base_power": ["if $move.type == psychic:", ["return $base_power * 13/10"]],
+        "on_source_base_power": [
+          "if $move.type == psychic:",
+          ["chain_modify: 5325/4096", "return"]
+        ],
         "on_try_hit": {
           "priority": 4,
           "program": [
@@ -984,11 +987,15 @@
     "pp": 15,
     "target": "Normal",
     "flags": ["Contact", "Mirror", "Protect"],
-    "hit_effect": {
-      "boosts": {
-        "atk": -1
+    "secondary_effects": [
+      {
+        "target": {
+          "boosts": {
+            "atk": -1
+          }
+        }
       }
-    }
+    ]
   },
   "instruct": {
     "name": "Instruct",

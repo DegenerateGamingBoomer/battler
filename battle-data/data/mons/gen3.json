@@ -17431,7 +17431,7 @@
     "color": "White",
     "primary_type": "Dark",
     "secondary_type": "Ghost",
-    "abilities": [],
+    "abilities": ["Sharpness"],
     "gender_ratio": 127,
     "catch_rate": 30,
     "egg_groups": ["Field"],

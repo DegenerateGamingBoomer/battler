@@ -72,6 +72,13 @@ fn encore_disables_all_moves_except_last_move() {
     assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 1"), Ok(()));
     assert_matches::assert_matches!(battle.set_player_choice("player-1", "pass"), Ok(()));
     assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 1"), Ok(()));
+    // Encore landed on a turn where the target did not move, so it lasts three more full turns.
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "pass"), Ok(()));
+    assert_matches::assert_matches!(
+        battle.set_player_choice("player-2", "move 2"),
+        Err(err) => assert!(format!("{err:#}").contains("is disabled"))
+    );
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 1"), Ok(()));
     assert_matches::assert_matches!(battle.set_player_choice("player-1", "pass"), Ok(()));
     assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 2"), Ok(()));
 
@@ -103,15 +110,21 @@ fn encore_disables_all_moves_except_last_move() {
                 "boost|mon:Togepi,player-2,1|stat:atk|by:1",
                 "boost|mon:Togepi,player-2,1|stat:spa|by:1",
                 "residual",
-                "end|mon:Togepi,player-2,1|move:Encore",
                 "turn|turn:6",
+                "continue",
+                "move|mon:Togepi,player-2,1|name:Growth|target:Togepi,player-2,1",
+                "boost|mon:Togepi,player-2,1|stat:atk|by:1",
+                "boost|mon:Togepi,player-2,1|stat:spa|by:1",
+                "residual",
+                "end|mon:Togepi,player-2,1|move:Encore",
+                "turn|turn:7",
                 "continue",
                 "move|mon:Togepi,player-2,1|name:Tackle|target:Togepi,player-1,1",
                 "split|side:0",
-                "damage|mon:Togepi,player-1,1|health:78/95",
-                "damage|mon:Togepi,player-1,1|health:83/100",
+                "damage|mon:Togepi,player-1,1|health:75/95",
+                "damage|mon:Togepi,player-1,1|health:79/100",
                 "residual",
-                "turn|turn:7"
+                "turn|turn:8"
             ]"#,
     )
     .unwrap();

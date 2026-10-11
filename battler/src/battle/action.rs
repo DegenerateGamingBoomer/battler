@@ -381,6 +381,7 @@ impl Action {
         match self {
             Self::Team(action) => Some(&mut action.mon_action),
             Self::Switch(action) => Some(&mut action.mon_action),
+            Self::BeforeSwitchEvents(action) => Some(&mut action.mon_action),
             Self::SwitchEvents(action) => Some(&mut action.mon_action),
             Self::Move(action) => Some(&mut action.mon_action),
             Self::BeforeTurnMove(action) => Some(&mut action.mon_action),
@@ -472,6 +473,7 @@ impl SpeedOrderable for Action {
         match self {
             Self::Team(action) => action.mon_action.speed,
             Self::Switch(action) => action.mon_action.speed,
+            Self::BeforeSwitchEvents(action) => action.mon_action.speed,
             Self::SwitchEvents(action) => action.mon_action.speed,
             Self::Move(action) => action.mon_action.speed,
             Self::BeforeTurnMove(action) => action.mon_action.speed,
@@ -484,6 +486,27 @@ impl SpeedOrderable for Action {
             Self::Shift(action) => action.mon_action.speed,
             _ => 1,
         }
+    }
+
+    fn tie_owner(&self) -> Option<u64> {
+        let mon = match self {
+            Self::Team(action) => action.mon_action.mon,
+            Self::Switch(action) => action.mon_action.mon,
+            Self::BeforeSwitchEvents(action) => action.mon_action.mon,
+            Self::SwitchEvents(action) => action.mon_action.mon,
+            Self::Move(action) => action.mon_action.mon,
+            Self::BeforeTurnMove(action) => action.mon_action.mon,
+            Self::PriorityChargeMove(action) => action.mon_action.mon,
+            Self::MegaEvo(action) => action.mon,
+            Self::UltraBurst(action) => action.mon,
+            Self::Dynamax(action) => action.mon,
+            Self::Terastallize(action) => action.mon,
+            Self::Escape(action) => action.mon_action.mon,
+            Self::Item(action) => action.mon_action.mon,
+            Self::Shift(action) => action.mon_action.mon,
+            _ => return None,
+        };
+        Some(mon.tie_owner())
     }
 
     fn sub_order(&self) -> u32 {

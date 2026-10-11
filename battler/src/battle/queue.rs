@@ -5,6 +5,7 @@ use alloc::{
 
 use anyhow::Result;
 use battler_prng::{
+    DrawSite,
     PseudoRandomNumberGenerator,
     rand_util,
 };
@@ -431,10 +432,23 @@ impl BattleQueue {
                         CoreBattleEngineSpeedSortTieResolution::Reverse => {
                             self.actions.insert(min, action)
                         }
-                        CoreBattleEngineSpeedSortTieResolution::Random => self.actions.insert(
-                            rand_util::range(prng, min as u64, max as u64 + 1) as usize,
-                            action,
-                        ),
+                        CoreBattleEngineSpeedSortTieResolution::Random => {
+                            let site = DrawSite::Engine("speed-tie");
+                            if let Some(semantic) = prng.semantic() {
+                                let owners = self
+                                    .actions
+                                    .range(min..max)
+                                    .chain(core::iter::once(&action))
+                                    .map(|action| action.tie_owner())
+                                    .collect::<Vec<_>>();
+                                semantic.ties(site, &owners);
+                            }
+                            self.actions.insert(
+                                rand_util::range_at(prng, site, min as u64, max as u64 + 1)
+                                    as usize,
+                                action,
+                            )
+                        }
                     }
                 }
             }

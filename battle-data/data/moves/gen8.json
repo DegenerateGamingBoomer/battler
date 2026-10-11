@@ -926,7 +926,7 @@
     "flags": ["Mirror", "NoMetronome", "Protect"],
     "secondary_effects": [
       {
-        "target": {
+        "user": {
           "boosts": {
             "spe": 1
           }
@@ -1835,7 +1835,15 @@
     "accuracy": 85,
     "pp": 10,
     "target": "Normal",
-    "flags": ["Mirror", "Protect"]
+    "flags": ["Mirror", "Protect"],
+    "secondary_effects": [
+      {
+        "chance": "30%",
+        "target": {
+          "volatile_status": "flinch"
+        }
+      }
+    ]
   },
   "victorydance": {
     "name": "Victory Dance",
@@ -1982,7 +1990,23 @@
     "accuracy": 100,
     "pp": 15,
     "target": "Normal",
-    "flags": ["Mirror", "Protect"]
+    "flags": ["Mirror", "Protect"],
+    "secondary_effects": [
+      {
+        "chance": "30%",
+        "target": {
+          "status": "brn"
+        }
+      }
+    ],
+    "effect": {
+      "callbacks": {
+        "on_move_base_power": [
+          "if $target.status.is_defined or $target.is_asleep:",
+          ["return $move.base_power * 2"]
+        ]
+      }
+    }
   },
   "ceaselessedge": {
     "name": "Ceaseless Edge",
@@ -2309,7 +2333,7 @@
       "NoSleepTalk",
       "WeakenThroughProtection"
     ],
-    "eff†ect": {
+    "effect": {
       "local_data": {
         "values": {
           "amount": 2

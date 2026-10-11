@@ -99,7 +99,9 @@
     "secondary_effects": [
       {
         "target": {
-          "spd": -2
+          "boosts": {
+            "spd": -2
+          }
         }
       }
     ]
@@ -214,7 +216,7 @@
       "callbacks": {
         "on_start": ["log_single_move: with_target"],
         "on_accuracy_exempt": ["return false"],
-        "on_source_modify_damage": ["return $damage * 2"],
+        "on_source_modify_damage": ["chain_modify: 2", "return"],
         "on_before_move": ["remove_volatile: $user $this.id"]
       }
     }
@@ -302,7 +304,14 @@
     "flags": ["Contact", "Mirror", "Protect"],
     "effect": {
       "delegates": ["move:rapidspin"]
-    }
+    },
+    "secondary_effects": [
+      {
+        "target": {
+          "status": "psn"
+        }
+      }
+    ]
   },
   "doodle": {
     "name": "Doodle",
@@ -488,7 +497,7 @@
           "program": [
             "$weather = func_call(effective_weather: $user)",
             "if $weather.is_defined and $weather.is_sunny:",
-            ["skip_effect_callback: harshsunlight", "return $damage * 3/2"]
+            ["skip_effect_callback: harshsunlight", "chain_modify: 3/2", "return"]
           ]
         }
       }
@@ -757,7 +766,7 @@
     "accuracy": 100,
     "pp": 5,
     "target": "Normal",
-    "flags": ["Contact", "Mirror", "NoMetronome", "Protect"],
+    "flags": ["Contact", "Mirror", "NoMetronome", "Protect", "Punch"],
     "user_effect": {},
     "effect": {
       "callbacks": {

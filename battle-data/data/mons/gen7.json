@@ -13232,7 +13232,7 @@
     "color": "Gray",
     "primary_type": "Bug",
     "secondary_type": "Steel",
-    "abilities": [],
+    "abilities": ["Tough Claws"],
     "gender_ratio": 127,
     "catch_rate": 45,
     "egg_groups": ["Bug", "Water 3"],

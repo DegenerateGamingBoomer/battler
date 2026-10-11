@@ -33,6 +33,16 @@ pub struct ChoiceContext {
     /// battler takes one choice per Pokémon that has to switch, in order. With this set, the
     /// choices of the other slots are dropped.
     pub switch_positions: Option<Vec<usize>>,
+    /// During a turn request, the active positions (0-based) that take a choice.
+    ///
+    /// Showdown expects a choice (`pass`) for an empty or fainted slot; battler only takes choices
+    /// for the Pokémon that can act. With this set, the choices of the other slots are dropped.
+    pub turn_positions: Option<Vec<usize>>,
+    /// Showdown's current team order (its `side.pokemon`) as battler team positions.
+    ///
+    /// Showdown numbers switch targets in this order, which changes as Pokémon switch in and out;
+    /// battler numbers them by team position. Empty means both orders are the same.
+    pub showdown_order: Vec<usize>,
 }
 
 fn parse_index(token: &str, what: &str) -> Result<usize> {
@@ -96,7 +106,10 @@ fn translate_one(part: &str, active_index: usize, context: &ChoiceContext) -> Re
                 return Ok(Choice::Switch(SwitchChoice::default()));
             };
             let mon = match token.parse::<usize>() {
-                Ok(_) => parse_index(token, "switch target")?,
+                Ok(_) => {
+                    let index = parse_index(token, "switch target")?;
+                    context.showdown_order.get(index).copied().unwrap_or(index)
+                }
                 Err(_) => {
                     let id = to_id(&args.join(" "));
                     context
@@ -145,6 +158,7 @@ pub fn translate(showdown_choice: &str, context: &ChoiceContext) -> Result<Strin
             context
                 .switch_positions
                 .as_ref()
+                .or(context.turn_positions.as_ref())
                 .is_none_or(|positions| positions.contains(i))
         })
         .map(|(i, part)| translate_one(part, i, context))

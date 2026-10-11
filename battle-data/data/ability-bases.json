@@ -48,7 +48,7 @@
         },
         "on_source_base_power": [
           "if $move.effect_state.type_change_boosted:",
-          ["return $base_power * 6/5"]
+          ["chain_modify: 4915/4096", "return"]
         ]
       }
     }
@@ -66,8 +66,9 @@
           "require !$aura_booster else return",
           "$move.effect_state.aura_booster = $effect_state.target",
           "if $move.effect_state.aura_break:",
-          ["return $base_power * 3/4"],
-          "return $base_power * 4/3"
+          ["chain_modify: 3072/4096", "return"],
+          "chain_modify: 5448/4096",
+          "return"
         ]
       }
     }

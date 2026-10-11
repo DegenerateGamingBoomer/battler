@@ -1098,7 +1098,7 @@
     "flags": ["Contact", "Mirror", "Protect"],
     "effect": {
       "callbacks": {
-        "on_base_power": ["if $source.player.mon_fainted_last_turn:", ["return $base_power * 2"]]
+        "on_base_power": ["if $source.player.mon_fainted_last_turn:", ["chain_modify: 2", "return"]]
       }
     }
   },
@@ -1292,7 +1292,7 @@
       "callbacks": {
         "on_side_start": ["log_side_start"],
         "on_side_end": ["log_side_end"],
-        "on_modify_spe": ["return $spe / 4"]
+        "on_modify_spe": ["chain_modify: 1/4", "return"]
       }
     }
   },
@@ -1940,7 +1940,7 @@
       "callbacks": {
         "on_base_power": [
           "if $battle.last_successful_move.is_defined and $battle.last_successful_move.id == fusionbolt:",
-          ["return $base_power * 2"]
+          ["chain_modify: 2", "return"]
         ]
       }
     }
@@ -1958,7 +1958,7 @@
       "callbacks": {
         "on_base_power": [
           "if $battle.last_successful_move.is_defined and $battle.last_successful_move.id == fusionflare:",
-          ["return $base_power * 2"]
+          ["chain_modify: 2", "return"]
         ]
       }
     }
