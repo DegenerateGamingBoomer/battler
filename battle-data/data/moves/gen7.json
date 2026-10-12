@@ -739,6 +739,10 @@
     "flags": ["Bullet", "Mirror", "Protect"],
     "effect": {
       "callbacks": {
+        "on_move_target_override": [
+          "if func_call(has_volatile: $mon healblock):",
+          ["return adjacentfoe"]
+        ],
         "on_use_move": [
           "if func_call(is_ally: $user $target):",
           [

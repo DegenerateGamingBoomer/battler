@@ -71,3 +71,58 @@ fn mirror_armor_reflects_stat_drops() {
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
 }
+
+fn incineroar() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Incineroar",
+                    "species": "Incineroar",
+                    "ability": "No Ability",
+                    "moves": [
+                        "Parting Shot"
+                    ],
+                    "nature": "Hardy",
+                    "level": 100
+                },
+                {
+                    "name": "Pikachu",
+                    "species": "Pikachu",
+                    "ability": "No Ability",
+                    "moves": [],
+                    "nature": "Hardy",
+                    "level": 100
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+#[test]
+fn parting_shot_user_switches_out_when_mirror_armor_reflects_drops() {
+    let mut battle = make_battle(0, incineroar().unwrap(), team().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "switch 1"), Ok(()));
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "move|mon:Incineroar,player-1,1|name:Parting Shot|target:Corviknight,player-2,1",
+            "ability|mon:Corviknight,player-2,1|ability:Mirror Armor",
+            "unboost|mon:Incineroar,player-1,1|stat:atk|by:1|from:ability:Mirror Armor|of:Corviknight,player-2,1",
+            "unboost|mon:Incineroar,player-1,1|stat:spa|by:1|from:ability:Mirror Armor|of:Corviknight,player-2,1",
+            "continue",
+            "split|side:0",
+            "switch|player:player-1|position:1|name:Pikachu|health:180/180|species:Pikachu|level:100|gender:U",
+            "switch|player:player-1|position:1|name:Pikachu|health:100/100|species:Pikachu|level:100|gender:U",
+            "residual",
+            "turn|turn:2"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 1, &expected_logs);
+}

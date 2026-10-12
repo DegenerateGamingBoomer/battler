@@ -2,7 +2,9 @@ use anyhow::Result;
 use battler::{
     BattleType,
     CoreBattleEngineSpeedSortTieResolution,
+    MoveTarget,
     PublicCoreBattle,
+    Request,
     TeamData,
     WrapResultError,
 };
@@ -88,4 +90,66 @@ fn pollen_puff_damages_foe_and_heals_ally() {
     )
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
+}
+
+fn heal_blockers() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Bronzong",
+                    "species": "Bronzong",
+                    "ability": "No Ability",
+                    "moves": [
+                        "Heal Block"
+                    ],
+                    "nature": "Hardy",
+                    "level": 100
+                },
+                {
+                    "name": "Bronzong",
+                    "species": "Bronzong",
+                    "ability": "No Ability",
+                    "moves": [],
+                    "nature": "Hardy",
+                    "level": 100
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+fn assert_pollen_puff_target(battle: &mut PublicCoreBattle, target: MoveTarget) {
+    assert_matches::assert_matches!(
+        battle.request_for_player("player-1"),
+        Ok(Some(Request::Turn(request))) => {
+            for active in &request.active {
+                assert_matches::assert_matches!(active.moves.get(0), Some(mov) => {
+                    assert_eq!(mov.target, target);
+                });
+            }
+        }
+    );
+}
+
+#[test]
+fn pollen_puff_cannot_target_ally_under_heal_block() {
+    let mut battle = make_battle(0, team().unwrap(), heal_blockers().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_pollen_puff_target(&mut battle, MoveTarget::Normal);
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "pass;pass"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 0;pass"), Ok(()));
+
+    assert_pollen_puff_target(&mut battle, MoveTarget::AdjacentFoe);
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0,-2;pass"), Err(err) => {
+        assert!(format!("{err:#}").contains("invalid target for Pollen Puff"), "{err:#}");
+    });
+    assert_matches::assert_matches!(
+        battle.set_player_choice("player-1", "move 0,1;pass"),
+        Ok(())
+    );
 }

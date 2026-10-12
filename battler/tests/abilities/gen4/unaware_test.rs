@@ -96,3 +96,48 @@ fn unaware_ignores_stat_boosts_during_move() {
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
 }
+
+fn smeargle() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Smeargle",
+                    "species": "Smeargle",
+                    "ability": "No Ability",
+                    "moves": [
+                        "Hone Claws",
+                        "Zap Cannon"
+                    ],
+                    "nature": "Hardy",
+                    "level": 50
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+#[test]
+fn unaware_ignores_accuracy_boosts_of_attacker() {
+    let mut battle = make_battle(2, smeargle().unwrap(), bibarel().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    for _ in 0..3 {
+        assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
+        assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass"), Ok(()));
+    }
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 1"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass"), Ok(()));
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "move|mon:Smeargle,player-1,1|name:Zap Cannon|noanim",
+            "miss|mon:Bibarel,player-2,1",
+            "residual",
+            "turn|turn:5"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 4, &expected_logs);
+}

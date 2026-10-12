@@ -2,6 +2,137 @@
 
 Spec: `champions-showdown-spec.md`. One section per phase, newest first.
 
+## P1c — differential harness from turn 0 (done: budget holds, remaining divergences listed)
+
+**What exists**
+- `battler-prng`: an optional semantic random source. Every engine draw goes through a named
+  `DrawSite` (`accuracy`, `crit`, `secondary`, `damage-roll`, `multi-hit`, `full-para`,
+  `confusion-hit`, `status-turns`, `speed-tie`, `target`, `effect:<id>` for fxlang draws). Off by
+  default; ordinary battles are unchanged.
+- `battler-diff-runner` (binary): plays a battle from JSON lines on stdin with the semantic streams
+  and answers with the draw log, speed-tie owners, translated protocol, translated requests and
+  the normalized state (`src/state.rs`).
+- `compat/diff` (Node, pinned Showdown in-process):
+  - `driver.js` — runs both engines step by step and compares draws, state, requests and protocol.
+    `cargo build --release -p battler-diff-runner`, then
+    `node compat/diff/driver.js --battles N [--start K] [--out DIR] [--verbose]`,
+    `--battle K` for one battle, `--scenarios [name]` for the spec scenarios, and
+    `--merge DIR,DIR,...` to summarize chunks run in parallel.
+  - `hooks.js` — classifies every Showdown draw by its caller; an unknown call site throws.
+  - `state.js` — Showdown's side of the normalized state (shape shared with `state.rs`).
+  - `scenarios.js` — the 15 scenarios listed in the spec.
+  - `show.js` (print a battle or step), `replay.js` (Showdown's damage calculation per hit),
+    `check-orders.js` (residual orders of both engines' data).
+- A turn where either engine breaks a speed tie is **tie-affected**; the comparison of that battle
+  ends there (spec). Random targets that Showdown picks while ordering actions and then discards
+  are not compared.
+
+**Result** (seeded random-choice battles with Champions random-doubles teams, level 50):
+
+| Sample | Battles | Compared turns | Diverged turns | Rate |
+|---|---|---|---|---|
+| battles 0–2399 | 2400 | 25,936 | 28 | 0.11% |
+
+Outcomes: 2060 ended, 311 tie-affected, 28 diverged, 1 showdown-rejected. Scenarios: 15 run, no
+state divergence (2 end early on a speed tie). The rate went from 6.3% at the start of the phase to
+the figure above. Battles 1200–2399 were held out until the end and diverged in 0.21% of turns on
+their first run; their divergences were then fixed or classified too, so they are no longer an
+unseen sample.
+
+**Fixed, by frequency** (Showdown is the reference; details in the P1c commits):
+- Turn order and timing: residual orders and sub-orders copied from Showdown and default
+  sub-orders by effect kind; durations count down only at their own residual; Mons faint between
+  residual effects (but weather hits everyone first); fainted Mons' residual effects are skipped;
+  priority and speed recalculated before each move (Gen 8+); mid-turn switch-outs (U-turn, Eject
+  Button) happen when the replacement comes in; Emergency Exit checks after the residual phase;
+  Champions Encore keeps the replaced move's place in the queue.
+- Damage: Showdown's 4096-based modifier chaining and rounding (base power and damage modifiers,
+  burn, Parental Bond, screens on every hit, protection-weakened hits, Heal Pulse, weather healing
+  moves); Body Press uses attack modifiers; confusion damage uses unmodified stats; Unaware per
+  target; multi-hit counts drawn after accuracy.
+- Effects: Pressure, Poison Touch, Toxic Chain, Sticky Web (Clear Body, Defiant), Rest replacing a
+  status, Telepathy, Sturdy, Charge, Beak Blast, King's Shield family vs status moves, Stone Axe and
+  Ceaseless Edge on the foe side, Strength Sap vs Liquid Ooze, Reckless vs Struggle, choice lock
+  after Knock Off, secondary effects and self-boosts on a substitute hit, a move that only hit a
+  substitute still counting as used (Life Orb), Magic Bounce clearing Prankster on the reflected
+  move, Parting Shot switching out after Mirror Armor, Unaware in accuracy checks, Disguise still
+  triggering after-hit effects, Transform copying boosts before the new ability starts, Wandering
+  Spirit on a knockout, Psychic Noise's 2-turn Heal Block, Thunder/Hurricane in sun (an fxlang
+  assignment that failed), and many residual details (Harvest, Hydration, Wish, Shed Skin).
+- Data typos found on the way: Bug type chart row, Rocky Helmet, Whirlwind and Signal Beam effect
+  fields, Banettite's species.
+- A panic: a foe-side move (Stealth Rock) used after every foe fainted.
+- Translation (`battler-showdown-compat`): requests (base species and ability, Struggle, Mega
+  options, revival, transformed Mon's own stats), status and cure attributions. Pollen Puff's
+  request target is `adjacentFoe` under Heal Block (engine data, as for Curse).
+
+**Remaining state divergences, with causes** (battles 0–2399; 28 turns):
+- 14 × request `maybeTrapped` (108, 433, 584, 658, 802, 912, 963, 1515, 1585, 1669, 2095, 2102,
+  2103, 2324): Showdown marks a Pokémon `maybeTrapped` when a foe's species could have a trapping
+  ability it has not shown (Arena Trap, Magnet Pull, Shadow Tag), so a cancelled switch leaks
+  nothing. battler's requests only report real traps. Request only; the battle state matches.
+- 4 × `encore` (657, 838, 1415, 2365): Showdown records a Pokémon's last move before the move runs,
+  battler after. Encore reflected by Magic Bounce fails in Showdown (the user's last move is already
+  Encore) but encores the user's previous move in battler (1415, 2365); 657 and 838 are the same
+  timing, picking a different move. Fixing it means moving the record ahead of the before-move
+  checks in `use_active_move`, which is wider than four turns justify.
+- 3 × `twoturnmove` (99, 572, 750): the battle ends during the turn a Pokémon starts charging
+  Solar Beam; Showdown's final state still holds the charging volatile, battler's does not. Final
+  step only.
+- 2 × `species` (17, 470): Revival Blessing on a Pokémon that fainted earlier in the same turn and
+  has not been replaced: Showdown sends it straight back into its empty slot; battler leaves the
+  slot empty until the next request.
+- 2 × `unburden` (136, 2260): Showdown keeps the `unburden` volatile after Trick or Switcheroo gives
+  the Pokémon a new item and only applies the Speed boost while it holds nothing; battler removes
+  the volatile when the item arrives. Same Speed either way (representation only).
+- 1 × `lockedmove` (327): an Outrage turn that misses. battler reads the move's outcome before it
+  is recorded, so the lock lasts one turn longer than in Showdown.
+- 1 × `status` (1152): battler cures a Natural Cure holder when the battle ends (as if it switched
+  out); Showdown does not. Final step only; battler's behaviour is intentional.
+- 1 × `boosts.def` (1354): Clanging Scales knocks out the last foe; Showdown ends the battle before
+  the user's Defense drop, battler applies it first. Final step only.
+
+**Other differences (outside the state budget)**
+- Draw logs: the `target` stream differs in 133 of 2400 battles (5.5%) because Showdown picks a
+  random target for a move chosen without one when it resolves the action, and again while sorting
+  the queue; battler picks once, when the move is used. The picks agree whenever state matches.
+- Protocol: the most frequent first differences are translation gaps, e.g. `[still]` on self-
+  and field-targeted moves (`|move|...|Trick Room||[still]`), `-end|...|Encore` vs
+  `move: Encore`, `[from] Stealth Rock` vs `move: Stealth Rock`, Bad Poison damage `[from] psn`,
+  form changes with `[from] ability:` and Mimikyu's Disguise lines. They do not affect state.
+
+**Test expectation changes** (each to Showdown's behaviour):
+- Residual order and timing: many residual logs; Emergency Exit now activates after all residual
+  effects (`emergency_exit_activates_after_residuals`, renamed).
+- Mid-turn switch-outs no longer log a separate `switchout` line (~30 tests: U-turn, Baton Pass,
+  Eject Button/Pack, Emergency Exit, Parting Shot, Shed Tail, ...).
+- Rounding: Heal Pulse, Shore Up, Parental Bond, Z-Move through Protect (±1 HP).
+- Random sequence: drawing the hit count after accuracy re-rolls later values in accuracy,
+  focus energy, metronome, multihit, rage and Water Shuriken tests (same assertions); the
+  affection and substitute tests move a forced value or seed so they still show what they test.
+- Behaviour: Shell Bell does not activate when only a substitute is hit (renamed test); Rapid Spin
+  raises Speed through a substitute; Sticky Web names the foe as the source; transformed abilities
+  start after the `transform` line; Bug type chart; Bad Poison and healing amounts; Refrigerate.
+- New tests: Champions Encore ordering, Thunder accuracy in sun, Strength Sap vs Liquid Ooze,
+  Psychic Noise, Stealth Rock after every foe fainted, every Mega Stone's species, Wandering Spirit
+  on a knockout, Life Orb after only hitting a substitute, Magic Bounce vs Prankster, Parting Shot
+  vs Mirror Armor, Pollen Puff under Heal Block, Unaware vs accuracy boosts.
+
+**Test status**: `cargo test -q -p battler -p battler-showdown-compat -p battler-champions
+-p battler-prng -p battler-state -p battler-service -p battler-client -p battler-diff-runner` all
+pass (battler: 1436). `battler-ai` does not build in this container (its build script needs
+external data); unrelated to this phase.
+
+**Gaps**
+- Tie-affected battles (311 of 2400, 13%) stop being compared at the first speed tie; re-syncing by
+  transplant is P2.
+- Protocol differences are listed, not budgeted; the translation gaps above should be closed
+  before protocol output is relied on.
+- One battle ends `showdown-rejected`: Showdown's own request offers a move its Encore then
+  rejects.
+
+**Next step**: P2 (transplant, then clone).
+
 ## P1b — Showdown compatibility layer (done, with the gaps listed below)
 
 Crate `battler-showdown-compat` (README inside). Everything below is tested against fixtures

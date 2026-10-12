@@ -152,13 +152,14 @@ impl MoveOutcomeOnTarget {
         match (*self, other) {
             (Self::Unknown, right) => right,
             (left @ _, Self::Unknown) => left,
-            (Self::HitSubstitute, right) => right,
             (Self::EventResult(a), Self::EventResult(b)) => Self::EventResult(a.combine(b)),
             (Self::Damage(left), Self::Damage(right)) => Self::Damage(left + right),
             (left @ Self::Damage(_), _) => left,
             (_, right @ Self::Damage(_)) => right,
             (left @ Self::EventResult(result), _) if result.advance() => left,
             (Self::EventResult(_), right) => right,
+            (Self::HitSubstitute, right @ Self::EventResult(result)) if result.advance() => right,
+            (left @ Self::HitSubstitute, _) => left,
         }
     }
 }

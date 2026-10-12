@@ -344,6 +344,15 @@
         "spa": -1
       }
     },
+    "effect": {
+      "callbacks": {
+        "on_hit": [
+          "# The user still switches out when Mirror Armor reflects both drops.",
+          "if func_call(has_ability: $target mirrorarmor):",
+          ["return true"]
+        ]
+      }
+    },
     "z_move": {
       "effect": "zpowerhealreplacement"
     }

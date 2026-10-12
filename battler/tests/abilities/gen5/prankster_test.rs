@@ -125,3 +125,63 @@ fn dark_types_resist_prankster_boosted_moves() {
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
 }
+
+fn prankster_sableye() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Sableye",
+                    "species": "Sableye",
+                    "ability": "Prankster",
+                    "moves": [
+                        "Thunder Wave"
+                    ],
+                    "nature": "Hardy",
+                    "level": 50
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+fn espeon() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Espeon",
+                    "species": "Espeon",
+                    "ability": "Magic Bounce",
+                    "moves": [],
+                    "nature": "Hardy",
+                    "level": 50
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+#[test]
+fn moves_reflected_by_magic_bounce_are_not_prankster_boosted() {
+    let mut battle = make_battle(0, prankster_sableye().unwrap(), espeon().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass"), Ok(()));
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "move|mon:Sableye,player-1,1|name:Thunder Wave|noanim",
+            "activate|mon:Espeon,player-2,1|ability:Magic Bounce",
+            "move|mon:Espeon,player-2,1|name:Thunder Wave|target:Sableye,player-1,1|from:ability:Magic Bounce",
+            "status|mon:Sableye,player-1,1|status:Paralysis",
+            "residual",
+            "turn|turn:2"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 1, &expected_logs);
+}

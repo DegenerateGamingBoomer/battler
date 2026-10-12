@@ -2791,11 +2791,13 @@ mod direct_move_step {
                     fxlang::BattleEvent::ModifyAccuracy,
                     *accuracy,
                 );
+                // Boosts are read in the context of the move against the target, so that effects
+                // like Unaware can ignore them.
                 let mut boost = 0;
                 if !context.active_move().data.ignore_accuracy {
                     let boosts = context.mon().volatile_state.boosts.clone();
                     let boosts = core_battle_effects::run_event_with_relay::<_, BoostTable>(
-                        context.as_mon_context_mut(),
+                        &mut context.user_applying_effect_context()?,
                         fxlang::BattleEvent::ModifyBoosts,
                         boosts,
                     );
@@ -2804,7 +2806,7 @@ mod direct_move_step {
                 if !context.active_move().data.ignore_evasion {
                     let boosts = context.target_mon().volatile_state.boosts.clone();
                     let boosts = core_battle_effects::run_event_with_relay::<_, BoostTable>(
-                        &mut context.target_mon_context()?,
+                        &mut context.applying_effect_context()?,
                         fxlang::BattleEvent::ModifyBoosts,
                         boosts,
                     );

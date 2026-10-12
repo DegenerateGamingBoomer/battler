@@ -285,6 +285,7 @@ mod items {
         mod griseous_orb_test;
         mod heal_ball_test;
         mod iron_ball_test;
+        mod life_orb_test;
         mod luxury_ball_test;
         mod metronome_test;
         mod power_herb_test;
