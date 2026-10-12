@@ -49,7 +49,9 @@ BattleActions.prototype.getDamage = function (source, target, move, suppress) {
     delete this.modifyDamage;
   }
   const m = typeof move === 'string' ? move : move.id;
-  console.log(`[step ${step}] ${source.name} ${m} -> ${target.name}: ${result}  atk=${source.getStat('atk')} spa=${source.getStat('spa')} def=${target.getStat('def')} spd=${target.getStat('spd')}`);
+  // Stats without modifiers; some modifiers (Stakeout) need an event target.
+  const stat = (mon, s) => mon.getStat(s, false, true);
+  console.log(`[step ${step}] ${source.name} ${m} -> ${target.name}: ${result}  atk=${stat(source, 'atk')} spa=${stat(source, 'spa')} def=${stat(target, 'def')} spd=${stat(target, 'spd')}`);
   for (const t of trace) console.log(`    ${t}`);
   return result;
 };

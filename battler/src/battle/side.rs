@@ -121,7 +121,9 @@ impl Side {
             Err(_) => return Ok(None),
             Ok(player_context) => player_context,
         };
-        Ok(player_context.player().active_or_exited_mon_handle(position))
+        Ok(player_context
+            .player()
+            .active_or_exited_mon_handle(position))
     }
 
     /// Counts the number of Mons left on the side.

@@ -693,10 +693,15 @@
     "pp": 15,
     "target": "Normal",
     "flags": ["Contact", "Mirror", "Protect"],
-    "hit_effect": {
-      "volatile_status": "throatchop"
-    },
+    "secondary_effects": [
+      {
+        "target": {
+          "volatile_status": "throatchop"
+        }
+      }
+    ],
     "condition": {
+      "duration": 2,
       "callbacks": {
         "on_start": ["log_start: silent"],
         "on_disable_move": [
@@ -706,10 +711,13 @@
             ["disable_move: $mon $move_slot.id"]
           ]
         ],
-        "on_before_move": [
-          "if !$move.upgraded and func_call(move_has_flag: $move sound):",
-          ["log_cant: with_move", "return stopfail"]
-        ],
+        "on_before_move": {
+          "priority": 6,
+          "program": [
+            "if !$move.upgraded and func_call(move_has_flag: $move sound):",
+            ["log_cant: with_move", "return stopfail"]
+          ]
+        },
         "on_try_move": ["return func_call(run_event_on_move: BeforeMove)"],
         "on_end": ["log_end: silent"],
         "on_residual": {

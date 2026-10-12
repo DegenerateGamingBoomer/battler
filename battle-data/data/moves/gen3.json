@@ -520,7 +520,10 @@
     "condition": {
       "duration": 3,
       "callbacks": {
-        "on_duration": ["if !func_call(will_move_this_turn: $target):", ["return 4"]],
+        "on_duration": [
+          "if $target.active_turns > 0 and !func_call(will_move_this_turn: $target):",
+          ["return 4"]
+        ],
         "on_start": ["log_start"],
         "on_end": ["log_end"],
         "on_disable_move": [
@@ -1804,8 +1807,8 @@
     "flags": ["Mirror", "Protect"],
     "secondary_effects": [
       {
+        "chance": "10%",
         "target": {
-          "chance": "10%",
           "volatile_status": "confusion"
         }
       }

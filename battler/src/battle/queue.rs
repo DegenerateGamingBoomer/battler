@@ -459,6 +459,18 @@ impl BattleQueue {
     }
 
     /// Updates the speed for each action taken by a Mon.
+    /// Runs a function on every queued action.
+    pub fn for_each_action_mut<F>(context: &mut Context, mut f: F) -> Result<()>
+    where
+        F: FnMut(&mut Context, &mut Action) -> Result<()>,
+    {
+        let mut actions = VecDeque::new();
+        core::mem::swap(&mut actions, &mut context.battle_mut().queue.actions);
+        let result = actions.iter_mut().try_for_each(|action| f(context, action));
+        core::mem::swap(&mut actions, &mut context.battle_mut().queue.actions);
+        result
+    }
+
     pub fn update_mon_speeds(context: &mut Context) -> Result<()> {
         let mut actions = VecDeque::new();
         core::mem::swap(&mut actions, &mut context.battle_mut().queue.actions);

@@ -25,7 +25,6 @@ use battler_data::{
     ItemFlag,
     MoveCategory,
     MoveData,
-    MoveFlag,
     MoveSource,
     MoveTarget,
     MultihitType,
@@ -653,20 +652,11 @@ fn do_move_internal(
         }
     }
 
-    // Deduct PP if the Mon selected this move for use, and the Mon was not forced to use it, or if
-    // the move is a charging move.
+    // Deduct PP if the Mon selected this move for use, and the Mon was not forced to use it.
     //
-    // Note that charging moves have their PP deducted on the last turn of use, as opposed to the
-    // first (default). The effect of such a move should hook into this event to ensure PP is not
-    // continually deducted every turn.
-    if result.used() && this_move_is_the_last_selected && locked_move_before.is_none()
-        || context
-            .as_battle_context()
-            .active_move(active_move_handle)?
-            .data
-            .flags
-            .contains(&MoveFlag::Charge)
-    {
+    // Charging moves have their PP deducted on the turn they start charging; the Mon is locked into
+    // the move on the next turn.
+    if result.used() && this_move_is_the_last_selected && locked_move_before.is_none() {
         let deduction = core_battle_effects::run_event_with_relay::<_, u8>(
             &mut context
                 .active_move_context(active_move_handle)?
@@ -990,8 +980,15 @@ fn effective_move_type(
                 .unwrap_or_else(|| "[unidentified effect]")
         )));
     };
+    // An active move runs the event itself, so effects can mark it (e.g., -ate abilities boost
+    // the moves they change).
+    let event_effect = if use_cache {
+        stable_effect
+    } else {
+        effect.clone()
+    };
     let mut context =
-        context.applying_effect_context(stable_effect, target, source_effect.cloned())?;
+        context.applying_effect_context(event_effect, target, source_effect.cloned())?;
     let typ = core_battle_effects::run_effect_event_with_input::<_, _, Option<Type>>(
         &mut context,
         fxlang::BattleEvent::ModifyMoveType,
@@ -2674,7 +2671,8 @@ mod direct_move_step {
                 } else {
                     Fraction::new(3, (3 - boost) as u16)
                 };
-                *accuracy = multiplier.mul(*accuracy as u16).floor() as u8;
+                // Anything above 100 always hits.
+                *accuracy = multiplier.mul(*accuracy as u16).floor().min(u8::MAX as u16) as u8;
             }
         }
 
@@ -2998,7 +2996,7 @@ fn apply_move_effects(
                     }
 
                     if let Some(heal_percent) = hit_effect.heal_percent {
-                        let damage = heal_percent * target_context.mon().base_max_hp;
+                        let damage = heal_percent * target_context.target_mon().base_max_hp;
                         let damage = damage.round();
                         let healed = heal(
                             &mut target_context.applying_effect_context()?,
@@ -5298,6 +5296,9 @@ pub fn start_ability(
 }
 
 /// Sets the target Mon's ability.
+///
+/// A Mon without HP keeps its ability, unless `allow_no_hp` is set: abilities are swapped (Skill
+/// Swap, Wandering Spirit) before a Mon knocked out by the move faints.
 pub fn set_ability(
     context: &mut ApplyingEffectContext,
     ability: &Id,
@@ -5305,12 +5306,13 @@ pub fn set_ability(
     dry_run: bool,
     force: bool,
     silent: bool,
+    allow_no_hp: bool,
 ) -> Result<EventResult> {
     let context = &mut scopeguard::guard(context, |context| {
         CoreBattle::invalidate_effect_caches(context.as_battle_context_mut()).ok();
     });
 
-    if !context.target().active || context.target().hp == 0 {
+    if !context.target().active || (context.target().hp == 0 && !allow_no_hp) {
         return Ok(EventResult::Fail);
     }
 
@@ -6694,7 +6696,7 @@ pub fn transform_into(
         false,
         RecalculateStatsHpPolicy::DoNotUpdate,
     )?;
-    set_ability(context, &ability_id, None, false, true, true)?;
+    set_ability(context, &ability_id, None, false, true, true, false)?;
     context.target_mut().volatile_state.move_slots = move_slots;
     context.target_mut().volatile_state.times_attacked = times_attacked;
 
@@ -6822,7 +6824,7 @@ pub fn forme_change(
     if (old_ability != new_ability || forme_change_type.set_ability_even_if_unchanged())
         && context.target().hp != 0
     {
-        set_ability(context, &new_ability, None, false, true, true)?;
+        set_ability(context, &new_ability, None, false, true, true, false)?;
     }
 
     if let FormeChangeType::Permanent {

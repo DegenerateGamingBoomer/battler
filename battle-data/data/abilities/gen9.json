@@ -19,10 +19,7 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_damaging_hit": [
-          "require func_call(move_makes_contact: $move) else return",
-          "set_terrain: grassyterrain"
-        ]
+        "on_damaging_hit": ["set_terrain: grassyterrain"]
       }
     }
   },

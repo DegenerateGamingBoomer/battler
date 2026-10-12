@@ -223,9 +223,7 @@
     "target": "Normal",
     "flags": ["BypassSubstitute", "FailCopycat", "Mirror", "NoAssist", "Reflectable", "Wind"],
     "hit_effect": {
-      "target": {
-        "force_switch": true
-      }
+      "force_switch": true
     },
     "z_move": {
       "boosts": {
@@ -757,8 +755,8 @@
       "no_copy": true,
       "callbacks": {
         "on_start": [
-          "# The target hasn't taken its turn yet, so this turn counts as a disabled turn.",
-          "if func_call(will_move_this_turn: $target):",
+          "# The target hasn't taken its turn yet (or is taking it now, when disabled by Cursed Body), so this turn counts as a disabled turn.",
+          "if func_call(will_move_this_turn: $target) or $source_effect.id == cursedbody:",
           ["$effect_state.duration = $effect_state.duration - 1"],
           "require $target.last_move.is_defined",
           "# Ensure the target's last move can be disbled.",

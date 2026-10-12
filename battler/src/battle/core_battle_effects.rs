@@ -1220,12 +1220,13 @@ where
             .location
             .holds_duration()
             && duration_decreased.insert((
-            callback_handle.applied_effect_handle.effect_handle.clone(),
-            callback_handle
-                .applied_effect_handle
-                .location
-                .for_residual(),
-        )) {
+                callback_handle.applied_effect_handle.effect_handle.clone(),
+                callback_handle
+                    .applied_effect_handle
+                    .location
+                    .for_residual(),
+            ))
+        {
             if let Some(effect_state_connector) = callback_handle
                 .applied_effect_handle
                 .effect_state_connector()
@@ -2150,7 +2151,8 @@ mod callbacks {
             AppliedEffectLocation::MonVolatile(_) => 2,
             AppliedEffectLocation::MonSlotCondition(_, _, _)
             | AppliedEffectLocation::SlotCondition(_, _) => 3,
-            AppliedEffectLocation::MonSideCondition(_, _) | AppliedEffectLocation::SideCondition(_) => 4,
+            AppliedEffectLocation::MonSideCondition(_, _)
+            | AppliedEffectLocation::SideCondition(_) => 4,
             AppliedEffectLocation::MonPseudoWeather(_)
             | AppliedEffectLocation::MonTerrain(_)
             | AppliedEffectLocation::MonWeather(_)

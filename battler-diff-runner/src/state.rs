@@ -6,6 +6,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use battler::{
+    Gender,
     Id,
     PublicCoreBattle,
     battle::{
@@ -20,6 +21,7 @@ use battler::{
 };
 use battler_showdown_compat::{
     names::{
+        gendered_species_name,
         species_name,
         to_id,
     },
@@ -184,7 +186,10 @@ impl SpeciesNames {
         let id = mon.volatile_state.species.to_string();
         match self.by_name.get(&mon.name) {
             Some((battler, showdown)) if *battler == id => showdown.clone(),
-            _ => id,
+            _ => match gendered_species_name(&id, mon.gender == Gender::Female) {
+                Some(name) => to_id(name),
+                None => id,
+            },
         }
     }
 }

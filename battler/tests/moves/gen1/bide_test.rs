@@ -160,7 +160,7 @@ fn bide_fails_if_no_damage_is_directly_received() {
                 "move|mon:Blissey,player-1,1|name:Bide|target:Blissey,player-1,1",
                 "residual",
                 "split|side:0",
-                "damage|mon:Blissey,player-1,1|from:status:Bad Poison|health:257/315",
+                "damage|mon:Blissey,player-1,1|from:status:Bad Poison|health:258/315",
                 "damage|mon:Blissey,player-1,1|from:status:Bad Poison|health:82/100",
                 "turn|turn:3",
                 "continue",
@@ -169,8 +169,8 @@ fn bide_fails_if_no_damage_is_directly_received() {
                 "fail|mon:Blissey,player-1,1",
                 "residual",
                 "split|side:0",
-                "damage|mon:Blissey,player-1,1|from:status:Bad Poison|health:198/315",
-                "damage|mon:Blissey,player-1,1|from:status:Bad Poison|health:63/100",
+                "damage|mon:Blissey,player-1,1|from:status:Bad Poison|health:201/315",
+                "damage|mon:Blissey,player-1,1|from:status:Bad Poison|health:64/100",
                 "turn|turn:4"
             ]"#,
     )

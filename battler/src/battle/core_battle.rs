@@ -1789,17 +1789,25 @@ impl<'d> CoreBattle<'d> {
             return Ok(());
         }
 
-        // Update speed dynamically between independent actions.
+        // Update priority and speed dynamically before the next move.
         match context.battle().queue.peek() {
-            Some(action) if action.independent() => {
+            Some(Action::Move(_) | Action::Dynamax(_)) => {
                 Self::update_speed(context)?;
-                BattleQueue::update_mon_speeds(context)?;
+                Self::update_action_priorities(context)?;
                 BattleQueue::sort(context);
             }
             _ => (),
         }
 
         Ok(())
+    }
+
+    /// Recalculates the priority and speed of every queued action, since effects like Mega
+    /// Evolution can change both mid-turn.
+    fn update_action_priorities(context: &mut Context) -> Result<()> {
+        BattleQueue::for_each_action_mut(context, |context, action| {
+            Self::calculate_action_priority(context, action, true)
+        })
     }
 
     fn check_for_exited_mons(context: &mut Context) -> Result<()> {
@@ -1940,7 +1948,12 @@ impl<'d> CoreBattle<'d> {
         for player in context.battle().player_indices().collect::<Vec<_>>() {
             let player_context = context.player_context(player)?;
             let fainted = (0..player_context.player().total_active_positions())
-                .filter(|position| player_context.player().active_mon_handle(*position).is_none())
+                .filter(|position| {
+                    player_context
+                        .player()
+                        .active_mon_handle(*position)
+                        .is_none()
+                })
                 .filter_map(|position| {
                     player_context
                         .player()
@@ -2082,7 +2095,11 @@ impl<'d> CoreBattle<'d> {
         Ok(None)
     }
 
-    fn calculate_action_priority(context: &mut Context, action: &mut Action) -> Result<()> {
+    fn calculate_action_priority(
+        context: &mut Context,
+        action: &mut Action,
+        recalculate: bool,
+    ) -> Result<()> {
         if let Action::Move(action) = action {
             let mut context = context.mon_context(action.mon_action.mon)?;
 
@@ -2102,6 +2119,15 @@ impl<'d> CoreBattle<'d> {
             let mut context = context.active_move_context(active_move_handle)?;
             let priority = context.active_move().data.priority;
 
+            // The move itself can modify its priority (e.g., Grassy Glide).
+            let priority = core_battle_effects::run_active_move_event_with_input::<_, Option<i8>>(
+                &mut context,
+                fxlang::BattleEvent::ModifyPriority,
+                core_battle_effects::MoveTargetForEvent::User,
+                priority,
+            )
+            .unwrap_or(priority);
+
             let priority = core_battle_effects::run_event_with_relay::<_, i8>(
                 &mut context.user_applying_effect_context(None)?,
                 fxlang::BattleEvent::ModifyPriority,
@@ -2111,15 +2137,18 @@ impl<'d> CoreBattle<'d> {
             context.active_move_mut().priority = priority;
             action.priority = priority as i32;
 
-            action.sub_priority = core_battle_effects::run_event_with_options::<_, _, i32>(
-                &mut context.user_applying_effect_context(None)?,
-                fxlang::BattleEvent::SubPriority,
-                0,
-                core_battle_effects::RunEventOptions {
-                    return_first_value: true,
-                    ..Default::default()
-                },
-            );
+            // Sub-priority (e.g., Quick Claw) is only decided once.
+            if !recalculate {
+                action.sub_priority = core_battle_effects::run_event_with_options::<_, _, i32>(
+                    &mut context.user_applying_effect_context(None)?,
+                    fxlang::BattleEvent::SubPriority,
+                    0,
+                    core_battle_effects::RunEventOptions {
+                        return_first_value: true,
+                        ..Default::default()
+                    },
+                );
+            }
         }
         if let Action::Switch(action) = action {
             // The priority of switch actions are determined by the speed of the Mon switching out.
@@ -2165,7 +2194,7 @@ impl<'d> CoreBattle<'d> {
                 mon_handle,
             )?);
         }
-        Self::calculate_action_priority(context, action)?;
+        Self::calculate_action_priority(context, action, false)?;
         Ok(())
     }
 
@@ -2184,15 +2213,7 @@ impl<'d> CoreBattle<'d> {
 
     /// Selects a random switchable Mon from the player.
     pub fn random_switchable(context: &mut Context, player: usize) -> Result<Option<MonHandle>> {
-        let prng = context.battle_mut().prng.as_mut();
-        // SAFETY: PRNG is completely disjoint from the iterator created below.
-        let prng = unsafe { mem::transmute(prng) };
-        Ok(rand_util::sample_iter_at(
-            prng,
-            DrawSite::Engine("random-switch"),
-            Player::switchable_mon_handles(&context.player_context(player)?),
-        )
-        .cloned())
+        Self::random_switchable_excluding_team_positions(context, player, [])
     }
 
     /// Selects a random switchable Mon from the player, excluding the given team positions.
@@ -2215,10 +2236,17 @@ impl<'d> CoreBattle<'d> {
             .cloned()
             .collect::<Vec<_>>()
         {
-            if !exclude.contains(&context.mon(mon_handle)?.team_position) {
-                switchables.push(mon_handle);
+            let mon = context.mon(mon_handle)?;
+            if !exclude.contains(&mon.team_position) {
+                switchables.push((mon.effective_team_position, mon_handle));
             }
         }
+        // Candidates are in the current team order, which changes as Mons switch in and out.
+        switchables.sort_by_key(|(position, _)| *position);
+        let switchables = switchables
+            .into_iter()
+            .map(|(_, mon_handle)| mon_handle)
+            .collect::<Vec<_>>();
         Ok(
             rand_util::sample_iter_at(prng, DrawSite::Engine("random-switch"), switchables.iter())
                 .cloned(),

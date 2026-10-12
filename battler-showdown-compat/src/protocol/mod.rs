@@ -281,11 +281,10 @@ impl Translator {
             }
         }
         // Showdown tells the genders of Meowstic's Mega formes apart.
-        if species == "Meowstic-Mega" {
-            showdown = match line.get("gender") {
-                Some("F") => "Meowstic-F-Mega".to_owned(),
-                _ => "Meowstic-M-Mega".to_owned(),
-            };
+        if let Some(name) =
+            crate::names::gendered_species_name(species, line.get("gender") == Some("F"))
+        {
+            showdown = name.to_owned();
         }
         let mut details = showdown;
         let level = line
@@ -776,11 +775,25 @@ impl Translator {
                 let target = Self::mon_of(line, "mon")?;
                 let status = status_id(line.get("status").context("status")?);
                 self.state(&target).status = Some(status.clone());
-                // Yawn's sleep is not attributed to the move.
-                let tags = if line.get("from") == Some("move:Yawn") {
-                    String::new()
-                } else {
-                    self.from_of(line)?
+                // Showdown only attributes a status to an ability or an item (Flame Orb, Toxic
+                // Orb), except sleep, which also names the move that caused it. Yawn's sleep is
+                // not attributed to the move.
+                let tags = match line.get("from") {
+                    Some(from) if from.starts_with("ability:") || from.starts_with("item:") => {
+                        self.from_of(line)?
+                    }
+                    Some(from)
+                        if from.starts_with("move:") && status == "slp" && from != "move:Yawn" =>
+                    {
+                        self.from_of(line)?
+                    }
+                    Some(_) => String::new(),
+                    None if status == "slp" && !self.residual => self
+                        .last_move_name
+                        .as_ref()
+                        .map(|name| format!("|[from] move: {name}"))
+                        .unwrap_or_default(),
+                    None => String::new(),
                 };
                 out.push(format!("|-status|{}|{status}{tags}", self.ident(&target)?));
             }

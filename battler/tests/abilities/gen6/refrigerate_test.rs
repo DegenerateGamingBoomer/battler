@@ -66,8 +66,8 @@ fn refrigerate_changes_normal_moves_to_ice_type() {
             "move|mon:Aurorus,player-1,1|name:Tackle|target:Aurorus,player-2,1",
             "resisted|mon:Aurorus,player-2,1",
             "split|side:1",
-            "damage|mon:Aurorus,player-2,1|health:330/356",
-            "damage|mon:Aurorus,player-2,1|health:93/100",
+            "damage|mon:Aurorus,player-2,1|health:324/356",
+            "damage|mon:Aurorus,player-2,1|health:92/100",
             "residual",
             "turn|turn:2"
         ]"#,

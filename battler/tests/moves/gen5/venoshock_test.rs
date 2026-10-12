@@ -91,7 +91,7 @@ fn venoshock_doubles_power_against_poisoned_target() {
                 "damage|mon:Blissey,player-2,1|health:80/100",
                 "residual",
                 "split|side:1",
-                "damage|mon:Blissey,player-2,1|from:status:Bad Poison|health:210/315",
+                "damage|mon:Blissey,player-2,1|from:status:Bad Poison|health:211/315",
                 "damage|mon:Blissey,player-2,1|from:status:Bad Poison|health:67/100",
                 "turn|turn:4"
             ]"#,

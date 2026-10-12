@@ -4863,10 +4863,13 @@ fn valid_target(mut context: FunctionContext) -> Result<Value> {
 /// @param {[`ValueType::Mon`]} [source] The source of the copied ability.
 /// @flag dry_run If set, the ability is not actually changed.
 /// @flag silent If set, no message is displayed.
+/// @flag swap If set, abilities are being swapped, which also works on a Mon without HP that has
+/// not fainted yet.
 /// @returns {[`ValueType::EventResult`]} Whether the ability was successfully set.
 fn set_ability(mut context: FunctionContext) -> Result<Value> {
     let silent = context.silent();
     let dry_run = context.has_flag("dry_run");
+    let swap = context.has_flag("swap");
     let mon = context.target_handle_positional()?;
     let ability_id = context
         .pop_front()
@@ -4887,6 +4890,7 @@ fn set_ability(mut context: FunctionContext) -> Result<Value> {
         dry_run,
         false,
         silent,
+        swap,
     )
     .map(|val| Value::EventResult(val))
 }

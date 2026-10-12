@@ -68,6 +68,16 @@ pub fn species_name(name: &str) -> String {
         .unwrap_or_else(|| name.to_owned())
 }
 
+/// Showdown's name for a battler species that Showdown splits by gender (Meowstic's Mega formes),
+/// or `None` if the species is named the same in both.
+pub fn gendered_species_name(battler_species: &str, female: bool) -> Option<&'static str> {
+    match to_id(battler_species).as_str() {
+        "meowsticmega" if female => Some("Meowstic-F-Mega"),
+        "meowsticmega" => Some("Meowstic-M-Mega"),
+        _ => None,
+    }
+}
+
 /// All species IDs Showdown knows.
 pub fn all_species_ids() -> impl Iterator<Item = &'static str> {
     NAMES.species.keys().map(String::as_str)

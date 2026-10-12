@@ -1493,13 +1493,14 @@ impl Mon {
                 Stat::Spe => Some(fxlang::BattleEvent::ModifySpe),
             } {
                 value = match calculate_stat_context {
+                    // Modifiers apply to the Mon using the stat, which is not the Mon whose stat it
+                    // is for moves like Foul Play.
                     Some(calculate_stat_context) => {
-                        let mon_handle = context.mon_handle();
                         core_battle_effects::run_event_with_relay::<_, u16>(
                             &mut context.as_battle_context_mut().applying_effect_context(
                                 calculate_stat_context.effect,
                                 Some(calculate_stat_context.source),
-                                mon_handle,
+                                stat_user,
                                 None,
                             )?,
                             modify_event,

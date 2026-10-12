@@ -220,6 +220,7 @@ async function playBattle(runner, {name, seed, teams, choose, fallback, done, ma
     if (verbose) {
       step.showdownLog = log;
       step.battlerProtocol = bt.protocol;
+      step.battlerLog = bt.log;
       step.showdownDraws = sd.draws;
       step.battlerDraws = bt.draws;
       step.showdownTies = sd.ties;

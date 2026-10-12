@@ -80,6 +80,11 @@ fn details_species(side: &SideInfo, mon: &MonBattleData) -> String {
             return species.clone();
         }
     }
+    if let Some(name) =
+        crate::names::gendered_species_name(base_species, mon.summary.gender == Gender::Female)
+    {
+        return name.to_owned();
+    }
     species_name(base_species)
 }
 

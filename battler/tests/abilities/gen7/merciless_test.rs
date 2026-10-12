@@ -101,8 +101,8 @@ fn merciless_lands_critical_hits_against_poisoned_target() {
                 "hitcount|hits:2",
                 "residual",
                 "split|side:1",
-                "damage|mon:Incineroar,player-2,1|from:status:Bad Poison|health:135/300",
-                "damage|mon:Incineroar,player-2,1|from:status:Bad Poison|health:45/100",
+                "damage|mon:Incineroar,player-2,1|from:status:Bad Poison|health:136/300",
+                "damage|mon:Incineroar,player-2,1|from:status:Bad Poison|health:46/100",
                 "turn|turn:3"
             ]"#,
     )

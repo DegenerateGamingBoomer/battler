@@ -570,10 +570,12 @@
         "on_try_hit": [
           "require func_call(can_switch: $target.player) else return stopreportfail",
           "require !func_call(has_volatile: $target substitute) else return stopreportfail",
-          "require $target.hp > ($target.max_hp / 2) and $target.max_hp != 1 else return stopreportfail"
+          "$cost = func_call(floor: expr(($target.max_hp + 1) / 2))",
+          "require $target.hp > $cost and $target.max_hp != 1 else return stopreportfail"
         ],
         "on_hit": [
-          "direct_damage: $target expr($target.max_hp / 2)",
+          "# Half of the user's max HP, rounded up.",
+          "direct_damage: $target func_call(floor: expr(($target.max_hp + 1) / 2))",
           "# Avoids Pursuit.",
           "$target.skip_before_switch_out = true"
         ]

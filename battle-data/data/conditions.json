@@ -357,7 +357,7 @@
           "program": [
             "if $effect_state.stage < 15:",
             ["$effect_state.stage = $effect_state.stage + 1"],
-            "damage: $target expr($target.base_max_hp / 16 * $effect_state.stage)"
+            "damage: $target expr(func_call(max: 1 func_call(floor: expr($target.base_max_hp / 16))) * $effect_state.stage)"
           ]
         },
         "on_modify_catch_rate": ["return $catch_rate * 3/2"]
@@ -430,14 +430,6 @@
           "run_event: PrepareHit"
         ],
         "on_set_last_move": ["if $effect_state.duration > 1:", ["return false"]],
-        "on_deduct_pp": {
-          "priority": -999,
-          "program": [
-            "# Run last, to ensure no PP is deducted while charging.",
-            "if $effect_state.duration > 1:",
-            ["return 0"]
-          ]
-        },
         "on_lock_move": ["return $effect_state.move"],
         "on_move_aborted": ["remove_volatile: $user $effect_state.move"]
       }
@@ -1283,21 +1275,21 @@
           "require !func_call(ability_has_flag: $target_ability noskillswap)",
           "require !func_call(ability_has_flag: $source_ability noskillswap)",
           "require !$target.dynamaxed",
-          "require func_call(set_ability: $source $target_ability use_source_effect no_forward dry_run)",
-          "require func_call(set_ability: $target $source_ability use_source_effect no_forward dry_run)",
+          "require func_call(set_ability: $source $target_ability use_source_effect no_forward dry_run swap)",
+          "require func_call(set_ability: $target $source_ability use_source_effect no_forward dry_run swap)",
           "$target_ability = $target.ability",
           "$source_ability = $source.ability",
           "log_activate: with_target with_source use_source_effect",
           "$allies = func_call(is_ally: $target $source)",
           "if $allies:",
           [
-            "set_ability: $source $target_ability $target use_source_effect no_forward silent",
-            "set_ability: $target $source_ability $source use_source_effect no_forward silent"
+            "set_ability: $source $target_ability $target use_source_effect no_forward silent swap",
+            "set_ability: $target $source_ability $source use_source_effect no_forward silent swap"
           ],
           "else:",
           [
-            "set_ability: $source $target_ability $target use_source_effect no_forward",
-            "set_ability: $target $source_ability $source use_source_effect no_forward"
+            "set_ability: $source $target_ability $target use_source_effect no_forward swap",
+            "set_ability: $target $source_ability $source use_source_effect no_forward swap"
           ]
         ]
       }
