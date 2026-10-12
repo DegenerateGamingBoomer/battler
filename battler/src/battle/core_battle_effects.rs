@@ -1219,6 +1219,18 @@ where
             break;
         }
 
+        // Effects on a Mon that fainted earlier in the residual phase do not run, except slot
+        // conditions.
+        if let Some(mon) = callback_handle.applied_effect_handle.location.mon_handle()
+            && !matches!(
+                callback_handle.applied_effect_handle.location,
+                AppliedEffectLocation::MonSlotCondition(..)
+            )
+            && context.as_battle_context_mut().mon(mon)?.hp == 0
+        {
+            continue;
+        }
+
         let mut context = match context.as_battle_context_mut().effect_context(
             callback_handle.applied_effect_handle.effect_handle.clone(),
             None,

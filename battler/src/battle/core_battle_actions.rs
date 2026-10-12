@@ -1469,7 +1469,30 @@ fn try_indirect_move(
     //
     // Note that if a move breaks its promise and actually applies a Mon effect, it will get applied
     // to this Mon. This should be viewed as undefined behavior.
-    move_hit_determine_success(context, &targets[0..1])
+    let representative = match targets.first() {
+        Some(target) => *target,
+        None => {
+            // Every foe fainted, but the move still applies to their side (Showdown targets the
+            // fainted Mons left in their slots).
+            let side = context.foe_side().index;
+            let positions = context.battle().max_side_length();
+            let mut side_context = context.as_battle_context_mut().side_context(side)?;
+            let mut representative = None;
+            for position in 0..positions {
+                if let Some(mon) =
+                    Side::active_or_exited_mon_in_position(&mut side_context, position)?
+                {
+                    representative = Some(mon);
+                    break;
+                }
+            }
+            match representative {
+                Some(mon) => mon,
+                None => return Ok(EventResult::Fail),
+            }
+        }
+    };
+    move_hit_determine_success(context, &[representative])
 }
 
 fn prepare_direct_move_against_targets(

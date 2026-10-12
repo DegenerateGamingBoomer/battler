@@ -408,7 +408,7 @@
       "callbacks": {
         "on_damaging_hit": [
           "require func_call(move_makes_contact: $move) else return",
-          "require !$source.status else return",
+          "# Rolls even if the attacker already has a status (which then cannot change).",
           "require !func_call(check_immunity: $source powderdust) else return",
           "$rand = func_call(random: 100)",
           "if $rand < 11:",

@@ -907,9 +907,11 @@
     "flags": ["Contact", "Mirror", "Protect"],
     "effect": {
       "callbacks": {
-        "on_try_hit": [
+        "on_try_use_move": [
+          "# Fails before any accuracy check.",
           "$action = func_call(pending_move_action_this_turn: $target)",
           "require $action.is_defined",
+          "require !func_call(has_volatile: $target mustrecharge)",
           "$pending_move = func_call(get_move: $action.id)",
           "require $pending_move.is_defined and ($pending_move.category != status or $pending_move.id == mefirst)"
         ]

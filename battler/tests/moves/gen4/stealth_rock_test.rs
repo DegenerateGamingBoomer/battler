@@ -134,3 +134,83 @@ fn stealth_rock_damages_mon_on_switch_in_with_type_effectiveness() {
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
 }
+
+fn shuckle() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Shuckle",
+                    "species": "Shuckle",
+                    "ability": "No Ability",
+                    "moves": [
+                        "Stealth Rock"
+                    ],
+                    "nature": "Hardy",
+                    "level": 50
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+fn jolteon_and_charizard() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Jolteon",
+                    "species": "Jolteon",
+                    "ability": "No Ability",
+                    "moves": [
+                        "Memento"
+                    ],
+                    "nature": "Hardy",
+                    "level": 50
+                },
+                {
+                    "name": "Charizard",
+                    "species": "Charizard",
+                    "ability": "No Ability",
+                    "moves": [],
+                    "nature": "Hardy",
+                    "level": 50
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+#[test]
+fn stealth_rock_sets_up_after_every_foe_fainted() {
+    let mut battle = make_battle(0, shuckle().unwrap(), jolteon_and_charizard().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 0"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "switch 1"), Ok(()));
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "move|mon:Jolteon,player-2,1|name:Memento|target:Shuckle,player-1,1",
+            "unboost|mon:Shuckle,player-1,1|stat:atk|by:2",
+            "unboost|mon:Shuckle,player-1,1|stat:spa|by:2",
+            "faint|mon:Jolteon,player-2,1",
+            "move|mon:Shuckle,player-1,1|name:Stealth Rock",
+            "sidestart|side:1|move:Stealth Rock",
+            "residual",
+            "continue",
+            "split|side:1",
+            "switch|player:player-2|position:1|name:Charizard|health:138/138|species:Charizard|level:50|gender:U",
+            "switch|player:player-2|position:1|name:Charizard|health:100/100|species:Charizard|level:50|gender:U",
+            "split|side:1",
+            "damage|mon:Charizard,player-2,1|from:move:Stealth Rock|health:69/138",
+            "damage|mon:Charizard,player-2,1|from:move:Stealth Rock|health:50/100",
+            "turn|turn:2"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 1, &expected_logs);
+}
