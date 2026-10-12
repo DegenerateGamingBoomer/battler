@@ -2,16 +2,20 @@
  "healer": {
   "effect": {
    "callbacks": {
-    "on_residual": [
-     "foreach $ally in func_call(adjacent_allies: $target):",
-     [
-      "if $ally.status.is_defined and func_call(chance: 1 2):",
+    "on_residual": {
+     "order": 5,
+     "sub_order": 3,
+     "program": [
+      "foreach $ally in func_call(adjacent_allies: $target):",
       [
-       "log_activate: with_target",
-       "cure_status: $ally"
+       "if $ally.status.is_defined and func_call(chance: 1 2):",
+       [
+        "log_activate: with_target",
+        "cure_status: $ally"
+       ]
       ]
      ]
-    ]
+    }
    }
   }
  },

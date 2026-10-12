@@ -148,7 +148,10 @@
       "no_copy": true,
       "callbacks": {
         "on_start": ["require $target.is_asleep", "log_start"],
-        "on_residual": ["damage: $target expr($target.base_max_hp / 4)"],
+        "on_residual": {
+          "order": 11,
+          "program": ["damage: $target expr($target.base_max_hp / 4)"]
+        },
         "on_after_cure_status": ["remove_volatile: $target $this.id"]
       }
     }
@@ -235,7 +238,10 @@
     "condition": {
       "callbacks": {
         "on_start": ["log_start: with_source"],
-        "on_residual": ["damage: $target expr($target.base_max_hp / 4)"]
+        "on_residual": {
+          "order": 12,
+          "program": ["damage: $target expr($target.base_max_hp / 4)"]
+        }
       }
     }
   },
@@ -709,7 +715,10 @@
     "condition": {
       "duration": 4,
       "callbacks": {
-        "on_residual": ["log_start: str('perish:{}', $effect_state.duration)"],
+        "on_residual": {
+          "order": 24,
+          "program": ["log_start: str('perish:{}', $effect_state.duration)"]
+        },
         "on_end": ["log_start: 'perish:0'", "faint: $target"]
       }
     }
@@ -1282,7 +1291,11 @@
           "require $volatile.id == confusion or $volatile.id == yawn else return",
           "log_activate: with_target",
           "return stopfail"
-        ]
+        ],
+        "on_side_residual": {
+          "order": 26,
+          "sub_order": 3
+        }
       }
     }
   },
@@ -1468,13 +1481,16 @@
           ["$effect_state.duration = $effect_state.duration + 1"]
         ],
         "on_override_move": ["if $move != $effect_state.move:", ["return $effect_state.move"]],
-        "on_residual": [
-          "$index = func_call(move_slot_index: $target $effect_state.move)",
-          "if $index.is_defined:",
-          ["$move_slot = func_call(move_slot_at_index: $target $index)"],
-          "if $move_slot.is_defined and $move_slot.pp == 0:",
-          ["remove_volatile: $target $this.id"]
-        ],
+        "on_residual": {
+          "order": 16,
+          "program": [
+            "$index = func_call(move_slot_index: $target $effect_state.move)",
+            "if $index.is_defined:",
+            ["$move_slot = func_call(move_slot_at_index: $target $index)"],
+            "if $move_slot.is_defined and $move_slot.pp == 0:",
+            ["remove_volatile: $target $this.id"]
+          ]
+        },
         "on_end": ["log_end"],
         "on_disable_move": [
           "require func_call(has_move: $mon $effect_state.move) else return",

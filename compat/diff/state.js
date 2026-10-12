@@ -54,6 +54,8 @@ function active(pokemon) {
     statusState: statusState(pokemon),
     boosts: boosts(pokemon),
     volatiles,
+    activeTurns: pokemon.activeTurns,
+    moveActions: pokemon.activeMoveActions,
   };
 }
 

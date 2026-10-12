@@ -353,6 +353,9 @@ pub struct MonSummaryData {
 pub struct MonBattleData {
     pub summary: MonSummaryData,
     pub species: String,
+    /// Base species, which changes on permanent forme changes (like Mega Evolution).
+    #[serde(default)]
+    pub base_species: String,
     pub hp: u16,
     pub max_hp: u16,
     pub health: String,
@@ -367,6 +370,9 @@ pub struct MonBattleData {
     pub boosts: BoostTable,
     pub moves: Vec<MonMoveSlotData>,
     pub ability: String,
+    /// Base ability, which changes on permanent forme changes (like Mega Evolution).
+    #[serde(default)]
+    pub base_ability: String,
     pub item: Option<String>,
     pub status: Option<String>,
     #[serde(default)]
@@ -1680,6 +1686,22 @@ impl Mon {
             .data
             .name
             .clone();
+        let base_species = context
+            .battle()
+            .dex
+            .species
+            .get_by_id(&context.mon().base_species)?
+            .data
+            .name
+            .clone();
+        let base_ability = context
+            .battle()
+            .dex
+            .abilities
+            .get_by_id(&context.mon().base_ability)?
+            .data
+            .name
+            .clone();
         let item = if let Some(item) = &context.mon().item {
             Some(
                 context
@@ -1698,6 +1720,7 @@ impl Mon {
         Ok(MonBattleData {
             summary: Self::summary_request_data(context)?,
             species,
+            base_species,
             hp: context.mon().hp,
             max_hp: context.mon().max_hp,
             health: context.mon().actual_health_string(),
@@ -1718,6 +1741,7 @@ impl Mon {
                 .map(|move_slot| MonMoveSlotData::from(context, &move_slot))
                 .collect::<Result<Vec<_>>>()?,
             ability,
+            base_ability,
             item,
             status: context
                 .mon()
@@ -2762,6 +2786,24 @@ impl Mon {
     /// Checks if the Mon has a volatile effect.
     pub fn has_volatile(context: &mut MonContext, id: &Id) -> bool {
         context.mon().volatile_state.volatiles.contains_key(id)
+    }
+
+    /// Recomputes which moves are disabled from the Mon's move effects.
+    pub fn refresh_disabled_moves(context: &mut MonContext) -> Result<()> {
+        for move_slot in &mut context.mon_mut().volatile_state.move_slots {
+            move_slot.disabled = false;
+        }
+        for move_slot in context.mon_mut().volatile_state.move_slots.clone() {
+            core_battle_effects::run_effect_event::<_, ()>(
+                &mut context.applying_effect_context(
+                    EffectHandle::InactiveMove(move_slot.id.clone()),
+                    None,
+                    None,
+                )?,
+                fxlang::BattleEvent::DisableMove,
+            );
+        }
+        Ok(())
     }
 
     /// Resets the Mon's state for the next turn.

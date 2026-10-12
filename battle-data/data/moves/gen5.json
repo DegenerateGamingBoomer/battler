@@ -148,7 +148,11 @@
             ["$boosts.spd = $boosts.def"]
           ],
           "return $boosts"
-        ]
+        ],
+        "on_field_residual": {
+          "order": 27,
+          "sub_order": 5
+        }
       }
     }
   },
@@ -210,6 +214,9 @@
     "priority": 2,
     "target": "User",
     "flags": ["FailCopycat", "NoAssist", "NoMetronome", "Powder"],
+    "hit_effect": {
+      "volatile_status": "ragepowder"
+    },
     "z_move": {
       "effect": "zpowerclearnegativeboosts"
     },
@@ -217,7 +224,25 @@
       "delegates": "move:followme"
     },
     "condition": {
-      "delegates": "movecondition:followme"
+      "duration": 1,
+      "callbacks": {
+        "on_start": [
+          "if $source_effect.is_condition:",
+          ["log_single_turn: with_target with_source_effect"],
+          "else:",
+          ["log_single_turn: with_target"]
+        ],
+        "on_foe_redirect_target": {
+          "priority": 1,
+          "program": [
+            "require !$effect_state.target.is_away_from_field else return",
+            "# Attackers that are immune to powder are not drawn in.",
+            "require !func_call(check_immunity: $user powderdust) else return",
+            "require func_call(valid_target: $user $effect_state.target $move.target) else return",
+            "return $effect_state.target"
+          ]
+        }
+      }
     }
   },
   "telekinesis": {
@@ -262,7 +287,10 @@
           "if !$mon.transformed and func_call(species_has_flag: $mon.base_species notelekinesis):",
           ["remove_volatile: $mon $this.id"]
         ],
-        "on_end": ["log_end"]
+        "on_end": ["log_end"],
+        "on_residual": {
+          "order": 19
+        }
       }
     }
   },
@@ -297,7 +325,11 @@
           "log_field_end",
           "foreach $mon in func_call(all_active_mons_in_speed_order):",
           ["start_item: $mon silent"]
-        ]
+        ],
+        "on_field_residual": {
+          "order": 27,
+          "sub_order": 6
+        }
       }
     }
   },
@@ -1209,7 +1241,11 @@
           "$move.secondary_effects = $secondary_effects",
           "if $move.user_effect_chance.is_defined:",
           ["$move.user_effect_chance = $move.user_effect_chance * 2"]
-        ]
+        ],
+        "on_side_residual": {
+          "order": 26,
+          "sub_order": 7
+        }
       }
     }
   },
@@ -1249,10 +1285,18 @@
       "callbacks": {
         "on_side_start": ["log_side_start"],
         "on_side_end": ["log_side_end"],
-        "on_residual": [
-          "if !func_call(has_type: $target fire):",
-          ["damage: $target expr($target.base_max_hp / 8)"]
-        ]
+        "on_residual": {
+          "order": 5,
+          "sub_order": 1,
+          "program": [
+            "if !func_call(has_type: $target fire):",
+            ["damage: $target expr($target.base_max_hp / 8)"]
+          ]
+        },
+        "on_side_residual": {
+          "order": 26,
+          "sub_order": 8
+        }
       }
     }
   },
@@ -1292,7 +1336,11 @@
       "callbacks": {
         "on_side_start": ["log_side_start"],
         "on_side_end": ["log_side_end"],
-        "on_modify_spe": ["chain_modify: 1/4", "return"]
+        "on_modify_spe": ["chain_modify: 1/4", "return"],
+        "on_side_residual": {
+          "order": 26,
+          "sub_order": 9
+        }
       }
     }
   },

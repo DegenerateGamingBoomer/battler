@@ -36,7 +36,11 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_residual": ["if $target.active_turns > 0:", ["boost: $target 'spe:1'"]]
+        "on_residual": {
+          "order": 28,
+          "sub_order": 2,
+          "program": ["if $target.active_turns > 0:", ["boost: $target 'spe:1'"]]
+        }
       }
     }
   },
@@ -762,20 +766,24 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_residual": [
-          "require !$target.item else return",
-          "$targets = []",
-          "foreach $mon in func_call(all_active_mons):",
-          [
-            "if $mon.last_item.is_defined and $mon.item_used_this_turn and func_call(is_adjacent: $mon $target):",
-            ["$targets = func_call(append: $targets $mon)"]
-          ],
-          "require !$targets.is_empty else return",
-          "$random_target = func_call(sample: $targets)",
-          "$item = $random_target.last_item",
-          "$random_target.last_item = undefined",
-          "set_item: $target $item"
-        ]
+        "on_residual": {
+          "order": 28,
+          "sub_order": 2,
+          "program": [
+            "require !$target.item else return",
+            "$targets = []",
+            "foreach $mon in func_call(all_active_mons):",
+            [
+              "if $mon.last_item.is_defined and $mon.item_used_this_turn and func_call(is_adjacent: $mon $target):",
+              ["$targets = func_call(append: $targets $mon)"]
+            ],
+            "require !$targets.is_empty else return",
+            "$random_target = func_call(sample: $targets)",
+            "$item = $random_target.last_item",
+            "$random_target.last_item = undefined",
+            "set_item: $target $item"
+          ]
+        }
       }
     }
   },
@@ -895,10 +903,14 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_residual": [
-          "if $target.hp > 0 and $target.status.is_defined and func_call(chance: 1 3):",
-          ["cure_status: $target"]
-        ]
+        "on_residual": {
+          "order": 5,
+          "sub_order": 3,
+          "program": [
+            "if $target.hp > 0 and $target.status.is_defined and func_call(chance: 1 3):",
+            ["cure_status: $target"]
+          ]
+        }
       }
     }
   },

@@ -227,9 +227,10 @@ fn pursuit_activates_on_user_switch_move() {
     let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
         r#"[
             "move|mon:Espeon,player-2,1|name:U-turn|target:Tyranitar,player-1,1",
+            "supereffective|mon:Tyranitar,player-1,1",
             "split|side:0",
-            "damage|mon:Tyranitar,player-1,1|health:141/160",
-            "damage|mon:Tyranitar,player-1,1|health:89/100",
+            "damage|mon:Tyranitar,player-1,1|health:122/160",
+            "damage|mon:Tyranitar,player-1,1|health:77/100",
             "activate|mon:Espeon,player-2,1|move:Pursuit",
             "move|mon:Tyranitar,player-1,1|name:Pursuit|target:Espeon,player-2,1",
             "supereffective|mon:Espeon,player-2,1",

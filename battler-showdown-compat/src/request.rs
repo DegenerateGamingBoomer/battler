@@ -67,20 +67,20 @@ pub struct SideInfo {
     pub species: ahash::HashMap<String, String>,
 }
 
-/// Whether the Pokémon's current forme is a permanent one (Showdown rewrites its details).
-fn permanent_forme(mon: &MonBattleData) -> bool {
-    ["-Mega", "-Primal", "-Ultra"]
-        .iter()
-        .any(|marker| mon.species.contains(marker))
-}
-
-fn details(mon: &MonBattleData, species_override: Option<&str>) -> String {
-    let species = match species_override {
-        Some(s) => s.to_owned(),
-        None if permanent_forme(mon) => species_name(&mon.species),
-        None => species_name(&mon.summary.species),
+/// The species Showdown shows in the Pokémon's details: its base species, which changes on
+/// permanent forme changes (Mega Evolution, Busted Mimikyu, Hero Palafin).
+fn details_species(side: &SideInfo, mon: &MonBattleData) -> String {
+    let base_species = if mon.base_species.is_empty() {
+        &mon.summary.species
+    } else {
+        &mon.base_species
     };
-    details_with_species(mon, species)
+    if to_id(base_species) == to_id(&mon.summary.species) {
+        if let Some(species) = side.species.get(&mon.summary.name) {
+            return species.clone();
+        }
+    }
+    species_name(base_species)
 }
 
 fn details_with_species(mon: &MonBattleData, species: String) -> String {
@@ -122,10 +122,7 @@ pub fn side(side: &SideInfo, player: &PlayerBattleData, team_preview: bool) -> V
             let active = if team_preview { i < side.active_count } else { mon.active };
             json!({
                 "ident": format!("{}: {}", side.id, mon.summary.name),
-                "details": match side.species.get(&mon.summary.name) {
-                    Some(species) if !permanent_forme(mon) => details_with_species(mon, species.clone()),
-                    _ => details(mon, None),
-                },
+                "details": details_with_species(mon, details_species(side, mon)),
                 "condition": condition(mon),
                 "active": active,
                 "stats": {
@@ -136,7 +133,7 @@ pub fn side(side: &SideInfo, player: &PlayerBattleData, team_preview: bool) -> V
                     "spe": stat(battler::Stat::Spe),
                 },
                 "moves": mon.moves.iter().map(|m| m.id.to_string()).collect::<Vec<_>>(),
-                "baseAbility": to_id(if permanent_forme(mon) { &mon.ability } else { &mon.summary.ability }),
+                "baseAbility": to_id(if mon.base_ability.is_empty() { &mon.summary.ability } else { &mon.base_ability }),
                 "item": mon.item.as_deref().map(to_id).unwrap_or_default(),
                 "pokeball": mon.summary.ball.as_deref().map(to_id).filter(|b| !b.is_empty()).unwrap_or_else(|| "pokeball".to_owned()),
                 "ability": to_id(&mon.ability),
@@ -189,7 +186,8 @@ pub fn translate(
                                     "pp": m.pp,
                                     "maxpp": m.max_pp,
                                     "target": target_id(&m.target),
-                                    "disabled": m.disabled,
+                                    // Showdown disables moves without PP.
+                                    "disabled": m.disabled || m.pp == 0,
                                 })
                             })
                             .collect()
@@ -197,10 +195,30 @@ pub fn translate(
                     let from_request = turn.active.iter().find(|r| r.team_position == mon.player_team_position);
                     let mut entry = json!({"moves": moves(from_request.map(|r| r.moves.as_slice()).unwrap_or(&mon.moves))});
                     if let Some(r) = from_request {
-                        if r.trapped {
+                        // A Pokémon locked into a move (charging, recharging, rampaging) only shows
+                        // that move's name and ID, and is trapped.
+                        if r.locked_into_move {
+                            entry["moves"] = json!(r.moves.iter().map(|m| json!({
+                                "move": crate::names::move_name(&m.name),
+                                "id": m.id.to_string(),
+                            })).collect::<Vec<_>>());
+                        }
+                        if r.trapped || r.locked_into_move {
                             entry["trapped"] = json!(true);
                         }
-                        if r.can_mega_evolve {
+                        // Without a usable move, the only option is Struggle, which also rules out
+                        // Mega Evolution.
+                        let struggle = !r.locked_into_move
+                            && r.moves.iter().all(|m| m.disabled || m.pp == 0);
+                        if struggle {
+                            entry["moves"] = json!([{
+                                "move": "Struggle",
+                                "id": "struggle",
+                                "target": "randomNormal",
+                                "disabled": false,
+                            }]);
+                        }
+                        if r.can_mega_evolve && !r.locked_into_move && !struggle {
                             entry["canMegaEvo"] = json!(true);
                         }
                     }

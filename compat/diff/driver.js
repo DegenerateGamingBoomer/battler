@@ -171,7 +171,7 @@ function snapshotRequests(battle) {
  * Plays one battle on both engines. `plan` gives the choices: a function (request, side index,
  * step) → choice string. Returns the per-battle record.
  */
-async function playBattle(runner, {name, seed, teams, choose, maxSteps = 200, verbose}) {
+async function playBattle(runner, {name, seed, teams, choose, fallback, done, maxSteps = 200, verbose}) {
   const record = {name, seed, teams, steps: [], turns: 0, outcome: 'ended', divergence: null, drawDiffs: [], protocolDiffs: [], requestDiffs: []};
   const semantic = new SemanticRandom(seed);
   const battle = new Battle({formatid: FORMAT, seed: [1, 2, 3, 4]});
@@ -207,8 +207,16 @@ async function playBattle(runner, {name, seed, teams, choose, maxSteps = 200, ve
     if (state.length) step.state = state;
     const protocol = bt.translateError ? {translateError: bt.translateError} : diffProtocol(log, bt.protocol || []);
     if (protocol) step.protocol = protocol;
-    const requests = diffJson(snapshotRequests(battle), bt.requests);
-    if (requests.length) step.requests = requests;
+    const showdownRequests = snapshotRequests(battle);
+    const requests = diffJson(showdownRequests, bt.requests);
+    if (requests.length) {
+      step.requests = requests;
+      // The move behind a move-slot difference, for triage.
+      for (const r of requests) {
+        const m = /^\.(\d)\.active\.(\d)\.moves\.(\d)\./.exec(r.path);
+        if (m) r.move = showdownRequests[m[1]]?.active?.[m[2]]?.moves?.[m[3]]?.id;
+      }
+    }
     if (verbose) {
       step.showdownLog = log;
       step.battlerProtocol = bt.protocol;
@@ -230,13 +238,26 @@ async function playBattle(runner, {name, seed, teams, choose, maxSteps = 200, ve
   }
 
   for (let i = 1; i <= maxSteps && !battle.ended; i++) {
+    if (done && done(battle)) break;
     const turn = battle.turn;
     const choices = battle.sides.map((side, k) => choose(side.activeRequest, k, i));
+    const fallbacks = [];
     for (const [k, c] of choices.entries()) {
       if (c && !battle.sides[k].choose(c)) {
-        record.outcome = 'showdown-rejected';
-        record.error = `Showdown rejected p${k + 1} '${c}': ${battle.sides[k].choice.error || ''}`;
-        return record;
+        const error = battle.sides[k].choice.error || '';
+        if (!fallback) {
+          record.outcome = 'showdown-rejected';
+          record.error = `Showdown rejected p${k + 1} '${c}': ${error}`;
+          return record;
+        }
+        // A scripted choice that no longer fits the battle: play a random legal one instead.
+        choices[k] = fallback(battle.sides[k].activeRequest);
+        fallbacks.push(`p${k + 1} '${c}' (${error}) -> '${choices[k]}'`);
+        if (choices[k] && !battle.sides[k].choose(choices[k])) {
+          record.outcome = 'showdown-rejected';
+          record.error = `Showdown rejected fallback p${k + 1} '${choices[k]}'`;
+          return record;
+        }
       }
     }
     try {
@@ -248,6 +269,7 @@ async function playBattle(runner, {name, seed, teams, choose, maxSteps = 200, ve
     }
     current = await runner.send({op: 'choose', choices});
     step = compare(current, i, turn, choices);
+    if (fallbacks.length) step.fallbacks = fallbacks;
     record.steps.push(step);
     if (step.tieAffected) {
       record.outcome = 'tie-affected';
@@ -352,16 +374,22 @@ async function main() {
     for (const sc of scenarios()) {
       if (args.scenarios && !sc.name.includes(args.scenarios)) continue;
       const teams = sc.teams.map(t => Teams.pack(t));
+      // Scripted choices answer each side's move requests in order; forced switches are answered
+      // with a seeded random legal choice.
+      const queues = [0, 1].map(k => sc.turns.map(turn => turn[k]));
+      const auto = new PRNG([sc.seed || 1, 3, 5, 7]);
       const record = await playBattle(runner, {
         name: sc.name, seed: sc.seed || 1, teams, verbose: args.verbose,
-        choose: (request, k, i) => {
-          if (i === 1 && sc.picks) return `team ${sc.picks[k]}`;
-          const turn = sc.turns[i - (sc.picks ? 2 : 1)];
-          return turn ? turn[k] : '';
+        choose: (request, k) => {
+          if (!request || request.wait) return '';
+          if (request.teamPreview) return `team ${sc.picks[k]}`;
+          if (request.forceSwitch) return randomChoice(request, auto);
+          return queues[k].shift() || '';
         },
-        maxSteps: sc.turns.length + (sc.picks ? 1 : 0),
+        fallback: request => randomChoice(request, auto),
+        done: () => queues.every(q => !q.length),
       });
-      if (record.outcome === 'step-limit') record.outcome = 'complete';
+      if (record.outcome === 'step-limit' || record.outcome === 'ended') record.outcome = 'complete';
       records.push(record);
       out.write(JSON.stringify(record) + '\n');
     }

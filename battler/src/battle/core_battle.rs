@@ -1935,6 +1935,26 @@ impl<'d> CoreBattle<'d> {
             Mon::reset_state_for_next_turn(&mut context)?;
         }
 
+        // A fainted Mon that was not replaced still occupies its position, and its moves are still
+        // reported in requests.
+        for player in context.battle().player_indices().collect::<Vec<_>>() {
+            let player_context = context.player_context(player)?;
+            let fainted = (0..player_context.player().total_active_positions())
+                .filter(|position| player_context.player().active_mon_handle(*position).is_none())
+                .filter_map(|position| {
+                    player_context
+                        .player()
+                        .active_or_exited_mon_handle(position)
+                })
+                .collect::<Vec<_>>();
+            for mon_handle in fainted {
+                let mut context = context.mon_context(mon_handle)?;
+                if context.mon().hp == 0 {
+                    Mon::refresh_disabled_moves(&mut context)?;
+                }
+            }
+        }
+
         context.battle_mut().registry.next_turn()?;
 
         core_battle_effects::run_event_for_each_active_mon(context, fxlang::BattleEvent::EndTurn)?;
@@ -2317,6 +2337,17 @@ impl<'d> CoreBattle<'d> {
                     {
                         // Target is unfainted or an ally, so the chosen target is still valid.
                         return Ok(Some(target_mon_handle));
+                    }
+                } else if target < 0 {
+                    // A fainted ally is still the target, so the move fails instead of picking a
+                    // new target.
+                    let mut side_context = context.pick_side_context(true)?;
+                    if let Some(ally) = Side::active_or_exited_mon_in_position(
+                        &mut side_context,
+                        (target.abs() - 1) as usize,
+                    )? && side_context.as_battle_context().mon(ally)?.hp == 0
+                    {
+                        return Ok(Some(ally));
                     }
                 }
             }

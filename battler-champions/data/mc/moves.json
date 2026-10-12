@@ -256,14 +256,17 @@
  "saltcure": {
   "condition": {
    "callbacks": {
-    "on_residual": [
-     "$divisor = 16",
-     "if func_call(has_any_type: $target [water, steel]):",
-     [
-      "$divisor = 8"
-     ],
-     "damage: $target expr($target.base_max_hp / $divisor)"
-    ]
+    "on_residual": {
+     "order": 13,
+     "program": [
+      "$divisor = 16",
+      "if func_call(has_any_type: $target [water, steel]):",
+      [
+       "$divisor = 8"
+      ],
+      "damage: $target expr($target.base_max_hp / $divisor)"
+     ]
+    }
    }
   }
  },

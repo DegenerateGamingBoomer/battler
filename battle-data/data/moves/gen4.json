@@ -20,7 +20,10 @@
       "duration": 1,
       "callbacks": {
         "on_start": ["log_single_turn: with_target"],
-        "on_types": ["return func_call(remove: $types flying)"]
+        "on_types": ["return func_call(remove: $types flying)"],
+        "on_residual": {
+          "order": 25
+        }
       }
     }
   },
@@ -65,7 +68,11 @@
           ["log_cant: with_move", "return stopfail"]
         ],
         "on_try_move": ["return func_call(run_event_on_move: BeforeMove)"],
-        "on_field_end": ["log_field_end"]
+        "on_field_end": ["log_field_end"],
+        "on_field_residual": {
+          "order": 27,
+          "sub_order": 2
+        }
       }
     }
   },
@@ -285,7 +292,11 @@
       "callbacks": {
         "on_side_start": ["log_side_start"],
         "on_modify_spe": ["chain_modify: 2", "return"],
-        "on_side_end": ["log_side_end"]
+        "on_side_end": ["log_side_end"],
+        "on_side_residual": {
+          "order": 26,
+          "sub_order": 5
+        }
       }
     }
   },
@@ -425,7 +436,10 @@
         "suppress_mon_item": ["if $effect_state.started:", ["return true"]],
         "on_prevent_used_items": ["return true"],
         "on_start": ["log_start", "if $target.can_suppress_item:", ["end_item: silent"]],
-        "on_end": ["log_end", "start_item: silent"]
+        "on_end": ["log_end", "start_item: silent"],
+        "on_residual": {
+          "order": 21
+        }
       }
     }
   },
@@ -571,7 +585,10 @@
         "on_try_move": ["return func_call(run_event_on_move: BeforeMove)"],
         "on_can_heal": ["return false"],
         "on_try_heal": ["return 0"],
-        "on_end": ["log_end"]
+        "on_end": ["log_end"],
+        "on_residual": {
+          "order": 20
+        }
       }
     }
   },
@@ -680,7 +697,11 @@
       "callbacks": {
         "on_side_start": ["log_side_start"],
         "on_critical_hit": ["return false"],
-        "on_side_end": ["log_side_end"]
+        "on_side_end": ["log_side_end"],
+        "on_side_residual": {
+          "order": 26,
+          "sub_order": 6
+        }
       }
     }
   },
@@ -980,7 +1001,10 @@
     "condition": {
       "callbacks": {
         "on_start": ["log_start"],
-        "on_residual": ["heal: $target expr($target.base_max_hp / 16)"]
+        "on_residual": {
+          "order": 6,
+          "program": ["heal: $target expr($target.base_max_hp / 16)"]
+        }
       }
     }
   },
@@ -1012,7 +1036,10 @@
       "callbacks": {
         "on_start": ["log_start"],
         "is_grounded": ["return false"],
-        "on_end": ["log_end"]
+        "on_end": ["log_end"],
+        "on_residual": {
+          "order": 18
+        }
       }
     }
   },
@@ -1665,7 +1692,11 @@
         "on_field_start": ["log_field_start: with_source"],
         "on_field_restart": ["remove_pseudo_weather: $this.id"],
         "on_modify_action_speed": ["$spe = $spe % 10000", "return (10000 - $spe) % 8192"],
-        "on_field_end": ["log_field_end"]
+        "on_field_end": ["log_field_end"],
+        "on_field_residual": {
+          "order": 27,
+          "sub_order": 1
+        }
       }
     }
   },

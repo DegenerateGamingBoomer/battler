@@ -110,6 +110,20 @@ impl Side {
         Ok(player_context.player().active_mon_handle(position))
     }
 
+    /// Gets the Mon that is in or last left the given position on the side, if any.
+    pub fn active_or_exited_mon_in_position(
+        context: &mut SideContext,
+        position: usize,
+    ) -> Result<Option<MonHandle>> {
+        let active_per_player = context.battle().format.battle_type.active_per_player();
+        let (player_position, position) = position.div_mod_floor(&active_per_player);
+        let player_context = match context.player_context(player_position) {
+            Err(_) => return Ok(None),
+            Ok(player_context) => player_context,
+        };
+        Ok(player_context.player().active_or_exited_mon_handle(position))
+    }
+
     /// Counts the number of Mons left on the side.
     pub fn mons_left(context: &mut SideContext) -> Result<usize> {
         let mut count = 0;

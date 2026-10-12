@@ -434,9 +434,12 @@ impl SpeedOrderable for Action {
             Self::BeforeTurn => 11,
             Self::Item(_) => 12,
             Self::BeforeTurnMove(_) => 13,
-            Self::BeforeSwitchEvents(_) => 99,
+            // Switch-in events run right after their own switch, before the next regular switch
+            // (Showdown's `runSwitch` at 101 against `switch` at 103), but after all instant
+            // switches (Showdown's `instaswitch` at 3).
+            Self::BeforeSwitchEvents(_) => 97,
             Self::Escape(_) => 101,
-            Self::SwitchEvents(_) => 103,
+            Self::SwitchEvents(_) => 98,
             Self::MegaEvo(_) => 104,
             Self::UltraBurst(_) => 105,
             Self::Dynamax(_) => 106,

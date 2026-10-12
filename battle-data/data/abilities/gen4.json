@@ -231,10 +231,15 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_weather": [
-          "if $effect.is_raining and $target.status.is_defined:",
-          ["log_activate: with_target", "cure_status: $target"]
-        ]
+        "on_residual": {
+          "order": 5,
+          "sub_order": 3,
+          "program": [
+            "$weather = func_call(effective_weather: $target)",
+            "if $weather.is_defined and $weather.is_raining and $target.status.is_defined:",
+            ["log_activate: with_target", "cure_status: $target"]
+          ]
+        }
       }
     }
   },
@@ -555,10 +560,14 @@
       "duration": 5,
       "callbacks": {
         "on_start": ["log_start"],
-        "on_residual": [
-          "if $target.active_turns == 0:",
-          ["$effect_state.duration = $effect_state.duration + 1"]
-        ],
+        "on_residual": {
+          "order": 28,
+          "sub_order": 2,
+          "program": [
+            "if $target.active_turns == 0:",
+            ["$effect_state.duration = $effect_state.duration + 1"]
+          ]
+        },
         "on_modify_atk": ["chain_modify: 1/2", "return"],
         "on_modify_spe": ["chain_modify: 1/2", "return"],
         "on_end": [
@@ -755,11 +764,15 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_residual": [
-          "require $target.hp != 0 else return",
-          "foreach $foe in func_call(all_foes: $target):",
-          ["if $target.is_asleep:", ["damage: $foe expr($foe.base_max_hp / 8)"]]
-        ]
+        "on_residual": {
+          "order": 28,
+          "sub_order": 2,
+          "program": [
+            "require $target.hp != 0 else return",
+            "foreach $foe in func_call(all_foes: $target):",
+            ["if $target.is_asleep:", ["damage: $foe expr($foe.base_max_hp / 8)"]]
+          ]
+        }
       }
     }
   }

@@ -215,6 +215,7 @@ fn transform_transforms_into_target() {
                             "weight": 40
                         },
                         "species": "Charizard",
+                        "base_species": "Ditto",
                         "hp": 108,
                         "max_hp": 108,
                         "health": "108/108",
@@ -296,6 +297,7 @@ fn transform_transforms_into_target() {
                             }
                         ],
                         "ability": "Blaze",
+                        "base_ability": "No Ability",
                         "item": null,
                         "status": null,
                         "weight": 905

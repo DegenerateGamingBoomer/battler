@@ -272,12 +272,15 @@
       "no_copy": true,
       "callbacks": {
         "on_start": ["log_start"],
-        "on_residual": [
-          "$divisor = 8",
-          "if func_call(has_any_type: $target [water, steel]):",
-          ["$divisor = 4"],
-          "damage: $target expr($target.base_max_hp / $divisor)"
-        ],
+        "on_residual": {
+          "order": 13,
+          "program": [
+            "$divisor = 8",
+            "if func_call(has_any_type: $target [water, steel]):",
+            ["$divisor = 4"],
+            "damage: $target expr($target.base_max_hp / $divisor)"
+          ]
+        },
         "on_end": ["log_end"]
       }
     }
@@ -1022,7 +1025,10 @@
           "if $effect_state.source.is_defined and !$effect_state.source.active:",
           ["remove_volatile: $mon $this.id"]
         ],
-        "on_residual": ["boost: $target 'spe:-1'"],
+        "on_residual": {
+          "order": 14,
+          "program": ["boost: $target 'spe:-1'"]
+        },
         "on_end": ["log_end: silent"]
       }
     }

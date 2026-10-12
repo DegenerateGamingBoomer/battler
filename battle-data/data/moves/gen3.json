@@ -42,11 +42,15 @@
           "foreach $mon in func_call(all_active_mons):",
           ["if !$mon.is_soundproof and $mon.status == slp:", ["cure_status: $mon"]]
         ],
-        "on_residual": [
-          "if $target.last_move.is_defined and $target.last_move.id == struggle:",
-          ["remove_volatile: $target $this.id no_events"],
-          "log_start: residual"
-        ],
+        "on_residual": {
+          "order": 28,
+          "sub_order": 1,
+          "program": [
+            "if $target.last_move.is_defined and $target.last_move.id == struggle:",
+            ["remove_volatile: $target $this.id no_events"],
+            "log_start: residual"
+          ]
+        },
         "on_end": ["log_end"],
         "on_lock_move": ["return $this.id"],
         "on_any_set_status": [
@@ -533,6 +537,9 @@
             "if !$move.upgraded and $move.category == status and $move.id != mefirst:",
             ["log_cant: with_move", "return stopfail"]
           ]
+        },
+        "on_residual": {
+          "order": 15
         }
       }
     }
@@ -668,7 +675,10 @@
             "heal: $target $effect_state.hp use_source_effect"
           ],
           "log_slot_end: $slot"
-        ]
+        ],
+        "on_residual": {
+          "order": 4
+        }
       }
     }
   },
@@ -735,7 +745,10 @@
           "program": ["return true"]
         },
         "on_start": ["log_start"],
-        "on_residual": ["heal: $target expr($target.base_max_hp / 16)"],
+        "on_residual": {
+          "order": 7,
+          "program": ["heal: $target expr($target.base_max_hp / 16)"]
+        },
         "on_trap_mon": ["return true"],
         "on_drag_out": ["log_activate: with_target", "return stop"]
       }
@@ -895,7 +908,10 @@
       "duration": 2,
       "callbacks": {
         "on_start": ["log_start: with_source"],
-        "on_end": ["log_end: silent", "set_status: $target slp $effect_state.source"]
+        "on_end": ["log_end: silent", "set_status: $target slp $effect_state.source"],
+        "on_residual": {
+          "order": 23
+        }
       }
     }
   },
@@ -1354,7 +1370,11 @@
       "callbacks": {
         "on_field_start": ["log_field_start: with_source"],
         "on_base_power": ["if $move.type == electric:", ["chain_modify: 1352/4096", "return"]],
-        "on_field_end": ["log_field_end"]
+        "on_field_end": ["log_field_end"],
+        "on_field_residual": {
+          "order": 27,
+          "sub_order": 4
+        }
       }
     }
   },
@@ -2154,7 +2174,11 @@
       "callbacks": {
         "on_field_start": ["log_field_start: with_source"],
         "on_base_power": ["if $move.type == fire:", ["chain_modify: 1352/4096", "return"]],
-        "on_field_end": ["log_field_end"]
+        "on_field_end": ["log_field_end"],
+        "on_field_residual": {
+          "order": 27,
+          "sub_order": 3
+        }
       }
     }
   },

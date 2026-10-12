@@ -243,11 +243,14 @@
     "condition": {
       "callbacks": {
         "on_start": ["add_volatile: $target trapped link no_forward", "log_start: with_target"],
-        "on_residual": [
-          "if !$effect_state.source or !$effect_state.source.active or $effect_state.hp == 0:",
-          ["remove_volatile: $target $this.id", "return"],
-          "boost: $target 'def:-1' 'spd:-1'"
-        ],
+        "on_residual": {
+          "order": 14,
+          "program": [
+            "if !$effect_state.source or !$effect_state.source.active or $effect_state.hp == 0:",
+            ["remove_volatile: $target $this.id", "return"],
+            "boost: $target 'def:-1' 'spd:-1'"
+          ]
+        },
         "on_end": ["log_end: silent with_target"]
       }
     }
@@ -2203,11 +2206,19 @@
       "duration": 4,
       "callbacks": {
         "on_side_start": ["log_side_start"],
-        "on_residual": [
-          "if !func_call(has_type: $target water):",
-          ["damage: $target expr($target.base_max_hp / 6)"]
-        ],
-        "on_side_end": ["log_side_end"]
+        "on_residual": {
+          "order": 5,
+          "sub_order": 1,
+          "program": [
+            "if !func_call(has_type: $target water):",
+            ["damage: $target expr($target.base_max_hp / 6)"]
+          ]
+        },
+        "on_side_end": ["log_side_end"],
+        "on_side_residual": {
+          "order": 26,
+          "sub_order": 11
+        }
       }
     }
   },
@@ -3001,11 +3012,19 @@
       "duration": 4,
       "callbacks": {
         "on_side_start": ["log_side_start"],
-        "on_residual": [
-          "if !func_call(has_type: $target grass):",
-          ["damage: $target expr($target.base_max_hp / 6)"]
-        ],
-        "on_side_end": ["log_side_end"]
+        "on_residual": {
+          "order": 5,
+          "sub_order": 1,
+          "program": [
+            "if !func_call(has_type: $target grass):",
+            ["damage: $target expr($target.base_max_hp / 6)"]
+          ]
+        },
+        "on_side_end": ["log_side_end"],
+        "on_side_residual": {
+          "order": 26,
+          "sub_order": 11
+        }
       }
     }
   },
@@ -3040,11 +3059,19 @@
       "duration": 4,
       "callbacks": {
         "on_side_start": ["log_side_start"],
-        "on_residual": [
-          "if !func_call(has_type: $target rock):",
-          ["damage: $target expr($target.base_max_hp / 6)"]
-        ],
-        "on_side_end": ["log_side_end"]
+        "on_residual": {
+          "order": 5,
+          "sub_order": 1,
+          "program": [
+            "if !func_call(has_type: $target rock):",
+            ["damage: $target expr($target.base_max_hp / 6)"]
+          ]
+        },
+        "on_side_end": ["log_side_end"],
+        "on_side_residual": {
+          "order": 26,
+          "sub_order": 11
+        }
       }
     }
   },
@@ -3108,11 +3135,19 @@
       "duration": 4,
       "callbacks": {
         "on_side_start": ["log_side_start"],
-        "on_residual": [
-          "if !func_call(has_type: $target fire):",
-          ["damage: $target expr($target.base_max_hp / 6)"]
-        ],
-        "on_side_end": ["log_side_end"]
+        "on_residual": {
+          "order": 5,
+          "sub_order": 1,
+          "program": [
+            "if !func_call(has_type: $target fire):",
+            ["damage: $target expr($target.base_max_hp / 6)"]
+          ]
+        },
+        "on_side_end": ["log_side_end"],
+        "on_side_residual": {
+          "order": 26,
+          "sub_order": 11
+        }
       }
     }
   },

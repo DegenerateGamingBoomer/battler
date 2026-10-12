@@ -111,13 +111,17 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_residual": [
-          "foreach $ally in func_call(adjacent_allies: $target):",
-          [
-            "if $ally.status.is_defined and func_call(chance: 3 10):",
-            ["log_activate: with_target", "cure_status: $ally"]
+        "on_residual": {
+          "order": 5,
+          "sub_order": 3,
+          "program": [
+            "foreach $ally in func_call(adjacent_allies: $target):",
+            [
+              "if $ally.status.is_defined and func_call(chance: 3 10):",
+              ["log_activate: with_target", "cure_status: $ally"]
+            ]
           ]
-        ]
+        }
       }
     }
   },
@@ -205,16 +209,20 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_residual": [
-          "$weather = func_call(effective_weather: $target)",
-          "require $weather.is_defined and $weather.is_sunny or !func_call(chance: 1 2) else return",
-          "require !$target.item else return",
-          "require $target.last_item.is_defined else return",
-          "require func_call(item_has_flag: $target.last_item berry) else return",
-          "$item = $target.last_item",
-          "$target.last_item = undefined",
-          "set_item: $target $item"
-        ]
+        "on_residual": {
+          "order": 28,
+          "sub_order": 2,
+          "program": [
+            "$weather = func_call(effective_weather: $target)",
+            "require $weather.is_defined and $weather.is_sunny or func_call(chance: 1 2) else return",
+            "require !$target.item else return",
+            "require $target.last_item.is_defined else return",
+            "require func_call(item_has_flag: $target.last_item berry) else return",
+            "$item = $target.last_item",
+            "$target.last_item = undefined",
+            "set_item: $target $item"
+          ]
+        }
       }
     }
   },
@@ -235,32 +243,36 @@
     "flags": [],
     "effect": {
       "callbacks": {
-        "on_residual": [
-          "$possible_boosts = []",
-          "foreach $stat in func_call(boostable_stats):",
-          [
-            "if $stat == acc or $stat == eva:",
-            ["continue"],
-            "if func_call(can_boost: $target str('{}:1', $stat)):",
-            ["$possible_boosts = func_call(append: $possible_boosts $stat)"]
-          ],
-          "$boost = func_call(sample: $possible_boosts)",
-          "$possible_drops = []",
-          "foreach $stat in func_call(boostable_stats):",
-          [
-            "if $stat == acc or $stat == eva or $stat == $boost:",
-            ["continue"],
-            "if func_call(can_boost: $target str('{}:-1', $stat)):",
-            ["$possible_drops = func_call(append: $possible_drops $stat)"]
-          ],
-          "$drop = func_call(sample: $possible_drops)",
-          "$boosts = func_call(boost_table)",
-          "if $boost.is_defined:",
-          ["$boosts = func_call(set_boost: $boosts $boost 2)"],
-          "if $drop.is_defined:",
-          ["$boosts = func_call(set_boost: $boosts $drop -1)"],
-          "boost: $target $boosts"
-        ]
+        "on_residual": {
+          "order": 28,
+          "sub_order": 2,
+          "program": [
+            "$possible_boosts = []",
+            "foreach $stat in func_call(boostable_stats):",
+            [
+              "if $stat == acc or $stat == eva:",
+              ["continue"],
+              "if func_call(can_boost: $target str('{}:1', $stat)):",
+              ["$possible_boosts = func_call(append: $possible_boosts $stat)"]
+            ],
+            "$boost = func_call(sample: $possible_boosts)",
+            "$possible_drops = []",
+            "foreach $stat in func_call(boostable_stats):",
+            [
+              "if $stat == acc or $stat == eva or $stat == $boost:",
+              ["continue"],
+              "if func_call(can_boost: $target str('{}:-1', $stat)):",
+              ["$possible_drops = func_call(append: $possible_drops $stat)"]
+            ],
+            "$drop = func_call(sample: $possible_drops)",
+            "$boosts = func_call(boost_table)",
+            "if $boost.is_defined:",
+            ["$boosts = func_call(set_boost: $boosts $boost 2)"],
+            "if $drop.is_defined:",
+            ["$boosts = func_call(set_boost: $boosts $drop -1)"],
+            "boost: $target $boosts"
+          ]
+        }
       }
     }
   },
@@ -531,13 +543,16 @@
     ],
     "effect": {
       "callbacks": {
-        "on_residual": [
-          "require func_call(base_species: $target) == darmanitan else return",
-          "if $target.hp <= $target.max_hp / 2:",
-          ["add_volatile: $target $this.id"],
-          "else:",
-          ["remove_volatile: $target $this.id"]
-        ],
+        "on_residual": {
+          "order": 29,
+          "program": [
+            "require func_call(base_species: $target) == darmanitan else return",
+            "if $target.hp <= $target.max_hp / 2:",
+            ["add_volatile: $target $this.id"],
+            "else:",
+            ["remove_volatile: $target $this.id"]
+          ]
+        },
         "on_end": ["remove_volatile: $target $this.id"]
       }
     },

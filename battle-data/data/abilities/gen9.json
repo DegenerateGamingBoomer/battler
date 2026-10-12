@@ -470,16 +470,20 @@
           "if $battle.in_residual:",
           ["$effect_state.counter = 1"]
         ],
-        "on_residual": [
-          "require $effect_state.berry.is_defined and $target.hp > 0 else return",
-          "if $effect_state.counter > 0:",
-          ["$effect_state.counter = $effect_state.counter - 1"],
-          "require $effect_state.counter == 0 else return",
-          "log_activate: with_target",
-          "eat_given_item: $target $effect_state.berry",
-          "effect_state_remove_key: $effect_state berry",
-          "effect_state_remove_key: $effect_state counter"
-        ]
+        "on_residual": {
+          "order": 28,
+          "sub_order": 2,
+          "program": [
+            "require $effect_state.berry.is_defined and $target.hp > 0 else return",
+            "if $effect_state.counter > 0:",
+            ["$effect_state.counter = $effect_state.counter - 1"],
+            "require $effect_state.counter == 0 else return",
+            "log_activate: with_target",
+            "eat_given_item: $target $effect_state.berry",
+            "effect_state_remove_key: $effect_state berry",
+            "effect_state_remove_key: $effect_state counter"
+          ]
+        }
       }
     }
   },

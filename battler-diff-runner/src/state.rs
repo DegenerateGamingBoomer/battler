@@ -203,6 +203,8 @@ fn active(mon: &Mon, names: &SpeciesNames) -> Json {
         "statusState": status_state(mon),
         "boosts": boosts(mon),
         "volatiles": volatiles,
+        "activeTurns": mon.active_turns,
+        "moveActions": mon.active_move_actions,
     })
 }
 

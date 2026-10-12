@@ -961,19 +961,19 @@ fn emergency_exit_activates_between_residuals() {
                 "damage|mon:Golisopod,player-1,1|from:weather:Sandstorm|health:79/135",
                 "damage|mon:Golisopod,player-1,1|from:weather:Sandstorm|health:59/100",
                 "split|side:0",
+                "damage|mon:Incineroar,player-1,2|from:move:Leech Seed|health:75/155",
+                "damage|mon:Incineroar,player-1,2|from:move:Leech Seed|health:49/100",
+                "split|side:1",
+                "heal|mon:Pikachu,player-2,1|from:move:Leech Seed|of:Incineroar,player-1,2|health:94/95",
+                "heal|mon:Pikachu,player-2,1|from:move:Leech Seed|of:Incineroar,player-1,2|health:99/100",
+                "split|side:0",
                 "damage|mon:Golisopod,player-1,1|from:status:Bad Poison|health:54/135",
                 "damage|mon:Golisopod,player-1,1|from:status:Bad Poison|health:40/100",
                 "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
                 "switchout|mon:Golisopod,player-1,1",
                 "split|side:0",
-                "damage|mon:Incineroar,player-1,2|from:move:Bind|health:75/155",
-                "damage|mon:Incineroar,player-1,2|from:move:Bind|health:49/100",
-                "split|side:0",
-                "damage|mon:Incineroar,player-1,2|from:move:Leech Seed|health:56/155",
-                "damage|mon:Incineroar,player-1,2|from:move:Leech Seed|health:37/100",
-                "split|side:1",
-                "heal|mon:Pikachu,player-2,1|from:move:Leech Seed|of:Incineroar,player-1,2|health:94/95",
-                "heal|mon:Pikachu,player-2,1|from:move:Leech Seed|of:Incineroar,player-1,2|health:99/100"
+                "damage|mon:Incineroar,player-1,2|from:move:Bind|health:56/155",
+                "damage|mon:Incineroar,player-1,2|from:move:Bind|health:37/100"
             ]"#,
     )
     .unwrap();

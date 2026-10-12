@@ -1215,7 +1215,11 @@ where
         };
 
         let mut ended = false;
-        if duration_decreased.insert((
+        if callback_handle
+            .applied_effect_handle
+            .location
+            .holds_duration()
+            && duration_decreased.insert((
             callback_handle.applied_effect_handle.effect_handle.clone(),
             callback_handle
                 .applied_effect_handle
@@ -2124,12 +2128,50 @@ mod callbacks {
             None => return Ok(None),
         };
 
+        let sub_order = match callback.sub_order() {
+            0 => default_sub_order(&callback_handle),
+            sub_order => sub_order,
+        };
         let mut result = SpeedOrderableCallbackHandle::new(callback_handle, speed);
         result.order = callback.order();
         result.priority = callback.priority();
-        result.sub_order = callback.sub_order();
+        result.sub_order = sub_order;
         result.effect_order = effect_order;
         Ok(Some(result))
+    }
+
+    /// The sub-order of a callback that does not set one, by the kind of effect.
+    ///
+    /// Callbacks that tie in order, priority and speed run in this order: volatile conditions, slot
+    /// conditions, side conditions, field conditions (weather, terrain, pseudo-weather), abilities
+    /// and then items. Statuses and everything else come first.
+    fn default_sub_order(callback_handle: &CallbackHandle) -> u32 {
+        match callback_handle.applied_effect_handle.location {
+            AppliedEffectLocation::MonVolatile(_) => 2,
+            AppliedEffectLocation::MonSlotCondition(_, _, _)
+            | AppliedEffectLocation::SlotCondition(_, _) => 3,
+            AppliedEffectLocation::MonSideCondition(_, _) | AppliedEffectLocation::SideCondition(_) => 4,
+            AppliedEffectLocation::MonPseudoWeather(_)
+            | AppliedEffectLocation::MonTerrain(_)
+            | AppliedEffectLocation::MonWeather(_)
+            | AppliedEffectLocation::PseudoWeather
+            | AppliedEffectLocation::Terrain
+            | AppliedEffectLocation::Weather => 5,
+            AppliedEffectLocation::MonAbility(_) | AppliedEffectLocation::MonSubAbility(_) => {
+                match callback_handle
+                    .applied_effect_handle
+                    .effect_handle
+                    .try_id()
+                    .map(|id| id.as_ref())
+                {
+                    Some("poisontouch" | "perishbody") => 6,
+                    Some("stall") => 9,
+                    _ => 7,
+                }
+            }
+            AppliedEffectLocation::MonItem(_) => 8,
+            _ => 0,
+        }
     }
 
     fn default_residual_has_duration(
@@ -2162,17 +2204,21 @@ mod callbacks {
                 // The default residual callback only counts down the effect's duration, so it does
                 // nothing for an effect without one.
                 if callback_handle.event.is_residual()
-                    && !default_residual_has_duration(context, &callback_handle)?
+                    && (!default_residual_has_duration(context, &callback_handle)?
+                        || !callback_handle
+                            .applied_effect_handle
+                            .location
+                            .holds_duration())
                 {
                     return Ok(None);
                 }
                 // Like any other callback, a default callback is ordered by the speed of the Mon
                 // holding the effect.
                 let speed = callback_handle.speed(context)?;
-                Ok(Some(SpeedOrderableCallbackHandle::new(
-                    callback_handle,
-                    speed,
-                )))
+                let sub_order = default_sub_order(&callback_handle);
+                let mut result = SpeedOrderableCallbackHandle::new(callback_handle, speed);
+                result.sub_order = sub_order;
+                Ok(Some(result))
             }
         }
     }

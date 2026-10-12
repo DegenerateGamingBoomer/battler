@@ -711,7 +711,10 @@
           ["log_cant: with_move", "return stopfail"]
         ],
         "on_try_move": ["return func_call(run_event_on_move: BeforeMove)"],
-        "on_end": ["log_end: silent"]
+        "on_end": ["log_end: silent"],
+        "on_residual": {
+          "order": 22
+        }
       }
     }
   },
@@ -796,6 +799,10 @@
             ["log_activate: with_target"],
             "return stopfail"
           ]
+        },
+        "on_field_residual": {
+          "order": 27,
+          "sub_order": 7
         }
       }
     }
@@ -1121,7 +1128,13 @@
       }
     },
     "condition": {
-      "delegates": ["condition:sidescreenmovebase"]
+      "delegates": ["condition:sidescreenmovebase"],
+      "callbacks": {
+        "on_side_residual": {
+          "order": 26,
+          "sub_order": 10
+        }
+      }
     }
   },
   "sinisterarrowraid": {

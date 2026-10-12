@@ -71,6 +71,20 @@ impl AppliedEffectLocation {
         }
     }
 
+    /// Whether the residual callback at this location counts down the effect's duration.
+    ///
+    /// Field and side effects also run residual callbacks for each active Mon, but only the
+    /// callback on the field or side itself counts down (and ends) the effect.
+    pub fn holds_duration(&self) -> bool {
+        match self {
+            Self::MonPseudoWeather(_)
+            | Self::MonSideCondition(_, _)
+            | Self::MonTerrain(_)
+            | Self::MonWeather(_) => false,
+            _ => true,
+        }
+    }
+
     /// The associated [`MonHandle`].
     pub fn mon_handle(&self) -> Option<MonHandle> {
         match self {
