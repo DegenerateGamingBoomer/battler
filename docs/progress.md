@@ -2,6 +2,38 @@
 
 Spec: `champions-showdown-spec.md`. One section per phase, newest first.
 
+## P2 — transplant and clone (in progress)
+
+**Done**
+- `battler-showdown-compat::transplant::apply_state` builds a battle from Showdown's serialized
+  state (`battle.toJSON()`) at a turn boundary: a silent start, then Pokémon (forme/Mega, HP,
+  status and counters, boosts, PP, items, abilities, once-per-battle flags), actives, volatiles
+  with durations and links, side/slot conditions, weather, terrain, pseudo-weather, last moves and
+  effect order, then battler's own `next_turn` for the request.
+- Driver mode `--transplant [TURNS]` (default 3): plays each battle on Showdown and, at every turn
+  boundary, transplants into battler and continues both engines under the semantic streams.
+- Measured before the latest fixes: battles 800–1599, 25,377 compared turns, 21 divergences
+  (0.08%, budget 1%). Battles 0–199: 0.09%.
+- Fixed since (each with a battler test, all to Showdown's behaviour): Intimidate vs Substitute
+  (`-immune`, no Defiant), Insomnia/Vital Spirit vs Yawn, Revival Blessing sending the revived
+  Pokémon back into its empty slot, Clanging Scales/Scale Shot self-boost after faints (and boosts
+  failing with no foes left), an Outrage-style lock ending on a failed turn, Sheer Force after
+  Mummy, Struggle in fainted-active requests, `maybeTrapped` in the driver's random choices.
+  Battles 1363, 1380, 1425, 1477 and 1498 now match.
+
+**Remaining work**
+- Rerun transplant mode over ≥10,000 compared turns on unseen battles and P1c from-start on
+  0–2399 for regressions; classify what is left.
+- Known final-step classes still open: `twoturnmove` held at battle end, Natural Cure at battle
+  end (intentional), a user's faint processed after the win (263, Mummy).
+- `Clone` for the full battle state (tests: clone vs fresh transplant, mutation isolation;
+  µs/bytes microbenchmark), then rerun the P0 benchmarks with transplant and clone and write
+  `docs/benchmarks/p2.md`.
+
+**Observation**: outside the semantic streams, `rand_util::range` uses `next() % n` on the raw
+generator, so small ranges can be biased (Thrash locks always lasted 2 turns over 12 seeds in
+tests). Not used by the differential harness.
+
 ## P1c — differential harness from turn 0 (done: budget holds, remaining divergences listed)
 
 **What exists**
@@ -131,7 +163,7 @@ external data); unrelated to this phase.
 - One battle ends `showdown-rejected`: Showdown's own request offers a move its Encore then
   rejects.
 
-**Next step**: P2 (transplant, then clone).
+**Next step**: P2 (transplant, then clone); see the P2 section.
 
 ## P1b — Showdown compatibility layer (done, with the gaps listed below)
 
