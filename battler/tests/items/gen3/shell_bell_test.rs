@@ -161,8 +161,9 @@ fn shell_bell_activates_after_multi_hit_move() {
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
 }
 
+// Damage to a substitute is not damage dealt by the move (Showdown's `totalDamage`).
 #[test]
-fn shell_bell_activates_after_hitting_substitute() {
+fn shell_bell_does_not_activate_after_hitting_substitute() {
     let mut battle = make_battle(0, sceptile().unwrap(), mightyena().unwrap()).unwrap();
     assert_matches::assert_matches!(battle.start(), Ok(()));
 
@@ -177,9 +178,6 @@ fn shell_bell_activates_after_hitting_substitute() {
         r#"[
             "move|mon:Sceptile,player-1,1|name:Leaf Blade|target:Mightyena,player-2,1",
             "end|mon:Mightyena,player-2,1|move:Substitute",
-            "split|side:0",
-            "heal|mon:Sceptile,player-1,1|from:item:Shell Bell|health:64/130",
-            "heal|mon:Sceptile,player-1,1|from:item:Shell Bell|health:50/100",
             "residual",
             "turn|turn:4"
         ]"#,

@@ -232,7 +232,7 @@
     "effect": {
       "callbacks": {
         "on_try_hit": [
-          "if $target != $source and func_call(is_ally: $target $source):",
+          "if $target != $source and func_call(is_ally: $target $source) and $move.category != status:",
           ["if $report:", ["log_activate: with_target"], "return stopfail"]
         ]
       }

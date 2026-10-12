@@ -63,9 +63,9 @@
           ["if $report:", ["log_immune: $target from_effect"], "return stopfail"]
         ],
         "on_damage": {
-          "priority": -100,
+          "priority": -30,
           "program": [
-            "if $target.hp == $target.max_hp and $damage > $target.hp and $effect.is_move:",
+            "if $target.hp == $target.max_hp and $damage >= $target.hp and $effect.is_move:",
             ["log_activate: with_target", "return $target.hp - 1"]
           ]
         }

@@ -1532,11 +1532,15 @@ fn try_direct_move(
 fn move_hit_loop_internal(
     context: &mut ActiveMoveContext,
     targets: &mut [HitTargetState],
-    hits: u8,
+    draw_hits: impl FnOnce(&mut ActiveMoveContext) -> Result<u8>,
 ) -> Result<HashMap<MonHandle, MoveOutcomeOnTarget>> {
     let mut target_hit_results = HashMap::new();
 
-    for hit in 0..hits {
+    // The number of hits is decided once the first hit is ready to land on a target.
+    let mut draw_hits = Some(draw_hits);
+    let mut hits = 1;
+    let mut hit = 0;
+    while hit < hits {
         // A hit on a Substitute does not stop the next hit, which may break it and hit the target.
         if hit > 0 {
             for target in targets.iter_mut() {
@@ -1615,6 +1619,10 @@ fn move_hit_loop_internal(
         if hit_targets.is_empty() {
             context.active_move_mut().hit -= 1;
             break;
+        }
+
+        if let Some(draw_hits) = draw_hits.take() {
+            hits = draw_hits(context)?;
         }
 
         // If using smart targeting, only hit one target at a time.
@@ -1714,6 +1722,8 @@ fn move_hit_loop_internal(
         if !context.mon().active || context.mon().hp == 0 {
             break;
         }
+
+        hit += 1;
     }
     Ok(target_hit_results)
 }
@@ -1727,27 +1737,29 @@ fn move_hit_loop(
 ) -> Result<Vec<HitTargetState>> {
     context.active_move_mut().total_damage = 0;
 
-    let hits = match context.active_move().data.multihit {
-        None => 1,
-        Some(MultihitType::Static(hits)) => hits,
-        Some(MultihitType::Range(min, max)) => {
-            if min == 2 && max == 5 {
-                // 35-35-15-15 for 2-3-4-5 hits.
-                *rand_util::sample_slice_at(
-                    context.battle_mut().prng.as_mut(),
-                    DrawSite::Engine("multi-hit"),
-                    &[2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5],
-                )
-                .wrap_expectation("expected sample_slice to produce a value")?
-            } else {
-                rand_util::range_at(
-                    context.battle_mut().prng.as_mut(),
-                    DrawSite::Engine("multi-hit"),
-                    min as u64,
-                    max as u64,
-                ) as u8
+    let draw_hits = |context: &mut ActiveMoveContext| -> Result<u8> {
+        Ok(match context.active_move().data.multihit {
+            None => 1,
+            Some(MultihitType::Static(hits)) => hits,
+            Some(MultihitType::Range(min, max)) => {
+                if min == 2 && max == 5 {
+                    // 35-35-15-15 for 2-3-4-5 hits.
+                    *rand_util::sample_slice_at(
+                        context.battle_mut().prng.as_mut(),
+                        DrawSite::Engine("multi-hit"),
+                        &[2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5],
+                    )
+                    .wrap_expectation("expected sample_slice to produce a value")?
+                } else {
+                    rand_util::range_at(
+                        context.battle_mut().prng.as_mut(),
+                        DrawSite::Engine("multi-hit"),
+                        min as u64,
+                        max as u64,
+                    ) as u8
+                }
             }
-        }
+        })
     };
 
     context.active_move_mut().target_original_hps = targets
@@ -1769,7 +1781,7 @@ fn move_hit_loop(
     // Immediately after the move hit loop, mark targets immutable again, as we do not want this
     // list to be modified.
     let mut targets = hit_targets_state_from_targets(targets.iter().cloned());
-    let target_hit_results = move_hit_loop_internal(context, targets.as_mut_slice(), hits)?;
+    let target_hit_results = move_hit_loop_internal(context, targets.as_mut_slice(), draw_hits)?;
     let targets = targets;
 
     // Log OHKOs.
@@ -2246,6 +2258,7 @@ pub fn calculate_damage(context: &mut ActiveTargetContext) -> Result<Option<u16>
         Some(CalculateStatContext {
             effect: effect_handle.clone(),
             source: move_target,
+            modifier_stat: Some(if is_physical { Stat::Atk } else { Stat::SpAtk }),
         }),
     )?;
     let defense = Mon::calculate_stat(
@@ -2256,6 +2269,7 @@ pub fn calculate_damage(context: &mut ActiveTargetContext) -> Result<Option<u16>
         Some(CalculateStatContext {
             effect: effect_handle,
             source: move_user,
+            modifier_stat: None,
         }),
     )?;
 
@@ -2426,6 +2440,15 @@ fn modify_damage(context: &mut ActiveTargetContext, mut base_damage: u32) -> Res
         fxlang::BattleEvent::ModifyDamage,
         base_damage,
     );
+
+    // A move that hits through a protection is weakened after all other modifiers.
+    if context
+        .active_move()
+        .hit_data(target_mon_handle)
+        .is_some_and(|hit_data| hit_data.flags.contains(&Id::from_known("bypassprotect")))
+    {
+        base_damage = modify_32(base_damage, Fraction::new(1, 4));
+    }
 
     let base_damage = base_damage as u16;
     let base_damage = base_damage.max(1);

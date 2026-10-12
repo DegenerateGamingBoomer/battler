@@ -242,3 +242,27 @@ fn ability_and_item_changes_are_in_the_overlay() {
     };
     assert_ne!(item(overlay), item(inner));
 }
+
+#[test]
+fn encore_replacing_a_queued_move_keeps_its_turn_order() {
+    let mut b = singles(
+        Rules::Champions,
+        vec![mon("Pikachu", "No Ability", None, &["Encore", "Splash"])],
+        vec![mon("Blissey", "No Ability", None, &["Growl", "Tackle"])],
+    );
+    choose(&mut b, "move 1", "move 0");
+    // Encore replaces Tackle with Growl, which still runs before the end of the turn.
+    choose(&mut b, "move 0", "move 1");
+    let log = log(&b);
+    let turn2: Vec<_> = log
+        .iter()
+        .skip_while(|l| !l.starts_with("turn|turn:2"))
+        .collect();
+    let growl = turn2
+        .iter()
+        .position(|l| l.starts_with("move|mon:Blissey") && l.contains("name:Growl"))
+        .unwrap_or_else(|| panic!("{turn2:#?}"));
+    let residual = turn2.iter().position(|l| *l == "residual").unwrap();
+    assert!(growl < residual, "{turn2:#?}");
+    assert!(!has(&log, "name:Tackle"), "{turn2:#?}");
+}

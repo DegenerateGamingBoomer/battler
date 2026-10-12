@@ -468,6 +468,11 @@ pub struct ReceivedAttackEntry {
 pub struct CalculateStatContext {
     pub effect: EffectHandle,
     pub source: MonHandle,
+    /// The stat whose modifiers apply, if not the calculated stat.
+    ///
+    /// An attack always uses attack modifiers, even when calculated from another stat (Body
+    /// Press).
+    pub modifier_stat: Option<Stat>,
 }
 
 /// How a Mon exited the battle.
@@ -1489,7 +1494,11 @@ impl Mon {
             }
         }
         if !unmodified {
-            if let Some(modify_event) = match stat {
+            let modifier_stat = calculate_stat_context
+                .as_ref()
+                .and_then(|calculate_stat_context| calculate_stat_context.modifier_stat)
+                .unwrap_or(stat);
+            if let Some(modify_event) = match modifier_stat {
                 Stat::HP => None,
                 Stat::Atk => Some(fxlang::BattleEvent::ModifyAtk),
                 Stat::Def => Some(fxlang::BattleEvent::ModifyDef),

@@ -325,7 +325,7 @@
      "else if $action.id != $effect_state.move and !func_call(has_item: $target mentalherb):",
      [
       "cancel_action: $target",
-      "add_move_action: $target $effect_state.move"
+      "add_move_action: $target $effect_state.move sorted"
      ]
     ],
     "on_override_move": null

@@ -4689,8 +4689,11 @@ fn deprioritize_move(mut context: FunctionContext) -> Result<()> {
 /// @param {[`ValueType::Mon`]} [mon] The Mon performing the move.
 /// @param {[`ValueType::String`] | [`ValueType::Effect`]} move_handle The move to perform.
 /// @param {[`ValueType::Mon`]} [target] The target of the move.
+/// @flag sorted If set, the action is inserted where it would have been sorted, instead of at the
+/// end of the queue.
 /// @returns {[`ValueType::Boolean`]} Whether the action was successfully added.
 fn add_move_action(mut context: FunctionContext) -> Result<Value> {
+    let sorted = context.has_flag("sorted");
     let mon_handle = context.target_handle_positional()?;
     let move_id = context
         .pop_front()
@@ -4702,20 +4705,22 @@ fn add_move_action(mut context: FunctionContext) -> Result<Value> {
         .map(|val| val.integer_isize().ok())
         .flatten();
 
-    let id = BattleQueue::add_action(
-        context.battle_context_mut(),
-        Action::Move(MoveAction::new(MoveActionInput {
-            id: move_id,
-            upgraded_id: None,
-            mon: mon_handle,
-            target,
-            mega: false,
-            z_move: false,
-            ultra: false,
-            dyna: false,
-            tera: false,
-        })),
-    )?;
+    let action = Action::Move(MoveAction::new(MoveActionInput {
+        id: move_id,
+        upgraded_id: None,
+        mon: mon_handle,
+        target,
+        mega: false,
+        z_move: false,
+        ultra: false,
+        dyna: false,
+        tera: false,
+    }));
+    let id = if sorted {
+        BattleQueue::insert_action_into_sorted_position(context.battle_context_mut(), action)?
+    } else {
+        BattleQueue::add_action(context.battle_context_mut(), action)?
+    };
     Ok(Value::UFraction(TryInto::<u64>::try_into(id)?.into()))
 }
 

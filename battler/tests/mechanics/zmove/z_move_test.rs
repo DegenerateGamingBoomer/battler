@@ -630,8 +630,8 @@ fn z_move_hits_through_protect() {
             "move|mon:Pikachu,player-1,1|name:Gigavolt Havoc|target:Eevee,player-2,1",
             "protectweaken|mon:Eevee,player-2,1",
             "split|side:1",
-            "damage|mon:Eevee,player-2,1|health:81/115",
-            "damage|mon:Eevee,player-2,1|health:71/100",
+            "damage|mon:Eevee,player-2,1|health:80/115",
+            "damage|mon:Eevee,player-2,1|health:70/100",
             "residual",
             "turn|turn:2"
         ]"#,

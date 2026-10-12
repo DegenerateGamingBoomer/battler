@@ -239,8 +239,9 @@
         "on_modify_damage": {
           "order": 1,
           "program": [
+            "# A whole number, so that later damage modifiers (Life Orb) still apply.",
             "if $move.category == physical and $move.id != facade:",
-            ["return $damage / 2"]
+            ["return func_call(floor: expr($damage / 2))"]
           ]
         },
         "on_modify_catch_rate": ["return $catch_rate * 3/2"]
