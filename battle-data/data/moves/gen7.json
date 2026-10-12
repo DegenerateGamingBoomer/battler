@@ -1067,7 +1067,10 @@
       "Protect"
     ],
     "effect": {
-      "delegates": ["condition:windingupmovebase"]
+      "delegates": ["condition:windingupmovebase"],
+      "callbacks": {
+        "on_after_move": ["remove_volatile: $user $this.id"]
+      }
     },
     "condition": {
       "duration": 1,

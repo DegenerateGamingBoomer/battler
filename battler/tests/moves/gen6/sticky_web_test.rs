@@ -87,7 +87,7 @@ fn sticky_web_reduces_speed_on_switch_in() {
             ["switch", "player-2", "Slurpuff"],
             ["switch", "player-2", "Slurpuff"],
             "activate|mon:Slurpuff,player-2,1|move:Sticky Web",
-            "unboost|mon:Slurpuff,player-2,1|stat:spe|by:1|from:move:Sticky Web",
+            "unboost|mon:Slurpuff,player-2,1|stat:spe|by:1|from:move:Sticky Web|of:Slurpuff,player-1,1",
             "residual",
             "turn|turn:4",
             "continue",

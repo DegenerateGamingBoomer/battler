@@ -131,7 +131,11 @@
         "on_switch_in": [
           "require $mon.is_grounded and !$mon.is_immune_to_entry_hazards else return",
           "log_activate: with_target",
-          "boost: $mon 'spe:-1'"
+          "# The first foe is the source, so the drop counts as coming from a foe.",
+          "$foes = func_call(all_foes: $mon)",
+          "if $foes.is_empty:",
+          ["boost: $mon 'spe:-1'", "return"],
+          "boost: $mon func_call(index: $foes 0) 'spe:-1'"
         ],
         "on_side_end": [
           "if $source_effect == $this.id:",

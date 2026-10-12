@@ -2880,17 +2880,34 @@ fn can_boost(mut context: FunctionContext) -> Result<Value> {
 /// Boosts or unboosts a Mon's stats.
 ///
 /// @param {[`ValueType::Mon`]} [mon] The Mon to boost.
+/// @param {[`ValueType::Mon`]} [source] The source of the boost, if not the effect's source.
 /// @param {[`ValueType::BoostTable`]} boosts The boosts to apply.
 /// @returns {[`ValueType::EventResult`]} The outcome of the boost.
 fn boost(mut context: FunctionContext) -> Result<Value> {
     let mon_handle = context.target_handle_positional()?;
+    let source_handle = match context.front().map(|val| val.value_type()) {
+        Some(ValueType::Mon) => Some(
+            context
+                .pop_front()
+                .wrap_expectation("missing source mon")?
+                .mon_handle()
+                .wrap_error_with_message("invalid source mon")?,
+        ),
+        _ => None,
+    };
 
     // Create the context early to parse flags.
     context.forward_to_applying_effect_context_with_target(mon_handle)?;
 
     let boosts = context.boosts_from_rest_of_args()?;
 
-    let mut context = context.forward_to_applying_effect_context_with_target(mon_handle)?;
+    let mut context = match source_handle {
+        Some(source_handle) => context.forward_to_applying_effect_context_with_source_and_target(
+            Some(source_handle),
+            mon_handle,
+        )?,
+        None => context.forward_to_applying_effect_context_with_target(mon_handle)?,
+    };
     let is_self = context
         .source_handle()
         .is_some_and(|source| source == context.target_handle());

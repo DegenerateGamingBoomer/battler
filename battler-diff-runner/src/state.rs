@@ -203,10 +203,31 @@ impl SpeciesNames {
     }
 }
 
+/// Protect variants. battler protects with the `protect` volatile and links the variant's own
+/// volatile for its extra effect; Showdown only has the variant's volatile.
+const PROTECT_VARIANTS: &[&str] = &[
+    "banefulbunker",
+    "burningbulwark",
+    "kingsshield",
+    "obstruct",
+    "silktrap",
+    "spikyshield",
+];
+
 fn active(mon: &Mon, names: &SpeciesNames) -> Json {
     let mut volatiles = Map::new();
     for (id, state) in &mon.volatile_state.volatiles {
         volatiles.insert(id.to_string(), volatile_state(id.as_ref(), state));
+    }
+    // battler's holder for the volatile of a move charging at the start of the turn (Beak Blast,
+    // Focus Punch), linked to the move's own volatile, which is what Showdown has.
+    volatiles.remove("windingup");
+    if let Some(variant) = PROTECT_VARIANTS
+        .iter()
+        .find(|variant| volatiles.contains_key(**variant))
+        && let Some(protect) = volatiles.remove("protect")
+    {
+        volatiles.insert((*variant).to_owned(), protect);
     }
     json!({
         "name": mon.name,
