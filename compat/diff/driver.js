@@ -118,9 +118,12 @@ function randomChoice(request, prng) {
   }
   if (request.forceSwitch) {
     const chosen = [];
-    return request.forceSwitch.map(must => {
+    return request.forceSwitch.map((must, i) => {
       if (!must) return 'pass';
-      const can = range(1, pokemon.length).filter(j => j > request.forceSwitch.length && !chosen.includes(j) && alive(j));
+      // Revival Blessing revives a fainted Pokémon.
+      const can = pokemon[i].reviving
+        ? range(1, pokemon.length).filter(j => !chosen.includes(j) && !alive(j))
+        : range(1, pokemon.length).filter(j => j > request.forceSwitch.length && !chosen.includes(j) && alive(j));
       if (!can.length) return 'pass';
       const t = prng.sample(can);
       chosen.push(t);

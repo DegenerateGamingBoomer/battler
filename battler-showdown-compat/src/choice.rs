@@ -13,6 +13,7 @@ use anyhow::{
 use battler_choice::{
     Choice,
     MoveChoice,
+    SelectChoice,
     SwitchChoice,
     TeamSelectionChoice,
     choices_to_string,
@@ -38,6 +39,12 @@ pub struct ChoiceContext {
     /// Showdown expects a choice (`pass`) for an empty or fainted slot; battler only takes choices
     /// for the Pokémon that can act. With this set, the choices of the other slots are dropped.
     pub turn_positions: Option<Vec<usize>>,
+    /// During a select request (Revival Blessing), the active positions (0-based) that select a
+    /// Pokémon.
+    ///
+    /// Showdown answers with a switch to the fainted Pokémon to revive; battler takes a select
+    /// choice. With this set, switches become selects and the choices of other slots are dropped.
+    pub select_positions: Option<Vec<usize>>,
     /// Showdown's current team order (its `side.pokemon`) as battler team positions.
     ///
     /// Showdown numbers switch targets in this order, which changes as Pokémon switch in and out;
@@ -119,6 +126,9 @@ fn translate_one(part: &str, active_index: usize, context: &ChoiceContext) -> Re
                         .with_context(|| format!("no Pokémon '{}' to switch to", args.join(" ")))?
                 }
             };
+            if context.select_positions.is_some() {
+                return Ok(Choice::Select(SelectChoice { mon: Some(mon) }));
+            }
             Ok(Choice::Switch(SwitchChoice { mon: Some(mon) }))
         }
         "shift" => Ok(Choice::Shift),
@@ -158,6 +168,7 @@ pub fn translate(showdown_choice: &str, context: &ChoiceContext) -> Result<Strin
             context
                 .switch_positions
                 .as_ref()
+                .or(context.select_positions.as_ref())
                 .or(context.turn_positions.as_ref())
                 .is_none_or(|positions| positions.contains(i))
         })
@@ -221,6 +232,15 @@ mod choice_test {
             translate("switch 3, switch 4", &both).unwrap(),
             "switch 2;switch 3"
         );
+    }
+
+    #[test]
+    fn translates_revival_switches_to_selects() {
+        let context = ChoiceContext {
+            select_positions: Some(vec![1]),
+            ..Default::default()
+        };
+        assert_eq!(translate("pass, switch 3", &context).unwrap(), "select 2");
     }
 
     #[test]

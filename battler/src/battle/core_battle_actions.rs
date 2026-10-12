@@ -360,7 +360,12 @@ fn copy_volatiles_for_switch(
     Mon::clear_volatile(context, true)?;
 
     let mut source_context = context.as_battle_context_mut().mon_context(source)?;
-    let boosts = source_context.mon().volatile_state.boosts.clone();
+    // Shed Tail only passes the Substitute.
+    let boosts = if copy_volatile_type == CopyVolatileType::SubstituteOnly {
+        BoostTable::default()
+    } else {
+        source_context.mon().volatile_state.boosts.clone()
+    };
     let mut volatiles = HashMap::default();
     for (volatile, state) in source_context.mon().volatile_state.volatiles.clone() {
         if CoreBattle::get_parsed_effect_by_id(source_context.as_battle_context_mut(), &volatile)?
@@ -1498,6 +1503,15 @@ fn move_hit_loop_internal(
     let mut target_hit_results = HashMap::new();
 
     for hit in 0..hits {
+        // A hit on a Substitute does not stop the next hit, which may break it and hit the target.
+        if hit > 0 {
+            for target in targets.iter_mut() {
+                if target.outcome == MoveOutcomeOnTarget::HitSubstitute {
+                    target.outcome = MoveOutcomeOnTarget::Unknown;
+                }
+            }
+        }
+
         // No more targets.
         if targets.is_empty() || targets.iter().all(|target| !target.outcome.advance()) {
             break;
@@ -1516,6 +1530,26 @@ fn move_hit_loop_internal(
         //
         // We do this now so that damage and base power callbacks can use this value.
         context.active_move_mut().hit = hit + 1;
+
+        // Moves that check accuracy for every hit (Triple Axel) silently stop at the first miss.
+        if hit > 0 && context.active_move().data.multiaccuracy {
+            let mut any_hit = false;
+            for target in targets.iter_mut() {
+                if !target.outcome.advance() {
+                    continue;
+                }
+                if direct_move_step::accuracy_check(
+                    &mut context.target_context(target.handle)?,
+                    true,
+                )? {
+                    any_hit = true;
+                }
+            }
+            if !any_hit {
+                context.active_move_mut().hit -= 1;
+                break;
+            }
+        }
 
         // Additional hits trigger a new move animation.
         if context.active_move().hit > 1 {
@@ -2587,7 +2621,8 @@ mod direct_move_step {
         context: &mut ActiveMoveContext,
         targets: &mut [HitTargetState],
     ) -> Result<()> {
-        if !context.active_move().data.multiaccuracy && context.active_move().hit > 1 {
+        // Additional hits of moves that check accuracy for every hit are checked before the hit.
+        if context.active_move().hit > 1 {
             return Ok(());
         }
 
@@ -2607,7 +2642,7 @@ mod direct_move_step {
     }
 
     /// Runs a single accuracy check of a move against a target.
-    fn accuracy_check(context: &mut ActiveTargetContext, silent: bool) -> Result<bool> {
+    pub fn accuracy_check(context: &mut ActiveTargetContext, silent: bool) -> Result<bool> {
         let mut accuracy = context.active_move().data.accuracy;
         // OHKO moves bypass accuracy modifiers.
         if let Some(ohko) = context.active_move().data.ohko_type.clone() {
@@ -6452,6 +6487,12 @@ pub fn can_mega_evolve(context: &mut MonContext) -> Result<Option<MegaEvolution>
     if !context.player().can_mega_evolve || !context.mon().active {
         return Ok(None);
     }
+    mega_evolution(context)
+}
+
+/// The Mega Evolution the Mon's species and item allow, regardless of whether it can Mega Evolve
+/// right now.
+pub fn mega_evolution(context: &mut MonContext) -> Result<Option<MegaEvolution>> {
     let species = context
         .battle()
         .dex

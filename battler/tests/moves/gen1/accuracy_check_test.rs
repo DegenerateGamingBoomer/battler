@@ -472,8 +472,6 @@ fn accuracy_check_for_multiaccuracy_moves() {
             "split|side:1",
             "damage|mon:Pikachu,player-2,1|health:78/95",
             "damage|mon:Pikachu,player-2,1|health:83/100",
-            "animatemove|mon:Pikachu,player-1,1|name:Triple Kick|noanim",
-            "miss|mon:Pikachu,player-2,1",
             "hitcount|hits:2",
             "residual",
             "turn|turn:5",
@@ -499,8 +497,6 @@ fn accuracy_check_for_multiaccuracy_moves() {
             "split|side:1",
             "damage|mon:Pikachu,player-2,1|health:29/95",
             "damage|mon:Pikachu,player-2,1|health:31/100",
-            "animatemove|mon:Pikachu,player-1,1|name:Triple Kick|noanim",
-            "miss|mon:Pikachu,player-2,1",
             "hitcount|hits:1",
             "residual",
             "turn|turn:7"

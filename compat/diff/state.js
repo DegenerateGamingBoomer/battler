@@ -42,9 +42,17 @@ function active(pokemon) {
   if (!pokemon || pokemon.fainted) return null;
   // Waiting for a mid-turn switch (U-turn, Eject Button, ...): Showdown keeps the Pokémon in its
   // slot until the replacement comes in, battler has already taken it out.
-  if (pokemon.switchFlag) return {name: pokemon.name, switching: true};
+  // Revival Blessing's "switch" only picks the Pokémon to revive; its user stays in.
+  if (pokemon.switchFlag && pokemon.switchFlag !== 'revivalblessing') {
+    return {name: pokemon.name, switching: true};
+  }
   const volatiles = {};
-  for (const [id, state] of Object.entries(pokemon.volatiles)) volatiles[id] = volatileState(id, state);
+  for (const [id, state] of Object.entries(pokemon.volatiles)) {
+    // Showdown links a trapping move's user to its target with a helper volatile; battler ends
+    // the trap when the user leaves without one.
+    if (id === 'trapper') continue;
+    volatiles[id] = volatileState(id, state);
+  }
   return {
     name: pokemon.name,
     species: pokemon.species.id,
@@ -73,11 +81,18 @@ function member(pokemon) {
   };
 }
 
-function conditions(map) {
+function conditions(map, turn) {
   const out = {};
   for (const [id, state] of Object.entries(map)) {
+    // Showdown's marker for a pending Revival Blessing choice, not a condition in battle.
+    if (id === 'revivalblessing') continue;
     const entry = {};
     if (typeof state.duration === 'number') entry.duration = state.duration;
+    // Wish records the turn it was used and resolves at the end of the next turn: a two-turn
+    // duration counted down at each residual.
+    if (id === 'wish' && typeof state.startingTurn === 'number') {
+      entry.duration = state.startingTurn + 1 - turn.turn + (turn.residualDone ? 0 : 1);
+    }
     if (typeof state.layers === 'number') entry.layers = state.layers;
     out[id] = entry;
   }
@@ -101,7 +116,11 @@ function normalize(battle) {
     },
     sides: battle.sides.map(side => ({
       conditions: conditions(side.sideConditions),
-      slotConditions: side.slotConditions.slice(0, side.active.length).map(conditions),
+      slotConditions: side.slotConditions.slice(0, side.active.length).map(map => conditions(map, {
+        turn: battle.getOverflowedTurnCount(),
+        // A request after this turn's residual (a replacement for a Pokémon that fainted to it).
+        residualDone: battle.midTurn && !battle.queue.list.some(action => action.choice === 'residual'),
+      })),
       active: side.active.map(p => active(p)),
       team: Object.fromEntries(side.pokemon.map(p => [p.name, member(p)])),
     })),

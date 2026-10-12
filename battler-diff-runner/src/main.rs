@@ -150,6 +150,10 @@ impl Session {
                 Ok(Some(battler::Request::Switch(request))) => {
                     context.switch_positions = Some(request.needs_switch.clone());
                 }
+                Ok(Some(battler::Request::Select(request))) => {
+                    context.select_positions =
+                        Some(request.positions.iter().map(|p| p.position).collect());
+                }
                 Ok(Some(battler::Request::Turn(_))) => {
                     let mons = self.battle.player_data(player)?.mons;
                     context.turn_positions = Some(

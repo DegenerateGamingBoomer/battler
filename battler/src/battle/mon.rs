@@ -373,6 +373,10 @@ pub struct MonBattleData {
     /// Base ability, which changes on permanent forme changes (like Mega Evolution).
     #[serde(default)]
     pub base_ability: String,
+    /// Whether the Mon could Mega Evolve (its player has not Mega Evolved yet, and it holds the
+    /// right Mega Stone), even if it is not on the field.
+    #[serde(default)]
+    pub can_mega_evolve: bool,
     pub item: Option<String>,
     pub status: Option<String>,
     #[serde(default)]
@@ -1718,6 +1722,8 @@ impl Mon {
             None
         };
         let weight = Self::get_weight(context);
+        let can_mega_evolve = context.player().can_mega_evolve
+            && core_battle_actions::mega_evolution(context)?.is_some();
         Ok(MonBattleData {
             summary: Self::summary_request_data(context)?,
             species,
@@ -1743,6 +1749,7 @@ impl Mon {
                 .collect::<Result<Vec<_>>>()?,
             ability,
             base_ability,
+            can_mega_evolve,
             item,
             status: context
                 .mon()

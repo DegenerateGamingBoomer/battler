@@ -475,6 +475,9 @@ impl Translator {
             | "removesidecondition"
             | "addslotcondition"
             | "removeslotcondition"
+            // Showdown announces no slot condition (Wish, Healing Wish) starting or ending.
+            | "slotstart"
+            | "slotend"
             | "addpseudoweather"
             | "removepseudoweather"
             | "addvolatile"
@@ -589,7 +592,21 @@ impl Translator {
                 ));
                 self.last_formechange = Some((mon, ability.unwrap_or_default()));
             }
-            "move" | "animatemove" => {
+            // Showdown only animates additional hits of Dragon Darts (smart targeting).
+            "animatemove" => {
+                let name = names::move_name(line.get("name").context("move name")?);
+                if name == "Dragon Darts"
+                    && let Some(target) = line.get("target")
+                {
+                    let user = Self::mon_of(line, "mon")?;
+                    out.push(format!(
+                        "|-anim|{}|{name}|{}",
+                        self.ident(&user)?,
+                        self.mon_ident(target)?
+                    ));
+                }
+            }
+            "move" => {
                 let user = Self::mon_of(line, "mon")?;
                 let name = names::move_name(line.get("name").context("move name")?);
                 let still = line.has("noanim");
@@ -1265,10 +1282,11 @@ impl Translator {
         }
         if let Some(condition) = line.get("condition") {
             let mon = mon.context("activate without a Pokémon")?;
-            let condition = if condition == "Confusion" {
-                "confusion"
-            } else {
-                condition
+            // Showdown names these conditions by ID.
+            let condition = match condition {
+                "Confusion" => "confusion",
+                "Trapped" => "trapped",
+                condition => condition,
             };
             return Ok(Some(format!(
                 "|-activate|{}|{condition}",

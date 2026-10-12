@@ -245,6 +245,10 @@ fn member(mon: &Mon, names: &SpeciesNames, context: &Context) -> Json {
 fn conditions<'a>(map: impl Iterator<Item = (&'a Id, &'a EffectState)>) -> Json {
     let mut out = Map::new();
     for (id, state) in map {
+        // The marker for a pending Revival Blessing choice, not a condition in battle.
+        if id.as_ref() == "revivalblessing" {
+            continue;
+        }
         let mut entry = Map::new();
         if let Some(duration) = duration(state) {
             entry.insert("duration".to_owned(), json!(duration));

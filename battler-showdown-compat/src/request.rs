@@ -199,22 +199,33 @@ pub fn translate(
                     };
                     let from_request = turn.active.iter().find(|r| r.team_position == mon.player_team_position);
                     let mut entry = json!({"moves": moves(from_request.map(|r| r.moves.as_slice()).unwrap_or(&mon.moves))});
+                    // Showdown still describes a fainted Pokémon left in its slot, including whether
+                    // it could Mega Evolve.
+                    if from_request.is_none() && mon.can_mega_evolve {
+                        entry["canMegaEvo"] = json!(true);
+                    }
                     if let Some(r) = from_request {
+                        // battler locks a Pokémon without usable moves into Struggle; Showdown
+                        // offers Struggle as its only move.
+                        let locked_into_struggle = r.locked_into_move
+                            && r.moves.len() == 1
+                            && r.moves[0].id.as_ref() == "struggle";
                         // A Pokémon locked into a move (charging, recharging, rampaging) only shows
                         // that move's name and ID, and is trapped.
-                        if r.locked_into_move {
+                        if r.locked_into_move && !locked_into_struggle {
                             entry["moves"] = json!(r.moves.iter().map(|m| json!({
                                 "move": crate::names::move_name(&m.name),
                                 "id": m.id.to_string(),
                             })).collect::<Vec<_>>());
                         }
-                        if r.trapped || r.locked_into_move {
+                        if r.trapped || (r.locked_into_move && !locked_into_struggle) {
                             entry["trapped"] = json!(true);
                         }
                         // Without a usable move, the only option is Struggle, which also rules out
                         // Mega Evolution.
-                        let struggle = !r.locked_into_move
-                            && r.moves.iter().all(|m| m.disabled || m.pp == 0);
+                        let struggle = locked_into_struggle
+                            || (!r.locked_into_move
+                                && r.moves.iter().all(|m| m.disabled || m.pp == 0));
                         if struggle {
                             entry["moves"] = json!([{
                                 "move": "Struggle",
@@ -237,6 +248,32 @@ pub fn translate(
                 .map(|i| switch.needs_switch.contains(&i))
                 .collect();
             let mut value = json!({"forceSwitch": flags, "side": side(side_info, player, false)});
+            if !side_info.multiple_requests {
+                value["noCancel"] = json!(true);
+            }
+            value
+        }
+        // Revival Blessing: Showdown asks the reviving slot to "switch" to a fainted Pokémon.
+        Request::Select(select) => {
+            let positions: Vec<usize> = select.positions.iter().map(|p| p.position).collect();
+            let flags: Vec<bool> = (0..side_info.active_count)
+                .map(|i| positions.contains(&i))
+                .collect();
+            let mut side = side(side_info, player, false);
+            if let Some(pokemon) = side["pokemon"].as_array_mut() {
+                let mut mons: Vec<&MonBattleData> = player.mons.iter().collect();
+                mons.sort_by_key(|m| m.player_effective_team_position);
+                for (entry, mon) in pokemon.iter_mut().zip(mons) {
+                    if mon.active
+                        && mon
+                            .player_active_position
+                            .is_some_and(|position| positions.contains(&position))
+                    {
+                        entry["reviving"] = json!(true);
+                    }
+                }
+            }
+            let mut value = json!({"forceSwitch": flags, "side": side});
             if !side_info.multiple_requests {
                 value["noCancel"] = json!(true);
             }

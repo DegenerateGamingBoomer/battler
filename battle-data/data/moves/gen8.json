@@ -1418,7 +1418,7 @@
     "flags": ["Mirror", "Protect"],
     "effect": {
       "callbacks": {
-        "on_try_use_move": ["require $target.item.is_defined else return"],
+        "on_try_use_move": ["require $target.is_defined and $target.item.is_defined"],
         "on_try_hit": [
           "require $target.item.is_defined",
           "$item = func_call(get_item: $target.item)",

@@ -1301,6 +1301,10 @@ where
             &event_state,
             callback_handle,
         )?;
+
+        // Mons that faint to a residual effect faint before the next one, which may end the
+        // battle.
+        CoreBattle::faint_messages(context.battle_context_mut())?;
     }
     Ok(())
 }
