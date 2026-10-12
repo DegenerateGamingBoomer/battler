@@ -377,6 +377,9 @@ pub struct MonBattleData {
     /// right Mega Stone), even if it is not on the field.
     #[serde(default)]
     pub can_mega_evolve: bool,
+    /// Whether the Mon is transformed into another Mon, so `stats` are not its own.
+    #[serde(default)]
+    pub transformed: bool,
     pub item: Option<String>,
     pub status: Option<String>,
     #[serde(default)]
@@ -1554,6 +1557,16 @@ impl Mon {
         )
     }
 
+    /// Calculates the value for the given [`Stat`] on a [`Mon`] with the given boost, without stat
+    /// modifiers (confusion damage).
+    pub fn calculate_stat_unmodified(
+        context: &mut MonContext,
+        stat: Stat,
+        boost: i8,
+    ) -> Result<u16> {
+        Self::calculate_stat_internal(context, stat, false, Some(boost), true, None, None)
+    }
+
     /// Gets the current value for the given [`Stat`] on a [`Mon`] after all boosts/drops and
     /// modifications.
     pub fn get_stat(
@@ -1760,6 +1773,7 @@ impl Mon {
             ability,
             base_ability,
             can_mega_evolve,
+            transformed: context.mon().volatile_state.transformed,
             item,
             status: context
                 .mon()

@@ -17,6 +17,7 @@ use battler_data::{
     BoostOrderIterator,
     BoostTable,
     BoostTableEntries,
+    ConditionType,
     CopyVolatileType,
     DefaultTrueBool,
     Fraction,
@@ -90,6 +91,7 @@ use crate::{
     effect::{
         AppliedEffectHandle,
         AppliedEffectLocation,
+        Effect,
         EffectHandle,
         LinkedEffectsManager,
         NonExistentEffect,
@@ -2908,7 +2910,14 @@ fn apply_spread_damage(
         }
 
         if context.effect().id() != &Id::from("strugglerecoil") {
-            if check_immunity(&mut context)? {
+            // Damage from a status the Mon already has applies even if it became immune to the
+            // status (a poisoned Mon that becomes Steel-type).
+            let status_damage = matches!(
+                context.effect(),
+                Effect::Condition(condition)
+                    if condition.data.condition_type == ConditionType::Status
+            );
+            if !status_damage && check_immunity(&mut context)? {
                 *damage = 0;
                 continue;
             }
@@ -3558,17 +3567,30 @@ fn apply_secondary_effects(
     }
 
     for target in targets {
-        if !target.outcome.advance() {
+        // A hit on a substitute still rolls for secondary effects, but only their effects on the
+        // user apply.
+        let hit_substitute = target.outcome == MoveOutcomeOnTarget::HitSubstitute;
+        if !target.outcome.advance() && !hit_substitute {
             continue;
         }
 
         let secondary_effects = context.active_move().data.secondary_effects.clone();
-        let secondary_effects =
+        let secondary_effects = if hit_substitute {
+            secondary_effects
+                .into_iter()
+                .map(|mut secondary_effect| {
+                    secondary_effect.target = None;
+                    secondary_effect.effect = serde_json::Value::Null;
+                    secondary_effect
+                })
+                .collect()
+        } else {
             core_battle_effects::run_event_with_relay::<_, Vec<SecondaryEffectData>>(
                 &mut context.applying_effect_context_for_target(target.handle)?,
                 fxlang::BattleEvent::ModifySecondaryEffects,
                 secondary_effects,
-            );
+            )
+        };
 
         let secondary_effects = secondary_effects
             .into_iter()
@@ -4177,8 +4199,9 @@ pub fn calculate_confusion_damage(context: &mut MonContext, base_power: u32) -> 
         .volatile_state
         .boosts
         .get(defense_stat.try_into()?);
-    let attack = Mon::calculate_stat(context, attack_stat, attack_boosts, None, None)?;
-    let defense = Mon::calculate_stat(context, defense_stat, defense_boosts, None, None)?;
+    // Stat modifiers (items, abilities, burn) do not apply.
+    let attack = Mon::calculate_stat_unmodified(context, attack_stat, attack_boosts)?;
+    let defense = Mon::calculate_stat_unmodified(context, defense_stat, defense_boosts)?;
     let level = context.mon().level as u32;
     let base_damage = 2 * level / 5 + 2;
     let base_damage = base_damage * base_power;

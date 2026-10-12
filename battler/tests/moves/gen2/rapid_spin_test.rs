@@ -162,6 +162,7 @@ fn rapid_spin_clears_user_entry_hazards_even_if_hitting_substitute() {
             "end|mon:Forretress,player-1,1|move:Leech Seed",
             "sideend|side:0|move:Spikes",
             "sideend|side:0|move:Toxic Spikes",
+            "boost|mon:Forretress,player-1,1|stat:spe|by:1",
             "residual",
             "turn|turn:7"
         ]"#,

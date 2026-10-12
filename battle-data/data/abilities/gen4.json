@@ -515,8 +515,8 @@
           "# We are using a move against a target.",
           "if $effect.source == $effect_state.target:",
           ["$boosts.def = 0", "$boosts.spd = 0", "$boosts.eva = 0"],
-          "# Mon is using a move against us.",
-          "else if $effect.source == $target and func_call(move_hit_target: $effect $effect_state.target):",
+          "# Mon is using a move against us (the target of this damage calculation).",
+          "else if $effect.source == $target and $source == $effect_state.target:",
           ["$boosts.atk = 0", "$boosts.def = 0", "$boosts.spa = 0", "$boosts.acc = 0"],
           "return $boosts"
         ]

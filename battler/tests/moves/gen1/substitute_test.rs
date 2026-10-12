@@ -76,7 +76,7 @@ fn make_battle(seed: u64, team_1: TeamData, team_2: TeamData) -> Result<PublicCo
 
 #[test]
 fn substitute_avoids_hit_effects_until_broken() {
-    let mut battle = make_battle(1434343, wobbuffet().unwrap(), wobbuffet().unwrap()).unwrap();
+    let mut battle = make_battle(1434345, wobbuffet().unwrap(), wobbuffet().unwrap()).unwrap();
     assert_matches::assert_matches!(battle.start(), Ok(()));
 
     assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
@@ -123,8 +123,8 @@ fn substitute_avoids_hit_effects_until_broken() {
             "move|mon:Wobbuffet,player-1,1|name:Crunch|target:Wobbuffet,player-2,1",
             "supereffective|mon:Wobbuffet,player-2,1",
             "split|side:1",
-            "damage|mon:Wobbuffet,player-2,1|health:196/250",
-            "damage|mon:Wobbuffet,player-2,1|health:79/100",
+            "damage|mon:Wobbuffet,player-2,1|health:200/250",
+            "damage|mon:Wobbuffet,player-2,1|health:80/100",
             "move|mon:Wobbuffet,player-2,1|name:Crunch|target:Wobbuffet,player-1,1",
             "supereffective|mon:Wobbuffet,player-1,1",
             "activate|mon:Wobbuffet,player-1,1|move:Substitute|damage",
@@ -150,8 +150,8 @@ fn substitute_avoids_hit_effects_until_broken() {
             "move|mon:Wobbuffet,player-2,1|name:Crunch|target:Wobbuffet,player-1,1",
             "supereffective|mon:Wobbuffet,player-1,1",
             "split|side:0",
-            "damage|mon:Wobbuffet,player-1,1|health:142/250",
-            "damage|mon:Wobbuffet,player-1,1|health:57/100",
+            "damage|mon:Wobbuffet,player-1,1|health:146/250",
+            "damage|mon:Wobbuffet,player-1,1|health:59/100",
             "unboost|mon:Wobbuffet,player-1,1|stat:def|by:1",
             "residual",
             "turn|turn:8"

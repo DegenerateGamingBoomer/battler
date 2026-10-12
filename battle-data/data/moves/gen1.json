@@ -1488,7 +1488,7 @@
           "if $weather.is_raining:",
           ["$move.accuracy = exempt"],
           "else if $weather.is_sunny:",
-          ["$move.accuracy = 50"]
+          ["$move.accuracy = 1/2"]
         ]
       }
     }

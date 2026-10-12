@@ -122,7 +122,14 @@ pub fn side(side: &SideInfo, player: &PlayerBattleData, team_preview: bool) -> V
         .iter()
         .enumerate()
         .map(|(i, mon)| {
-            let stat = |s: battler::Stat| mon.stats.get(&s).copied();
+            // Requests show the Mon's own stats, not the stats it transformed into.
+            let stat = |s: battler::Stat| {
+                if mon.transformed {
+                    Some(mon.summary.stats.get(s))
+                } else {
+                    mon.stats.get(&s).copied()
+                }
+            };
             // Team preview lists the first positions as active.
             let active = if team_preview { i < side.active_count } else { mon.active };
             json!({

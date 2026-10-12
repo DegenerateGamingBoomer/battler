@@ -11,6 +11,7 @@ use battler_test_utils::{
     TestBattleBuilder,
     assert_logs_since_start_eq,
     assert_logs_since_turn_eq,
+    get_controlled_rng_for_battle,
     static_local_data_store,
 };
 
@@ -518,4 +519,53 @@ fn harsh_sunlight_increases_growth_boost() {
     )
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
+}
+
+fn jolteon() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Jolteon",
+                    "species": "Jolteon",
+                    "ability": "No Ability",
+                    "moves": [
+                        "Thunder"
+                    ],
+                    "nature": "Hardy",
+                    "gender": "M",
+                    "level": 50
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+#[test]
+fn harsh_sunlight_lowers_thunder_accuracy() {
+    let mut battle = make_battle(0, charizard().unwrap(), jolteon().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass"), Ok(()));
+
+    // Hits at 70% accuracy, but misses at 50%.
+    let rng = get_controlled_rng_for_battle(&mut battle).unwrap();
+    rng.insert_fake_values_relative_to_sequence_count([(1, 60)]);
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "pass"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 0"), Ok(()));
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "move|mon:Jolteon,player-2,1|name:Thunder|noanim",
+            "miss|mon:Charizard,player-1,1",
+            "residual",
+            "weather|weather:Harsh Sunlight|residual",
+            "turn|turn:3"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 2, &expected_logs);
 }

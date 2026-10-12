@@ -184,10 +184,11 @@
         "on_source_modify_damage": [
           "$category = func_call(value_from_local_data: category)",
           "require $target != $user and (!$category or $move.category == $category) else return",
-          "# Only one screen weakens the move against each target.",
-          "require $move.effect_state.screen_weakened_target != $target else return",
+          "# Only one screen weakens each hit against each target.",
+          "require $move.effect_state.screen_weakened_target != $target or $move.effect_state.screen_weakened_hit != $move.hit else return",
           "require !func_call(move_crit_target: $move $target) and !$move.effect_state.infiltrates else return",
           "$move.effect_state.screen_weakened_target = $target",
+          "$move.effect_state.screen_weakened_hit = $move.hit",
           "if $format.mons_per_side > 1:",
           ["chain_modify: 2732/4096", "return"],
           "chain_modify: 1/2",

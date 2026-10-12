@@ -298,6 +298,7 @@ fn transform_transforms_into_target() {
                         ],
                         "ability": "Blaze",
                         "base_ability": "No Ability",
+                        "transformed": true,
                         "item": null,
                         "status": null,
                         "weight": 905
