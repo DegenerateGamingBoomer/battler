@@ -86,8 +86,8 @@ fn kangaskhan_mega_evolves_and_gains_parental_bond() {
             "damage|mon:Kangaskhan,player-2,1|health:31/100",
             "animatemove|mon:Kangaskhan,player-1,1|name:Earthquake",
             "split|side:1",
-            "damage|mon:Kangaskhan,player-2,1|health:33/165",
-            "damage|mon:Kangaskhan,player-2,1|health:20/100",
+            "damage|mon:Kangaskhan,player-2,1|health:34/165",
+            "damage|mon:Kangaskhan,player-2,1|health:21/100",
             "hitcount|hits:2",
             "residual",
             "turn|turn:3"

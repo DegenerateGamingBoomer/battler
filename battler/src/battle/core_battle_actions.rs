@@ -218,6 +218,23 @@ pub fn switch_out(
     switch_out_internal(context, false, true, copy_volatile_type)
 }
 
+/// Prepares a Mon to switch out mid-turn (U-turn, Eject Button, ...), right before its
+/// replacement is chosen.
+///
+/// Only the events before switching out run now (Pursuit); the Mon stays in battle until its
+/// replacement switches in.
+pub fn prepare_to_switch_out(context: &mut MonContext) -> Result<()> {
+    if !context.mon().active
+        || context.mon().hp == 0
+        || context.mon().switch_state.skip_before_switch_out
+    {
+        return Ok(());
+    }
+    core_battle_effects::run_event::<MonContext, ()>(context, fxlang::BattleEvent::BeforeSwitchOut);
+    context.mon_mut().switch_state.skip_before_switch_out = true;
+    Ok(())
+}
+
 /// Switches a Mon into the given position.
 pub fn switch_in(
     context: &mut MonContext,
@@ -250,9 +267,18 @@ pub fn switch_in(
             if let Some(previous_mon_switch_type) = context.mon().switch_state.needs_switch {
                 switch_type = Some(previous_mon_switch_type);
             }
+            let copy_volatile_type = match switch_type {
+                Some(SwitchType::CopyVolatile(copy_volatile_type)) => Some(copy_volatile_type),
+                _ => None,
+            };
+
+            // The previous Mon switches out first (keeping the volatiles it passes on).
+            if !switch_out_internal(&mut context, true, true, copy_volatile_type)? {
+                return Ok(false);
+            }
 
             // Copy volatiles out now, then apply after the switch in log.
-            if let Some(SwitchType::CopyVolatile(copy_volatile_type)) = switch_type {
+            if let Some(copy_volatile_type) = copy_volatile_type {
                 copied_volatiles = Some((
                     previous_mon,
                     copy_volatiles_for_switch(
@@ -261,10 +287,6 @@ pub fn switch_in(
                         copy_volatile_type,
                     )?,
                 ));
-            }
-
-            if !switch_out_internal(&mut context, true, true, None)? {
-                return Ok(false);
             }
 
             context.mon_mut().effective_team_position = previous_team_position;
@@ -2320,6 +2342,15 @@ fn modify_damage(context: &mut ActiveTargetContext, mut base_damage: u32) -> Res
     if context.active_move().spread_hit {
         let spread_modifier = Fraction::new(3, 4);
         base_damage = modify_32(base_damage, spread_modifier);
+    } else if context.active_move().hit > 1
+        && matches!(
+            context.active_move().effect_state.get("parental_bond"),
+            Some(fxlang::Value::Boolean(true))
+        )
+    {
+        // Parental Bond's second hit.
+        let parental_bond_modifier = Fraction::new(1, 4);
+        base_damage = modify_32(base_damage, parental_bond_modifier);
     }
 
     // Weather modifiers.
@@ -3079,6 +3110,7 @@ fn apply_move_effects(
                         &mut target_context.applying_effect_context()?,
                         &Id::from(status),
                         !is_secondary && !is_self,
+                        false,
                     )?;
                     hit_effect_outcome = hit_effect_outcome.combine(set_status.into());
                 }
@@ -3618,13 +3650,17 @@ fn force_switch_from_move(
 }
 
 /// Tries to set the status of a Mon.
+///
+/// If `replace` is set, a different existing status is replaced instead of failing.
 pub fn try_set_status(
     context: &mut ApplyingEffectContext,
     status: &Id,
     is_primary_move_effect: bool,
+    replace: bool,
 ) -> Result<EventResult> {
     struct Callbacks {
         is_primary_move_effect: bool,
+        replace: bool,
         previous_status: Option<Id>,
         previous_status_state: EffectState,
     }
@@ -3643,8 +3679,14 @@ pub fn try_set_status(
             &mut self,
             context: &mut ConditionContext<'context, 'battle, 'data, ApplyingEffectContext>,
         ) -> Result<EventResult> {
-            if context.context.target().hp == 0 || context.context.target().status.is_some() {
+            if context.context.target().hp == 0 {
                 return Ok(EventResult::Fail);
+            }
+            match &context.context.target().status {
+                Some(status) if !self.replace || *status == context.effect_id => {
+                    return Ok(EventResult::Fail);
+                }
+                _ => (),
             }
 
             Ok(EventResult::Advance)
@@ -3727,6 +3769,7 @@ pub fn try_set_status(
 
     let callbacks = Callbacks {
         is_primary_move_effect,
+        replace,
         previous_status: context.target().status.clone(),
         previous_status_state: context.target().status_state.clone(),
     };

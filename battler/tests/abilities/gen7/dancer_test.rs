@@ -275,7 +275,6 @@ fn dancer_fails_when_locked_into_move() {
             "damage|mon:Oricorio,player-1,1|health:117/135",
             "damage|mon:Oricorio,player-1,1|health:87/100",
             "itemend|mon:Oricorio,player-1,1|item:Eject Button",
-            "switchout|mon:Oricorio,player-1,1",
             "continue",
             "split|side:0",
             ["switch", "player-1", "Oricorio"],

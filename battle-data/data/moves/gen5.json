@@ -178,7 +178,7 @@
     "flags": ["Mirror", "Protect"],
     "effect": {
       "callbacks": {
-        "on_move_base_power": ["if [psn, tox] has $target.status:", ["return $move.base_power * 2"]]
+        "on_base_power": ["if [psn, tox] has $target.status:", ["chain_modify: 2", "return"]]
       }
     }
   },
@@ -919,10 +919,13 @@
     "effect": {
       "callbacks": {
         "on_hit": [
-          "$multiplier = 1/2",
+          "# Half rounds up; a boosted multiplier is a 4096-based modifier, rounded like other modifiers.",
+          "$amount = expr(($target.base_max_hp + 1) / 2)",
           "if $move.effect_state.multiplier.is_defined:",
-          ["$multiplier = $move.effect_state.multiplier"],
-          "require func_call(heal: $target expr($target.base_max_hp * $multiplier) primary_effect) else return stop"
+          [
+            "$amount = expr(($target.base_max_hp * $move.effect_state.multiplier * 4096 + 2047) / 4096)"
+          ],
+          "require func_call(heal: $target $amount primary_effect) else return stop"
         ]
       }
     }

@@ -2545,9 +2545,11 @@ fn apply_recoil_damage(mut context: FunctionContext) -> Result<Value> {
 ///
 /// @param {[`ValueType::Mon`]} [mon] The Mon to modify.
 /// @param {[`ValueType::String`]} status The status ID.
+/// @flag replace If set, a different existing status is replaced (Rest).
 /// @returns {[`ValueType::EventResult`]} Whether the status was successfully set.
 fn set_status(mut context: FunctionContext) -> Result<Value> {
     let primary_effect = context.primary_effect();
+    let replace = context.has_flag("replace");
     let mon_handle = context.target_handle_positional()?;
     let status = context
         .pop_front()
@@ -2560,6 +2562,7 @@ fn set_status(mut context: FunctionContext) -> Result<Value> {
         &mut context.forward_to_applying_effect_context_with_target(mon_handle)?,
         &status,
         primary_effect,
+        replace,
     )
     .map(|val| Value::EventResult(val))
 }
@@ -5921,15 +5924,22 @@ fn set_needs_switch(mut context: FunctionContext) -> Result<()> {
     Ok(())
 }
 
-/// Forces a Mon to switch out.
+/// Makes a Mon switch out once the current action ends.
 ///
 /// @param {[`ValueType::Mon`]} [mon] The Mon to switch.
-/// @returns {[`ValueType::Boolean`]} Whether the switch was successful.
+/// @returns {[`ValueType::Boolean`]} Whether the Mon will switch out.
 fn switch_out(mut context: FunctionContext) -> Result<Value> {
     let target_handle = context.target_handle_positional()?;
     let mut context = context.mon_context(target_handle)?;
+    if !Player::can_switch(context.as_player_context())
+        || !context.mon().active
+        || context.mon().hp == 0
+    {
+        return Ok(Value::Boolean(false));
+    }
+    // The Mon switches out when its replacement switches in, after the current action.
     context.mon_mut().switch_state.needs_switch = Some(SwitchType::Normal);
-    core_battle_actions::switch_out(&mut context, None).map(|val| Value::Boolean(val))
+    Ok(Value::Boolean(true))
 }
 
 /// Forces a Mon to switch out.

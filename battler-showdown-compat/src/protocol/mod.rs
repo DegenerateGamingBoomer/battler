@@ -858,11 +858,13 @@ impl Translator {
                 } else {
                     ""
                 };
-                // Abilities that announce themselves first cure with a plain message.
+                // Abilities that announce themselves first and items (berries, after `-enditem`)
+                // cure with a plain message.
                 let tags = if matches!(
                     line.get("from"),
                     Some("ability:Shed Skin" | "ability:Hydration" | "ability:Healer")
-                ) {
+                ) || line.get("from").is_some_and(|from| from.starts_with("item:"))
+                {
                     "|[msg]".to_owned()
                 } else {
                     format!("{}{msg}", self.from_of(line)?)

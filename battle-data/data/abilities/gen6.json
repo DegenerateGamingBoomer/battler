@@ -329,10 +329,6 @@
           "require !$move.upgraded else return",
           "$move.multihit = 2",
           "$move.effect_state.parental_bond = true"
-        ],
-        "on_modify_damage": [
-          "if $move.hit > 1 and $move.effect_state.parental_bond:",
-          ["return $damage / 4"]
         ]
       }
     }

@@ -67,8 +67,7 @@ fn chilly_reception_starts_snow_and_switches_user_out() {
         r#"[
             "prepare|mon:Slowking,player-1,1|move:Chilly Reception",
             "move|mon:Slowking,player-1,1|name:Chilly Reception",
-            "weather|weather:Snow",
-            "switchout|mon:Slowking,player-1,1"
+            "weather|weather:Snow"
         ]"#,
     )
     .unwrap();

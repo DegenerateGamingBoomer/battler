@@ -40,13 +40,6 @@ function boosts(pokemon) {
 
 function active(pokemon) {
   if (!pokemon || pokemon.fainted) return null;
-  // Waiting for a mid-turn switch (U-turn, Eject Button, ...): Showdown keeps the Pokémon in its
-  // slot until the replacement comes in, battler has already taken it out.
-  // Revival Blessing's "switch" only picks the Pokémon to revive; its user stays in.
-  // A switch pending when the battle ends never happens.
-  if (pokemon.switchFlag && pokemon.switchFlag !== 'revivalblessing' && !pokemon.battle.ended) {
-    return {name: pokemon.name, switching: true};
-  }
   const volatiles = {};
   for (const [id, state] of Object.entries(pokemon.volatiles)) {
     // Showdown links a trapping move's user to its target with a helper volatile; battler ends
@@ -54,7 +47,7 @@ function active(pokemon) {
     if (id === 'trapper') continue;
     volatiles[id] = volatileState(id, state);
   }
-  return {
+  const entry = {
     name: pokemon.name,
     species: pokemon.species.id,
     hp: pokemon.hp,
@@ -66,6 +59,12 @@ function active(pokemon) {
     activeTurns: pokemon.activeTurns,
     moveActions: pokemon.activeMoveActions,
   };
+  // Waiting for its mid-turn replacement (U-turn, Eject Button, ...). Revival Blessing's "switch"
+  // only picks the Pokémon to revive, and a switch pending when the battle ends never happens.
+  if (pokemon.switchFlag && pokemon.switchFlag !== 'revivalblessing' && !pokemon.battle.ended) {
+    entry.switching = true;
+  }
+  return entry;
 }
 
 function member(pokemon) {

@@ -277,6 +277,7 @@ pub fn normalize(
     names: &[SpeciesNames],
 ) -> Result<Json> {
     let turn = battle.internal.turn();
+    let ended = battle.ended();
     let field = &battle.internal.field;
     let pseudo = conditions(field.pseudo_weathers.iter());
     let weather = field.weather.as_ref().map(|w| weather_id(w.as_ref()));
@@ -322,14 +323,14 @@ pub fn normalize(
             .iter()
             .zip(&exited_handles)
             .map(|(handle, exited)| -> Result<Json> {
-                // A Pokémon waiting for its mid-turn replacement (U-turn, Eject Button, ...) has
-                // left its slot already; Showdown keeps it there until the switch.
+                // A Pokémon that left its slot without fainting (which should not be visible at a
+                // request).
                 if handle.is_none()
                     && let Some(exited) = exited
                 {
                     let mon = context.mon(*exited)?;
                     if mon.hp > 0 {
-                        return Ok(json!({"name": mon.name, "switching": true}));
+                        return Ok(json!({"name": mon.name, "exited": true}));
                     }
                 }
                 match handle {
@@ -338,7 +339,12 @@ pub fn normalize(
                         Ok(if mon.hp == 0 {
                             Json::Null
                         } else {
-                            active(&mon, names)
+                            let mut entry = active(&mon, names);
+                            // Waiting for its mid-turn replacement (U-turn, Eject Button, ...).
+                            if mon.switch_state.needs_switch.is_some() && !ended {
+                                entry["switching"] = json!(true);
+                            }
+                            entry
                         })
                     }
                     None => Ok(Json::Null),

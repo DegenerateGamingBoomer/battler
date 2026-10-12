@@ -96,7 +96,6 @@ fn jaw_lock_traps_user_and_target() {
             "damage|mon:Drednaw,player-2,1|health:106/290",
             "damage|mon:Drednaw,player-2,1|health:37/100",
             "activate|mon:Drednaw,player-2,1|ability:Emergency Exit",
-            "switchout|mon:Drednaw,player-2,1",
             "continue",
             "split|side:1",
             ["switch", "player-2", "Drednaw"],

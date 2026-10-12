@@ -40,6 +40,7 @@ function parseArgs(argv) {
     else if (a === '--runner') args.runner = path.resolve(argv[++i]);
     else if (a === '--verbose') args.verbose = true;
     else if (a === '--scenarios') args.scenarios = (argv[i + 1] && !argv[i + 1].startsWith('--')) ? argv[++i] : '';
+    else if (a === '--merge') args.merge = argv[++i].split(',').map(d => path.resolve(d));
     else throw new Error(`unknown argument ${a}`);
   }
   return args;
@@ -369,6 +370,15 @@ function printSummary(s) {
 async function main() {
   const args = parseArgs(process.argv);
   fs.mkdirSync(args.out, {recursive: true});
+  if (args.merge) {
+    // Summarizes earlier runs (for example, chunks run in parallel with --start) together.
+    const merged = args.merge.flatMap(dir => fs.readFileSync(path.join(dir, 'battles.jsonl'), 'utf8')
+      .split('\n').filter(Boolean).map(line => JSON.parse(line)));
+    const summary = summarize(merged);
+    fs.writeFileSync(path.join(args.out, 'summary.json'), JSON.stringify(summary, null, 1));
+    printSummary(summary);
+    return;
+  }
   const runner = new Runner(args.runner);
   const records = [];
   const out = fs.createWriteStream(path.join(args.out, 'battles.jsonl'));

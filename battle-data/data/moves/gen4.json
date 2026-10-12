@@ -201,10 +201,7 @@
     "flags": ["Mirror", "Protect"],
     "effect": {
       "callbacks": {
-        "on_move_base_power": [
-          "if 2 * $target.hp <= $target.max_hp:",
-          ["return $move.base_power * 2"]
-        ]
+        "on_base_power": ["if 2 * $target.hp <= $target.max_hp:", ["chain_modify: 2", "return"]]
       }
     }
   },

@@ -149,8 +149,7 @@ fn mind_blown_recoil_activates_emergency_exit() {
             "split|side:0",
             "damage|mon:Blacephalon,player-1,1|from:Recoil|health:108/216",
             "damage|mon:Blacephalon,player-1,1|from:Recoil|health:50/100",
-            "activate|mon:Blacephalon,player-1,1|ability:Emergency Exit",
-            "switchout|mon:Blacephalon,player-1,1"
+            "activate|mon:Blacephalon,player-1,1|ability:Emergency Exit"
         ]"#,
     )
     .unwrap();

@@ -1025,9 +1025,9 @@
     ],
     "effect": {
       "callbacks": {
-        "on_move_base_power": [
+        "on_base_power": [
           "if func_call(has_pseudo_weather: gravity):",
-          ["return $move.base_power * 3/2"]
+          ["chain_modify: 3/2", "return"]
         ]
       }
     }
@@ -1167,9 +1167,9 @@
           "if $user.effective_terrain == psychicterrain:",
           ["$move.target = alladjacentfoes"]
         ],
-        "on_move_base_power": [
+        "on_base_power": [
           "if $source.effective_terrain == psychicterrain:",
-          ["return $move.base_power * 3/2"]
+          ["chain_modify: 3/2", "return"]
         ]
       }
     }
@@ -1276,9 +1276,9 @@
     "flags": ["Mirror", "Protect"],
     "effect": {
       "callbacks": {
-        "on_move_base_power": [
+        "on_base_power": [
           "if $source.effective_terrain == mistyterrain:",
-          ["return $move.base_power * 3/2"]
+          ["chain_modify: 3/2", "return"]
         ]
       }
     }
@@ -1400,10 +1400,7 @@
     "flags": ["Contact", "Mirror", "Protect"],
     "effect": {
       "callbacks": {
-        "on_move_base_power": [
-          "if $source.stats_lowered_this_turn:",
-          ["return $move.base_power * 2"]
-        ]
+        "on_base_power": ["if $source.stats_lowered_this_turn:", ["chain_modify: 2", "return"]]
       }
     }
   },
@@ -1900,7 +1897,7 @@
     ],
     "effect": {
       "callbacks": {
-        "on_move_base_power": ["if [psn, tox] has $target.status:", ["return $move.base_power * 2"]]
+        "on_base_power": ["if [psn, tox] has $target.status:", ["chain_modify: 2", "return"]]
       }
     }
   },

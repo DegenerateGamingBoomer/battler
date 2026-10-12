@@ -95,7 +95,7 @@ fn heal_pulse_heals_half_max_hp() {
             "continue",
             "move|mon:Reuniclus,player-1,1|name:Heal Pulse|target:Reuniclus,player-2,1",
             "split|side:1",
-            "heal|mon:Reuniclus,player-2,1|health:165/201",
+            "heal|mon:Reuniclus,player-2,1|health:166/201",
             "heal|mon:Reuniclus,player-2,1|health:83/100",
             "residual",
             "turn|turn:3"

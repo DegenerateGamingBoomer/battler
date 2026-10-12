@@ -1291,10 +1291,10 @@
           "$weather = func_call(effective_weather: $user)",
           "require !$weather or !$weather.is_sunny"
         ],
-        "on_move_base_power": [
+        "on_base_power": [
           "$weak_weathers = [rainweather, heavyrainweather, sandstormweather, hailweather, snowweather]",
           "if $weak_weathers has func_call(effective_weather: $source):",
-          ["return $move.base_power * 1/2"]
+          ["chain_modify: 1/2", "return"]
         ]
       }
     }
@@ -2817,7 +2817,8 @@
           ["log_fail_heal: $user", "return stopfail"]
         ],
         "on_hit": [
-          "require func_call(set_status: $target slp) else return stop",
+          "# Rest replaces any other status.",
+          "require func_call(set_status: $target slp replace) else return stop",
           "$status_state = func_call(status_effect_state: $target)",
           "$status_state.total_time = 3",
           "$status_state.time = 3",

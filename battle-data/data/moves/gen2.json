@@ -1669,14 +1669,15 @@
     "effect": {
       "callbacks": {
         "on_hit": [
+          "# The factor is a 4096-based modifier, rounded like other modifiers.",
           "$weather = func_call(effective_weather: $target)",
           "if !$weather:",
-          ["$factor = 1/2"],
+          ["$modifier = 2048"],
           "else if $weather.is_sunny:",
-          ["$factor = 2/3"],
+          ["$modifier = 2732"],
           "else:",
-          ["$factor = 1/4"],
-          "require func_call(heal: $target expr($target.max_hp * $factor) primary_effect) else return stop"
+          ["$modifier = 1024"],
+          "require func_call(heal: $target expr(($target.max_hp * $modifier + 2047) / 4096) primary_effect) else return stop"
         ]
       }
     }

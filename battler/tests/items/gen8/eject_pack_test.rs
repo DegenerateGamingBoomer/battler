@@ -71,8 +71,7 @@ fn eject_pack_switches_mon_out_on_negative_boost() {
             "boost|mon:Rillaboom,player-1,1|stat:atk|by:2",
             "move|mon:Rillaboom,player-2,1|name:Growl",
             "unboost|mon:Rillaboom,player-1,1|stat:atk|by:1",
-            "itemend|mon:Rillaboom,player-1,1|item:Eject Pack",
-            "switchout|mon:Rillaboom,player-1,1"
+            "itemend|mon:Rillaboom,player-1,1|item:Eject Pack"
         ]"#,
     )
     .unwrap();

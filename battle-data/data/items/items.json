@@ -2168,8 +2168,11 @@
           "require !$target.force_switch else return",
           "require !$target.being_called_back else return",
           "require !$target.is_away_from_field else return",
+          "# Another Mon already switching out (not the attacker's own U-turn) blocks this one.",
           "foreach $mon in func_call(all_active_or_exited_mons):",
-          ["require !$mon.being_called_back else return"],
+          [
+            "require !$mon.being_called_back and ($mon == $source or !$mon.needs_switch) else return"
+          ],
           "$effect_state.activator = $source",
           "use_item: $target"
         ],
@@ -2681,8 +2684,11 @@
           "require !$target.force_switch else return",
           "require !$target.being_called_back else return",
           "require !$target.is_away_from_field else return",
+          "# Another Mon already switching out blocks this one.",
           "foreach $mon in func_call(all_active_or_exited_mons):",
-          ["require !$mon.being_called_back else return"],
+          [
+            "require !$mon.being_called_back and ($mon == $target or !$mon.needs_switch) else return"
+          ],
           "$effect_state.activator = $source",
           "use_item: $target"
         ],

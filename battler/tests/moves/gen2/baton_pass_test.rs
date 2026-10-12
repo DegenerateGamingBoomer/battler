@@ -93,7 +93,6 @@ fn baton_pass_switches_user_out_and_passes_volatiles() {
     let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
         r#"[
                 "move|mon:Espeon,player-2,1|name:Baton Pass|target:Espeon,player-2,1",
-                "switchout|mon:Espeon,player-2,1|copyvolatile",
                 "continue",
                 "split|side:1",
                 ["switch", "player-2", "Umbreon"],
@@ -135,7 +134,6 @@ fn baton_pass_switches_user_out_and_passes_volatiles() {
                 "turn|turn:6",
                 "continue",
                 "move|mon:Espeon,player-1,1|name:Baton Pass|target:Espeon,player-1,1",
-                "switchout|mon:Espeon,player-1,1|copyvolatile",
                 "continue",
                 "split|side:0",
                 ["switch", "player-1", "Umbreon"],
@@ -179,7 +177,6 @@ fn baton_pass_does_not_activate_pursuit() {
             "turn|turn:2",
             "continue",
             "move|mon:Espeon,player-1,1|name:Baton Pass|target:Espeon,player-1,1",
-            "switchout|mon:Espeon,player-1,1|copyvolatile",
             "continue",
             "split|side:0",
             ["switch", "player-1", "Umbreon"],
@@ -214,7 +211,6 @@ fn baton_pass_cannot_switch_to_mon_that_just_switched_out() {
     let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
         r#"[
             "move|mon:Espeon,player-1,1|name:Baton Pass|target:Espeon,player-1,1",
-            "switchout|mon:Espeon,player-1,1|copyvolatile",
             "continue",
             "split|side:0",
             ["switch", "player-1", "Umbreon"],

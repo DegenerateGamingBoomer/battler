@@ -1758,11 +1758,9 @@ impl<'d> CoreBattle<'d> {
                         .collect::<Vec<_>>()
                     {
                         let mut context = context.mon_context(mon)?;
-                        if let Some(switch_type) = context.mon().switch_state.needs_switch {
-                            core_battle_actions::switch_out(
-                                &mut context,
-                                switch_type.copy_volatile(),
-                            )?;
+                        if context.mon().switch_state.needs_switch.is_some() {
+                            // The Mon stays in battle until its replacement switches in.
+                            core_battle_actions::prepare_to_switch_out(&mut context)?;
 
                             // Mon may have fainted here.
                             Self::faint_messages(context.as_battle_context_mut())?;
@@ -2358,6 +2356,16 @@ impl<'d> CoreBattle<'d> {
                     let target_context = context
                         .as_battle_context_mut()
                         .mon_context(target_mon_handle)?;
+                    // A move that can target the user falls back to the user when the ally
+                    // faints.
+                    if target_context.mon().hp == 0
+                        && move_target == MoveTarget::AdjacentAllyOrUser
+                        && target_context
+                            .mon()
+                            .is_ally(target_context.as_battle_context().mon(mon)?)
+                    {
+                        return Ok(Some(mon));
+                    }
                     if target_context.mon().active
                         || target_context
                             .mon()
@@ -2375,6 +2383,9 @@ impl<'d> CoreBattle<'d> {
                         (target.abs() - 1) as usize,
                     )? && side_context.as_battle_context().mon(ally)?.hp == 0
                     {
+                        if move_target == MoveTarget::AdjacentAllyOrUser {
+                            return Ok(Some(mon));
+                        }
                         return Ok(Some(ally));
                     }
                 }

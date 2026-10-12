@@ -477,9 +477,9 @@
     "flags": ["Contact", "Mirror", "Protect", "Slicing"],
     "effect": {
       "callbacks": {
-        "on_move_base_power": [
+        "on_base_power": [
           "if $field.effective_terrain == electricterrain:",
-          ["return $move.base_power * 3/2"]
+          ["chain_modify: 3/2", "return"]
         ]
       }
     }
@@ -530,9 +530,9 @@
     "flags": ["Contact", "Mirror", "NoMetronome", "Protect"],
     "effect": {
       "callbacks": {
-        "on_move_base_power": [
+        "on_base_power": [
           "if func_call(type_effectiveness: $target) > 0:",
-          ["return $move.base_power * 4/3"]
+          ["chain_modify: 5461/4096", "return"]
         ]
       }
     }
@@ -1122,12 +1122,13 @@
     "flags": ["Mirror", "Protect"],
     "effect": {
       "callbacks": {
-        "on_move_base_power": [
+        "on_base_power": [
           "if func_call(chance: 3 10):",
           [
             "add_attribute_value_to_last_move: anim All-Out",
             "log_activate: with_target use_source",
-            "return $move.base_power * 2"
+            "chain_modify: 2",
+            "return"
           ]
         ]
       }

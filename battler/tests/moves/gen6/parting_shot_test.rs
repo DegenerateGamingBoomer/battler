@@ -69,8 +69,7 @@ fn parting_shot_lowers_attack_stats_and_switches_user() {
         r#"[
             "move|mon:Incineroar,player-1,1|name:Parting Shot|target:Incineroar,player-2,1",
             "unboost|mon:Incineroar,player-2,1|stat:atk|by:1",
-            "unboost|mon:Incineroar,player-2,1|stat:spa|by:1",
-            "switchout|mon:Incineroar,player-1,1"
+            "unboost|mon:Incineroar,player-2,1|stat:spa|by:1"
         ]"#,
     )
     .unwrap();
@@ -95,7 +94,6 @@ fn parting_shot_can_be_reflected() {
             "move|mon:Incineroar,player-1,1|name:Parting Shot|target:Incineroar,player-2,1|from:move:Magic Coat",
             "unboost|mon:Incineroar,player-2,1|stat:atk|by:1",
             "unboost|mon:Incineroar,player-2,1|stat:spa|by:1",
-            "switchout|mon:Incineroar,player-1,1",
             "continue",
             "split|side:0",
             ["switch", "player-1"],

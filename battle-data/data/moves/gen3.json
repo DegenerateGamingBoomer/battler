@@ -305,9 +305,9 @@
     "flags": ["Contact", "Mirror", "Protect"],
     "effect": {
       "callbacks": {
-        "on_move_base_power": [
-          "if [psn, tox, par, brn] has $source.status:",
-          ["return $move.base_power * 2"]
+        "on_base_power": [
+          "if [psn, tox, par, brn, frz] has $source.status:",
+          ["chain_modify: 2", "return"]
         ]
       }
     }
@@ -929,9 +929,9 @@
     "flags": ["Contact", "Mirror", "Protect"],
     "effect": {
       "callbacks": {
-        "on_move_base_power": [
+        "on_base_power": [
           "require !!func_call(take_item: $target dry_run) else return",
-          "return $move.base_power * 3/2"
+          "chain_modify: 3/2"
         ],
         "on_after_hit": ["require $source.hp != 0 else return", "take_item: $target"]
       }

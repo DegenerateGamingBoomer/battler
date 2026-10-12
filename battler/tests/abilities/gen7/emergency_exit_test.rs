@@ -205,7 +205,6 @@ fn emergency_exit_activates_when_hp_goes_below_half() {
             "damage|mon:Golisopod,player-1,1|health:63/135",
             "damage|mon:Golisopod,player-1,1|health:47/100",
             "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
-            "switchout|mon:Golisopod,player-1,1",
             "continue",
             "split|side:0",
             ["switch", "player-1", "Decidueye"],
@@ -249,8 +248,7 @@ fn emergency_exit_does_not_activate_if_berry_heals() {
             "split|side:0",
             "damage|mon:Golisopod,player-1,1|health:24/135",
             "damage|mon:Golisopod,player-1,1|health:18/100",
-            "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
-            "switchout|mon:Golisopod,player-1,1"
+            "activate|mon:Golisopod,player-1,1|ability:Emergency Exit"
         ]"#,
     )
     .unwrap();
@@ -282,7 +280,6 @@ fn emergency_exit_does_not_activate_if_hp_already_below_half() {
             "damage|mon:Golisopod,player-1,1|health:63/135",
             "damage|mon:Golisopod,player-1,1|health:47/100",
             "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
-            "switchout|mon:Golisopod,player-1,1",
             "continue",
             "split|side:0",
             ["switch", "player-1", "Decidueye"],
@@ -392,8 +389,7 @@ fn emergency_exit_activates_on_toxic_damage() {
                 "split|side:0",
                 "damage|mon:Golisopod,player-1,1|from:status:Bad Poison|health:61/135",
                 "damage|mon:Golisopod,player-1,1|from:status:Bad Poison|health:46/100",
-                "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
-                "switchout|mon:Golisopod,player-1,1"
+                "activate|mon:Golisopod,player-1,1|ability:Emergency Exit"
             ]"#,
     )
     .unwrap();
@@ -473,8 +469,7 @@ fn emergency_exit_activates_on_recoil() {
             "split|side:0",
             "damage|mon:Golisopod,player-1,1|from:Recoil|health:45/135",
             "damage|mon:Golisopod,player-1,1|from:Recoil|health:34/100",
-            "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
-            "switchout|mon:Golisopod,player-1,1"
+            "activate|mon:Golisopod,player-1,1|ability:Emergency Exit"
         ]"#,
     )
     .unwrap();
@@ -517,8 +512,7 @@ fn emergency_exit_activates_on_struggle_recoil() {
             "split|side:0",
             "damage|mon:Golisopod,player-1,1|from:Struggle Recoil|health:35/135",
             "damage|mon:Golisopod,player-1,1|from:Struggle Recoil|health:26/100",
-            "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
-            "switchout|mon:Golisopod,player-1,1"
+            "activate|mon:Golisopod,player-1,1|ability:Emergency Exit"
         ]"#,
     )
     .unwrap();
@@ -638,8 +632,7 @@ fn emergency_exit_activates_after_last_hit_of_multihit_move() {
             "damage|mon:Golisopod,player-1,1|health:49/135",
             "damage|mon:Golisopod,player-1,1|health:37/100",
             "hitcount|hits:5",
-            "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
-            "switchout|mon:Golisopod,player-1,1"
+            "activate|mon:Golisopod,player-1,1|ability:Emergency Exit"
         ]"#,
     )
     .unwrap();
@@ -681,7 +674,6 @@ fn emergency_exit_blocks_user_switch() {
             "damage|mon:Golisopod,player-1,1|health:55/135",
             "damage|mon:Golisopod,player-1,1|health:41/100",
             "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
-            "switchout|mon:Golisopod,player-1,1",
             "continue",
             "split|side:0",
             ["switch", "player-1", "Decidueye"],
@@ -781,7 +773,6 @@ fn emergency_exit_activates_pursuit() {
             "split|side:0",
             "damage|mon:Golisopod,player-1,1|health:47/135",
             "damage|mon:Golisopod,player-1,1|health:35/100",
-            "switchout|mon:Golisopod,player-1,1",
             "continue",
             "split|side:0",
             ["switch", "player-1", "Incineroar"],
@@ -892,7 +883,9 @@ fn emergency_exit_activates_between_hazards() {
             "damage|mon:Golisopod,player-1,1|from:move:Spikes|health:53/135",
             "damage|mon:Golisopod,player-1,1|from:move:Spikes|health:40/100",
             "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
-            "switchout|mon:Golisopod,player-1,1",
+            "split|side:0",
+            "damage|mon:Golisopod,player-1,1|from:move:Stealth Rock|health:20/135",
+            "damage|mon:Golisopod,player-1,1|from:move:Stealth Rock|health:15/100",
             "continue",
             "split|side:0",
             ["switch", "player-1", "Decidueye"],
@@ -970,10 +963,12 @@ fn emergency_exit_activates_between_residuals() {
                 "damage|mon:Golisopod,player-1,1|from:status:Bad Poison|health:55/135",
                 "damage|mon:Golisopod,player-1,1|from:status:Bad Poison|health:41/100",
                 "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
-                "switchout|mon:Golisopod,player-1,1",
                 "split|side:0",
                 "damage|mon:Incineroar,player-1,2|from:move:Bind|health:56/155",
-                "damage|mon:Incineroar,player-1,2|from:move:Bind|health:37/100"
+                "damage|mon:Incineroar,player-1,2|from:move:Bind|health:37/100",
+                "split|side:0",
+                "damage|mon:Golisopod,player-1,1|from:item:Sticky Barb|health:39/135",
+                "damage|mon:Golisopod,player-1,1|from:item:Sticky Barb|health:29/100"
             ]"#,
     )
     .unwrap();
@@ -1008,8 +1003,17 @@ fn emergency_exit_activates_during_move() {
             "damage|mon:Golisopod,player-1,1|from:ability:Rough Skin|of:Pikachu,player-2,1|health:53/135",
             "damage|mon:Golisopod,player-1,1|from:ability:Rough Skin|of:Pikachu,player-2,1|health:40/100",
             "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
-            "switchout|mon:Golisopod,player-1,1",
-            "hitcount|hits:1"
+            "animatemove|mon:Golisopod,player-1,1|name:Double Kick|target:Pikachu,player-2,1",
+            "split|side:1",
+            "damage|mon:Pikachu,player-2,1|health:24/112",
+            "damage|mon:Pikachu,player-2,1|health:22/100",
+            "split|side:0",
+            "damage|mon:Golisopod,player-1,1|from:ability:Rough Skin|of:Pikachu,player-2,1|health:37/135",
+            "damage|mon:Golisopod,player-1,1|from:ability:Rough Skin|of:Pikachu,player-2,1|health:28/100",
+            "hitcount|hits:2",
+            "split|side:0",
+            "damage|mon:Golisopod,player-1,1|from:item:Life Orb|health:24/135",
+            "damage|mon:Golisopod,player-1,1|from:item:Life Orb|health:18/100"
         ]"#,
     )
     .unwrap();
@@ -1049,13 +1053,22 @@ fn emergency_exit_activates_pursuit_during_move() {
             "damage|mon:Golisopod,player-1,1|from:ability:Rough Skin|of:Pikachu,player-2,1|health:53/135",
             "damage|mon:Golisopod,player-1,1|from:ability:Rough Skin|of:Pikachu,player-2,1|health:40/100",
             "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
+            "animatemove|mon:Golisopod,player-1,1|name:Double Kick|target:Pikachu,player-2,1",
+            "split|side:1",
+            "damage|mon:Pikachu,player-2,1|health:24/112",
+            "damage|mon:Pikachu,player-2,1|health:22/100",
+            "split|side:0",
+            "damage|mon:Golisopod,player-1,1|from:ability:Rough Skin|of:Pikachu,player-2,1|health:37/135",
+            "damage|mon:Golisopod,player-1,1|from:ability:Rough Skin|of:Pikachu,player-2,1|health:28/100",
+            "hitcount|hits:2",
+            "split|side:0",
+            "damage|mon:Golisopod,player-1,1|from:item:Life Orb|health:24/135",
+            "damage|mon:Golisopod,player-1,1|from:item:Life Orb|health:18/100",
             "activate|mon:Golisopod,player-1,1|move:Pursuit",
             "move|mon:Pikachu,player-2,2|name:Pursuit|target:Golisopod,player-1,1",
             "split|side:0",
-            "damage|mon:Golisopod,player-1,1|health:37/135",
-            "damage|mon:Golisopod,player-1,1|health:28/100",
-            "switchout|mon:Golisopod,player-1,1",
-            "hitcount|hits:1"
+            "damage|mon:Golisopod,player-1,1|health:8/135",
+            "damage|mon:Golisopod,player-1,1|health:6/100"
         ]"#,
     )
     .unwrap();
@@ -1092,16 +1105,15 @@ fn emergency_exit_activates_pursuit_during_opponent_move() {
             "damage|mon:Golisopod,player-1,1|health:65/135",
             "damage|mon:Golisopod,player-1,1|health:49/100",
             "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
+            "formechange|mon:Meloetta,player-2,2|species:Meloetta-Pirouette|from:move:Relic Song",
+            "split|side:1",
+            "damage|mon:Meloetta,player-2,2|from:item:Life Orb|health:144/160",
+            "damage|mon:Meloetta,player-2,2|from:item:Life Orb|health:90/100",
             "activate|mon:Golisopod,player-1,1|move:Pursuit",
             "move|mon:Pikachu,player-2,1|name:Pursuit|target:Golisopod,player-1,1",
             "split|side:0",
             "damage|mon:Golisopod,player-1,1|health:63/135",
             "damage|mon:Golisopod,player-1,1|health:47/100",
-            "switchout|mon:Golisopod,player-1,1",
-            "formechange|mon:Meloetta,player-2,2|species:Meloetta-Pirouette|from:move:Relic Song",
-            "split|side:1",
-            "damage|mon:Meloetta,player-2,2|from:item:Life Orb|health:144/160",
-            "damage|mon:Meloetta,player-2,2|from:item:Life Orb|health:90/100",
             "continue",
             "split|side:0",
             ["switch", "player-1", "Incineroar"],
@@ -1133,7 +1145,6 @@ fn emergency_exit_activates_after_eject_button() {
             "damage|mon:Golisopod,player-1,1|health:63/135",
             "damage|mon:Golisopod,player-1,1|health:47/100",
             "itemend|mon:Golisopod,player-1,1|item:Eject Button",
-            "switchout|mon:Golisopod,player-1,1",
             "continue",
             "split|side:0",
             ["switch", "player-1", "Decidueye"],
@@ -1176,8 +1187,17 @@ fn emergency_exit_activates_before_shell_bell() {
             "damage|mon:Golisopod,player-1,1|from:ability:Rough Skin|of:Pikachu,player-2,1|health:53/135",
             "damage|mon:Golisopod,player-1,1|from:ability:Rough Skin|of:Pikachu,player-2,1|health:40/100",
             "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
-            "switchout|mon:Golisopod,player-1,1",
-            "hitcount|hits:1"
+            "animatemove|mon:Golisopod,player-1,1|name:Double Kick|target:Pikachu,player-2,1",
+            "split|side:1",
+            "damage|mon:Pikachu,player-2,1|health:15/95",
+            "damage|mon:Pikachu,player-2,1|health:16/100",
+            "split|side:0",
+            "damage|mon:Golisopod,player-1,1|from:ability:Rough Skin|of:Pikachu,player-2,1|health:37/135",
+            "damage|mon:Golisopod,player-1,1|from:ability:Rough Skin|of:Pikachu,player-2,1|health:28/100",
+            "hitcount|hits:2",
+            "split|side:0",
+            "heal|mon:Golisopod,player-1,1|from:item:Shell Bell|health:47/135",
+            "heal|mon:Golisopod,player-1,1|from:item:Shell Bell|health:35/100"
         ]"#,
     )
     .unwrap();

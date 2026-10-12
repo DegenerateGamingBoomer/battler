@@ -74,8 +74,8 @@ fn shore_up_heals_health_based_on_sandstorm() {
                 "weather|weather:Sandstorm",
                 "move|mon:Palossand,player-2,1|name:Shore Up|target:Palossand,player-2,1",
                 "split|side:1",
-                "heal|mon:Palossand,player-2,1|health:187/280",
-                "heal|mon:Palossand,player-2,1|health:67/100",
+                "heal|mon:Palossand,player-2,1|health:188/280",
+                "heal|mon:Palossand,player-2,1|health:68/100",
                 "residual",
                 "weather|weather:Sandstorm|residual",
                 "turn|turn:3"
