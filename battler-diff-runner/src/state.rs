@@ -183,7 +183,16 @@ impl SpeciesNames {
     }
 
     fn species(&self, mon: &Mon) -> String {
-        let id = mon.volatile_state.species.to_string();
+        self.species_id(mon, &mon.volatile_state.species)
+    }
+
+    /// The persistent forme (changed only by permanent forme changes, like Mega Evolution).
+    fn base_species(&self, mon: &Mon) -> String {
+        self.species_id(mon, &mon.base_species)
+    }
+
+    fn species_id(&self, mon: &Mon, species: &Id) -> String {
+        let id = species.to_string();
         match self.by_name.get(&mon.name) {
             Some((battler, showdown)) if *battler == id => showdown.clone(),
             _ => match gendered_species_name(&id, mon.gender == Gender::Female) {
@@ -231,7 +240,7 @@ fn ability_id(context: &Context, id: &Id) -> String {
 
 fn member(mon: &Mon, names: &SpeciesNames, context: &Context) -> Json {
     json!({
-        "species": names.species(mon),
+        "species": names.base_species(mon),
         "hp": mon.hp,
         "maxhp": mon.max_hp,
         "status": if mon.hp == 0 { String::new() } else { status_id(mon) },

@@ -700,6 +700,14 @@ impl Translator {
                     } else {
                         "|[silent]".to_owned()
                     }
+                } else if title == "heal"
+                    && line.get("from").is_none()
+                    && self.last_move_name.as_deref() == Some("Rest")
+                    && self.last_move_user.as_ref() == Some(&target)
+                {
+                    // Rest's healing is cosmetic in Showdown (it happens as the user falls
+                    // asleep).
+                    "|[silent]".to_owned()
                 } else {
                     self.from_of(line)?
                 };
@@ -850,11 +858,16 @@ impl Translator {
                 } else {
                     ""
                 };
-                out.push(format!(
-                    "|-curestatus|{}|{status}{}{msg}",
-                    self.ident(&target)?,
-                    self.from_of(line)?
-                ));
+                // Abilities that announce themselves first cure with a plain message.
+                let tags = if matches!(
+                    line.get("from"),
+                    Some("ability:Shed Skin" | "ability:Hydration" | "ability:Healer")
+                ) {
+                    "|[msg]".to_owned()
+                } else {
+                    format!("{}{msg}", self.from_of(line)?)
+                };
+                out.push(format!("|-curestatus|{}|{status}{tags}", self.ident(&target)?));
             }
             "boost" | "unboost" => {
                 let target = Self::mon_of(line, "mon")?;
@@ -1187,6 +1200,8 @@ impl Translator {
                     self.from_of(line)?
                 ));
             }
+            // Showdown does not count the hits of Dragon Darts (smart targeting).
+            "hitcount" if self.last_move_name.as_deref() == Some("Dragon Darts") => (),
             "hitcount" => {
                 let target = self
                     .last_move_target

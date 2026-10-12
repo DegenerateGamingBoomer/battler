@@ -51,6 +51,8 @@
             "require $move.target != user and $move.category != status else return",
             "if $report:",
             ["log_activate: with_target with_source_effect no_ignore_active_move_source_effect"],
+            "# A blocked move fails, which matters for crash damage.",
+            "run_event_on_move: MoveFailed user",
             "return stop"
           ]
         }

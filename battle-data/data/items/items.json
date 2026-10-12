@@ -816,7 +816,7 @@
       "callbacks": {
         "on_modify_crit_ratio": [
           "$base_species = func_call(base_species: $user)",
-          "if $base_species == farfetchd:",
+          "if $base_species == farfetchd or $base_species == sirfetchd:",
           ["return $crit_ratio + 2"]
         ]
       }

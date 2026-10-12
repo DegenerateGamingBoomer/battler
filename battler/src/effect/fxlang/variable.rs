@@ -770,12 +770,10 @@ where
                             "item_used_this_turn" => ValueRef::Boolean(
                                 context.mon(mon_handle)?.volatile_state.item_used_this_turn,
                             ),
-                            "last_item" => {
-                                match context.mon(mon_handle)?.volatile_state.last_item.as_ref() {
-                                    Some(item) => ValueRef::TempString(item.to_string()),
-                                    None => ValueRef::Undefined,
-                                }
-                            }
+                            "last_item" => match context.mon(mon_handle)?.last_item.as_ref() {
+                                Some(item) => ValueRef::TempString(item.to_string()),
+                                None => ValueRef::Undefined,
+                            },
                             "last_move" => {
                                 match context.mon(mon_handle)?.volatile_state.last_move {
                                     Some(last_move) => ValueRef::TempEffect(last_move.into()),
@@ -1408,9 +1406,9 @@ where
                         "effect_state" => ValueRefMut::TempEffectState(
                             MonEffectStateConnector::new(**mon_handle).make_dynamic(),
                         ),
-                        "last_item" => ValueRefMut::OptionalId(
-                            &mut context.mon_mut(**mon_handle)?.volatile_state.last_item,
-                        ),
+                        "last_item" => {
+                            ValueRefMut::OptionalId(&mut context.mon_mut(**mon_handle)?.last_item)
+                        }
                         "last_target_location" => ValueRefMut::OptionalISize(
                             &mut context
                                 .mon_mut(**mon_handle)?

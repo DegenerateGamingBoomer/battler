@@ -1141,7 +1141,7 @@
     "accuracy": 100,
     "pp": 5,
     "target": "Normal",
-    "self_destruct": true,
+    "self_destruct": "ifhit",
     "flags": ["NoParentalBond", "Protect"],
     "effect": {
       "callbacks": {

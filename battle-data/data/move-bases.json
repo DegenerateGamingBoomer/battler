@@ -40,6 +40,8 @@
             "activate_applying_effect: $this no_forward",
             "if $effect_state.source_effect.is_defined:",
             ["activate_applying_effect: $effect_state.source_effect no_forward"],
+            "# A blocked move fails, which matters for crash damage.",
+            "run_event_on_move: MoveFailed user",
             "return stop"
           ]
         },
@@ -176,9 +178,10 @@
         "on_source_modify_damage": [
           "$category = func_call(value_from_local_data: category)",
           "require $target != $user and (!$category or $move.category == $category) else return",
-          "require !$move.effect_state.screen_weaken else return",
+          "# Only one screen weakens the move against each target.",
+          "require $move.effect_state.screen_weakened_target != $target else return",
           "require !func_call(move_crit_target: $move $target) and !$move.effect_state.infiltrates else return",
-          "$move.effect_state.screen_weaken = true",
+          "$move.effect_state.screen_weakened_target = $target",
           "if $format.mons_per_side > 1:",
           ["chain_modify: 2732/4096", "return"],
           "chain_modify: 1/2",

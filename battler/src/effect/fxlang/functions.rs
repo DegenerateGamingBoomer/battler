@@ -2265,14 +2265,28 @@ fn run_event_on_mon_volatile(mut context: FunctionContext) -> Result<Option<Valu
 /// Runs an event on an active move.
 ///
 /// @param {[`ValueType::String`]} event The event ID.
+/// @flag user If set, the event runs with respect to the user of the move (like the engine runs
+/// `MoveFailed`), instead of the current target.
 /// @returns {[`ValueType::Boolean`] | [`ValueType::Undefined`]}
 fn run_event_on_move(mut context: FunctionContext) -> Result<Option<Value>> {
+    let on_user = context.has_flag("user");
     let event = context
         .pop_front()
         .wrap_expectation("missing event")?
         .string()
         .wrap_error_with_message("invalid event")?;
     let event = BattleEvent::from_str(&event).map_err(general_error)?;
+
+    if on_user {
+        let mut context = context
+            .source_active_move_context()?
+            .wrap_expectation("source effect is not an active move")?;
+        return Ok(core_battle_effects::run_active_move_event::<Option<Value>>(
+            &mut context,
+            event,
+            core_battle_effects::MoveTargetForEvent::User,
+        ));
+    }
 
     let target_handle = context.target_handle();
     let source_handle = context.source_handle();

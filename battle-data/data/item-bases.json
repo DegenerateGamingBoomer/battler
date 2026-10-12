@@ -107,7 +107,12 @@
     "condition_type": "Built-in",
     "condition": {
       "callbacks": {
-        "on_start": ["remove_volatile: $target choicelock"],
+        "on_start": [
+          "# A new choice item (from Trick) ends the lock from the previous one.",
+          "$choice_lock = func_call(volatile_status_effect_state: $target choicelock)",
+          "if $choice_lock.is_defined:",
+          ["$choice_lock.force_ended = true", "remove_volatile: $target choicelock"]
+        ],
         "is_choice_locked": ["return true"],
         "on_use_move": ["add_volatile: $user choicelock"]
       }

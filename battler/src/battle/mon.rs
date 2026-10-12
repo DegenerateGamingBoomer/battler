@@ -614,8 +614,6 @@ pub struct MonVolatileState {
     pub ability_slot: AbilitySlot,
     /// Effect state for the item.
     pub item_state: fxlang::EffectState,
-    /// The last item used.
-    pub last_item: Option<Id>,
     /// Volatile statuses.
     pub volatiles: HashMap<Id, fxlang::EffectState>,
 
@@ -722,6 +720,8 @@ pub struct Mon {
     pub base_ability: Id,
     pub original_item: Option<Id>,
     pub item: Option<Id>,
+    /// The last item used, which is kept when the Mon switches out (Harvest, Recycle).
+    pub last_item: Option<Id>,
     pub status: Option<Id>,
     pub status_state: fxlang::EffectState,
 
@@ -855,6 +855,7 @@ impl Mon {
             base_ability: ability,
             original_item: item.clone(),
             item,
+            last_item: None,
             status: data
                 .persistent_battle_data
                 .status
@@ -2013,7 +2014,6 @@ impl Mon {
                 })
                 .transpose()?
                 .unwrap_or_default(),
-            last_item: None,
             volatiles: HashMap::default(),
             transformed: false,
             illusion: None,

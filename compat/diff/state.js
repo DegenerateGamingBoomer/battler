@@ -43,7 +43,8 @@ function active(pokemon) {
   // Waiting for a mid-turn switch (U-turn, Eject Button, ...): Showdown keeps the Pokémon in its
   // slot until the replacement comes in, battler has already taken it out.
   // Revival Blessing's "switch" only picks the Pokémon to revive; its user stays in.
-  if (pokemon.switchFlag && pokemon.switchFlag !== 'revivalblessing') {
+  // A switch pending when the battle ends never happens.
+  if (pokemon.switchFlag && pokemon.switchFlag !== 'revivalblessing' && !pokemon.battle.ended) {
     return {name: pokemon.name, switching: true};
   }
   const volatiles = {};
@@ -69,7 +70,9 @@ function active(pokemon) {
 
 function member(pokemon) {
   return {
-    species: pokemon.species.id,
+    // The persistent forme; the active entry has the current one. (A Pokémon that faints keeps
+    // its temporary forme in Showdown, while battler reverts it.)
+    species: pokemon.baseSpecies.id,
     hp: pokemon.hp,
     maxhp: pokemon.maxhp,
     // A fainted Pokémon keeps its status in Showdown; battler replaces it with `fnt`.

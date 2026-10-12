@@ -30,14 +30,22 @@ const SIM_SITES = {
   'battle-queue.js:insertChoice': 'speed-tie',
   'battle.js:speedSort': 'speed-tie',
   'battle.js:getRandomSwitchable': 'random-switch',
-  'battle.js:getRandomTarget': 'target',
-  // The printed target of a spread or side move is picked at random, but battler does not pick
-  // one (allowlist R1), so those draws go to a category that is not compared.
-  'side.js:randomFoe': battle => {
-    const move = battle.__randomTargetMove;
-    return move && SPREAD_TARGETS.has(move.target) ? 'display-target' : 'target';
-  },
+  'battle.js:getRandomTarget': battle => targetCategory(battle),
+  'side.js:randomFoe': battle => targetCategory(battle),
 };
+
+// Random targets that nothing uses go to a category that is not compared:
+// - the printed target of a spread or side move, which battler does not pick (allowlist R1);
+// - targets picked while ordering actions: getActionSpeed looks up a target only for priority
+//   modifiers, and a random-target move (Struggle, Outrage) picks its target again when it is
+//   used, ignoring the one resolveAction stored.
+function targetCategory(battle) {
+  const move = battle.__randomTargetMove;
+  if (move && SPREAD_TARGETS.has(move.target)) return 'display-target';
+  if (battle.__orderingActions) return 'display-target';
+  if (battle.__resolvingAction && move && move.target === 'randomNormal') return 'display-target';
+  return 'target';
+}
 
 // Data call sites that share a category; every other data site is `effect:<id>`.
 const DATA_SITES = {
@@ -157,6 +165,22 @@ function install(SD) {
     const {category, site} = classify(this, 'sample', sample);
     return items[this.semantic.int(category, items.length, site)];
   };
+  const {BattleQueue: Queue} = require(path.join(SD, 'dist/sim/battle-queue'));
+  for (const [proto, method, flag] of [
+    [Battle.prototype, 'getActionSpeed', '__orderingActions'],
+    [Queue.prototype, 'resolveAction', '__resolvingAction'],
+  ]) {
+    const originalMethod = proto[method];
+    proto[method] = function (...args) {
+      const battle = this.battle || this;
+      battle[flag] = (battle[flag] || 0) + 1;
+      try {
+        return originalMethod.apply(this, args);
+      } finally {
+        battle[flag]--;
+      }
+    };
+  }
   Battle.prototype.getRandomTarget = function (pokemon, move) {
     const previous = this.__randomTargetMove;
     this.__randomTargetMove = this.dex.moves.get(move);

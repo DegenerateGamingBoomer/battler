@@ -608,6 +608,15 @@ fn do_move_internal(
 
     let context = context.as_mon_context_mut();
 
+    // Remembered before the move, since a Mon that faints during its own move (Final Gambit) loses
+    // its volatile state.
+    let selected_for_use = context
+        .mon()
+        .volatile_state
+        .last_move_selected
+        .as_ref()
+        .is_some_and(|last_move| last_move == &selected_move_id);
+
     // Use the move.
     let result = use_active_move(
         context,
@@ -661,7 +670,10 @@ fn do_move_internal(
     //
     // Charging moves have their PP deducted on the turn they start charging; the Mon is locked into
     // the move on the next turn.
-    if result.used() && this_move_is_the_last_selected && locked_move_before.is_none() {
+    if result.used()
+        && (this_move_is_the_last_selected || (selected_for_use && context.mon().hp == 0))
+        && locked_move_before.is_none()
+    {
         let deduction = core_battle_effects::run_event_with_relay::<_, u8>(
             &mut context
                 .active_move_context(active_move_handle)?
@@ -1516,13 +1528,18 @@ fn move_hit_loop_internal(
         if targets.is_empty() || targets.iter().all(|target| !target.outcome.advance()) {
             break;
         }
-        if targets.iter().all(|target| {
-            context
-                .target_context(target.handle)
-                .map(|context| context.target_mon().hp)
-                .unwrap_or(0)
-                == 0
-        }) {
+        // Stop once every target still being hit has fainted.
+        if targets
+            .iter()
+            .filter(|target| target.outcome.advance())
+            .all(|target| {
+                context
+                    .target_context(target.handle)
+                    .map(|context| context.target_mon().hp)
+                    .unwrap_or(0)
+                    == 0
+            })
+        {
             break;
         }
 
@@ -1758,7 +1775,16 @@ fn move_hit_loop(
         core_battle_logs::hit_count(context.as_battle_context_mut(), hits)?;
     }
 
-    apply_recoil_damage(context, context.active_move().total_damage)?;
+    // Recoil based on damage, and Struggle's, only applies if the move dealt damage.
+    let needs_damage = context
+        .active_move()
+        .data
+        .recoil
+        .as_ref()
+        .is_some_and(|recoil| recoil.struggle || matches!(recoil.base, RecoilBase::Damage));
+    if !needs_damage || context.active_move().total_damage > 0 {
+        apply_recoil_damage(context, context.active_move().total_damage)?;
+    }
 
     // Record received attacks. Multihit moves are folded into one attack at this point.
     for (target, result) in target_hit_results {
@@ -5930,7 +5956,7 @@ fn after_use_item(context: &mut ApplyingEffectContext, item: Id) -> Result<bool>
         .wrap_expectation("expected item to have non-condition handle")?;
 
     context.target_mut().volatile_state.item_used_this_turn = true;
-    context.target_mut().volatile_state.last_item = Some(item);
+    context.target_mut().last_item = Some(item);
     context.target_mut().item = None;
     context.target_mut().volatile_state.item_state = fxlang::EffectState::default();
 

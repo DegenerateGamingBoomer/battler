@@ -907,8 +907,8 @@
           "order": 5,
           "sub_order": 3,
           "program": [
-            "if $target.hp > 0 and $target.status.is_defined and func_call(chance: 1 3):",
-            ["cure_status: $target"]
+            "if $target.hp > 0 and $target.status.is_defined and func_call(chance: 33 100):",
+            ["log_activate: with_target", "cure_status: $target"]
           ]
         }
       }
