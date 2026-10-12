@@ -427,8 +427,8 @@ fn flower_gift_activates_when_weather_is_unsuppressed() {
                 "turn|turn:2",
                 "continue",
                 "move|mon:Ditto,player-2,2|name:Transform|target:Cherrim,player-1,1",
-                "formechange|mon:Cherrim,player-1,1|species:Cherrim-Sunshine|from:ability:Flower Gift",
                 "transform|mon:Ditto,player-2,2|into:Cherrim,player-1,1|species:Cherrim",
+                "formechange|mon:Cherrim,player-1,1|species:Cherrim-Sunshine|from:ability:Flower Gift",
                 "residual",
                 "weather|weather:Harsh Sunlight|residual",
                 "turn|turn:3"

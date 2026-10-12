@@ -2045,7 +2045,11 @@ fn hit_targets(
     // Force switch out targets that were hit, as necessary.
     force_switch_from_move(context, targets)?;
 
-    for target in targets.iter().filter(|target| target.outcome.damage() > 0) {
+    // A damaging hit reduced to no damage (Disguise) still counts as a damaging hit.
+    for target in targets
+        .iter()
+        .filter(|target| matches!(target.outcome, MoveOutcomeOnTarget::Damage(_)))
+    {
         core_battle_effects::run_event_with_input::<_, _, ()>(
             &mut context.applying_effect_context_for_target(target.handle)?,
             fxlang::BattleEvent::DamagingHit,
@@ -5434,12 +5438,23 @@ pub fn start_ability(
     ability_source: Option<MonHandle>,
     silent: bool,
 ) -> Result<()> {
+    start_ability_internal(context, ability_source, silent, false)
+}
+
+/// Starts the target Mon's ability, even without HP if `allow_no_hp` is set (an ability swapped
+/// onto a Mon knocked out by the move still starts).
+fn start_ability_internal(
+    context: &mut ApplyingEffectContext,
+    ability_source: Option<MonHandle>,
+    silent: bool,
+    allow_no_hp: bool,
+) -> Result<()> {
     let context = &mut scopeguard::guard(context, |context| {
         CoreBattle::invalidate_effect_caches(context.as_battle_context_mut()).ok();
     });
 
     if !context.target().active
-        || context.target().hp == 0
+        || (context.target().hp == 0 && !allow_no_hp)
         || context
             .target()
             .volatile_state
@@ -5539,7 +5554,9 @@ pub fn set_ability(
         )?,
     };
 
-    start_ability(context, ability_source, silent)?;
+    // The new ability must be the effective one when it starts.
+    CoreBattle::invalidate_effect_caches(context.as_battle_context_mut())?;
+    start_ability_internal(context, ability_source, silent, allow_no_hp)?;
 
     core_battle_effects::run_event_with_input::<ApplyingEffectContext, _, ()>(
         context,
@@ -6875,13 +6892,16 @@ pub fn transform_into(
         false,
         RecalculateStatsHpPolicy::DoNotUpdate,
     )?;
-    set_ability(context, &ability_id, None, false, true, true, false)?;
     context.target_mut().volatile_state.move_slots = move_slots;
     context.target_mut().volatile_state.times_attacked = times_attacked;
 
     core_battle_logs::transform(context, target)?;
 
-    try_event!(copy_boosts(context, target, true)?, Ok);
+    // Boosts are copied before the new ability starts, so an ability like Intimidate does not
+    // affect the copied boosts.
+    let copied_boosts = copy_boosts(context, target, true)?;
+    set_ability(context, &ability_id, None, false, true, true, false)?;
+    try_event!(copied_boosts, Ok);
 
     Ok(EventResult::Advance)
 }

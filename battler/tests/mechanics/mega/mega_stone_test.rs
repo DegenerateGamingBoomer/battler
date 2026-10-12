@@ -237,3 +237,44 @@ fn embargo_cannot_stop_mega_evolution() {
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
 }
+
+#[test]
+fn every_mega_stone_is_untakable_from_its_species() {
+    use battler::{
+        DataStore,
+        DataStoreByName,
+        Id,
+    };
+
+    let store = static_local_data_store();
+    let mega_stones = store
+        .all_item_ids(&|item| item.special_data.mega_evolution.is_some())
+        .unwrap();
+    assert!(!mega_stones.is_empty());
+    for id in mega_stones {
+        let item = store.get_item(&id).unwrap().unwrap();
+        let species = item.effect["local_data"]["values"]["species"]
+            .as_str()
+            .unwrap_or_else(|| panic!("{id} has no untakable species"));
+        let base_species = item
+            .special_data
+            .mega_evolution
+            .unwrap()
+            .from
+            .iter()
+            .map(|from| {
+                let data = store.get_species_by_name(from).unwrap().unwrap();
+                let base = if data.base_species.is_empty() {
+                    data.name
+                } else {
+                    data.base_species
+                };
+                Id::from(base)
+            })
+            .collect::<Vec<_>>();
+        assert!(
+            base_species.contains(&Id::from(species)),
+            "{id} is untakable from {species}, but Mega Evolves {base_species:?}"
+        );
+    }
+}

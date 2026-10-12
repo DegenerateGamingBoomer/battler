@@ -86,3 +86,79 @@ fn wandering_spirit_swaps_abilities_on_contact() {
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
 }
+
+fn runerigus() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Runerigus",
+                    "species": "Runerigus",
+                    "ability": "Wandering Spirit",
+                    "moves": [],
+                    "nature": "Hardy",
+                    "level": 5
+                },
+                {
+                    "name": "Runerigus",
+                    "species": "Runerigus",
+                    "ability": "Wandering Spirit",
+                    "moves": [],
+                    "nature": "Hardy",
+                    "level": 50
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+fn gyarados() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Gyarados",
+                    "species": "Gyarados",
+                    "ability": "Intimidate",
+                    "moves": [
+                        "Crunch"
+                    ],
+                    "nature": "Hardy",
+                    "level": 50
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+#[test]
+fn wandering_spirit_swaps_abilities_with_knocked_out_holder() {
+    let mut battle = make_battle(0, runerigus().unwrap(), gyarados().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "pass"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 0"), Ok(()));
+
+    // The holder swaps abilities before fainting, and the Intimidate it receives activates.
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "move|mon:Gyarados,player-2,1|name:Crunch|target:Runerigus,player-1,1",
+            "supereffective|mon:Runerigus,player-1,1",
+            "split|side:0",
+            "damage|mon:Runerigus,player-1,1|health:0",
+            "damage|mon:Runerigus,player-1,1|health:0",
+            "activate|mon:Gyarados,player-2,1|ability:Wandering Spirit|of:Runerigus,player-1,1",
+            "abilitystart|mon:Runerigus,player-1,1|ability:Intimidate|source:Gyarados,player-2,1|from:ability:Wandering Spirit",
+            "activate|mon:Runerigus,player-1,1|ability:Intimidate",
+            "unboost|mon:Gyarados,player-2,1|stat:atk|by:1|from:ability:Intimidate|of:Runerigus,player-1,1",
+            "abilityend|mon:Gyarados,player-2,1|ability:Intimidate|from:ability:Wandering Spirit|of:Runerigus,player-1,1",
+            "abilitystart|mon:Gyarados,player-2,1|ability:Wandering Spirit|source:Runerigus,player-1,1|from:ability:Wandering Spirit|of:Runerigus,player-1,1",
+            "faint|mon:Runerigus,player-1,1",
+            "residual"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 1, &expected_logs);
+}
