@@ -2989,6 +2989,16 @@ fn apply_spread_damage(
 
 /// Applies the drain effect to the user of an effect.
 pub fn apply_drain(context: &mut ApplyingEffectContext, damage: u16) -> Result<u16> {
+    apply_drain_with_rounding(context, damage, false)
+}
+
+/// Applies the drain effect to the user of an effect, rounding the amount up if `ceil` is set (as
+/// for damage dealt to a Substitute).
+pub fn apply_drain_with_rounding(
+    context: &mut ApplyingEffectContext,
+    damage: u16,
+    ceil: bool,
+) -> Result<u16> {
     let mut healed = 0;
     if let Some(Some(drain_percent)) = context
         .effect()
@@ -2998,7 +3008,7 @@ pub fn apply_drain(context: &mut ApplyingEffectContext, damage: u16) -> Result<u
         let target_handle = context.target_handle();
         if let Some(mut context) = context.source_context()? {
             let amount = drain_percent * damage;
-            let amount = amount.round();
+            let amount = if ceil { amount.ceil() } else { amount.round() };
             healed = heal(
                 &mut context.applying_effect_context(
                     EffectHandle::Condition(Id::from_known("drain")),
@@ -6885,7 +6895,9 @@ pub fn transform_into(
         RecalculateStatsHpPolicy::DoNotUpdate,
     )?;
 
-    // Then, manually set everything else.
+    // Then, manually set everything else. The HP stat stays the user's own.
+    let mut stats = stats;
+    stats.hp = context.target().base_stored_stats.hp;
     context.target_mut().volatile_state.weight = weight;
     Mon::set_types(&mut context.target_context()?, types)?;
     Mon::set_stats(

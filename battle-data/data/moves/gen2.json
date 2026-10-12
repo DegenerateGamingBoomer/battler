@@ -1464,10 +1464,14 @@
       "no_copy": true,
       "callbacks": {
         "on_start": [
-          "require $target.last_move.is_defined",
-          "$last_move_id = $target.last_move.id",
-          "if $target.last_move.upgraded and $target.last_move.upgraded_base_move.is_defined:",
-          ["$last_move_id = $last_move.upgraded_base_move"],
+          "$used_move = $target.last_move",
+          "# Showdown records a move as its user's last move before it runs: a Pokémon in the middle of its own move (an Encore reflected back by Magic Bounce) has that move as its last move.",
+          "if $target.active_move.is_defined:",
+          ["$used_move = $target.active_move"],
+          "require $used_move.is_defined",
+          "$last_move_id = $used_move.id",
+          "if $used_move.upgraded and $used_move.upgraded_base_move.is_defined:",
+          ["$last_move_id = $used_move.upgraded_base_move"],
           "$last_move = func_call(get_move: $last_move_id)",
           "require $last_move.is_defined and !func_call(move_has_flag: $last_move failencore)",
           "$index = func_call(move_slot_index: $target $last_move.id)",

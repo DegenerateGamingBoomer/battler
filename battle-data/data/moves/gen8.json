@@ -1745,7 +1745,7 @@
       "callbacks": {
         "on_after_hit": [
           "# Always on the user's foe side, and blocked by Sheer Force like a secondary effect.",
-          "require !$move.ignore_all_secondary_effects and $source.hp > 0 else return",
+          "require !$move.ignore_all_secondary_effects else return",
           "add_side_condition: $source.foe_side stealthrock"
         ]
       }
@@ -2025,7 +2025,7 @@
       "callbacks": {
         "on_after_hit": [
           "# Always on the user's foe side, and blocked by Sheer Force like a secondary effect.",
-          "require !$move.ignore_all_secondary_effects and $source.hp > 0 else return",
+          "require !$move.ignore_all_secondary_effects else return",
           "add_side_condition: $source.foe_side spikes"
         ]
       }

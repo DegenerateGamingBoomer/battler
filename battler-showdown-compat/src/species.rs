@@ -37,7 +37,7 @@ fn exists(data: &dyn DataStore, id: &str) -> Result<Option<String>> {
 }
 
 /// Alternate battler IDs for a Showdown species ID, tried in order.
-fn alternates(id: &str) -> (Vec<String>, Option<Gender>) {
+pub(crate) fn alternates(id: &str) -> (Vec<String>, Option<Gender>) {
     // Names that exist in both but mean different things.
     match id {
         "maushold" => return (vec!["mausholdfamilyofthree".to_owned()], None),

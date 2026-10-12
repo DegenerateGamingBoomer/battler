@@ -217,6 +217,12 @@ impl EffectState {
         *self.get_mut(Self::ENDING) = Value::Boolean(self.ending());
     }
 
+    /// Marks the effect as started, for an effect state built directly rather than through its
+    /// `Start` event (a transplant).
+    pub fn mark_started(&mut self) {
+        self.set_activation_state(EffectActivationState::Started);
+    }
+
     /// Whether or not the effect is starting.
     ///
     /// An effect is starting if any correspondign "Start" event is currently running.

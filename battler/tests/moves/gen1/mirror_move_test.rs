@@ -93,15 +93,16 @@ fn mirror_move_copies_targets_last_move() {
     assert_matches::assert_matches!(battle.set_player_choice("player-1", "pass"), Ok(()));
     assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 0"), Ok(()));
 
-    // Two-turn move, last move is copied (not this one).
+    // Two-turn move: it is already the last move on its charging turn (as in Showdown), so it is
+    // copied.
     assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 3"), Ok(()));
     assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 0"), Ok(()));
 
-    // Two-turn move finishes and is copied.
+    // Both two-turn moves finish.
     assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
     assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 0"), Ok(()));
 
-    // Last move was Mirror Move, so the copy fails. Copied two-turn move finishes.
+    // Last move was Mirror Move, so both copies fail.
     assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
     assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 0"), Ok(()));
 
@@ -150,8 +151,9 @@ fn mirror_move_copies_targets_last_move() {
             "continue",
             "move|mon:Pidgeot,player-1,1|name:Razor Wind|noanim",
             "prepare|mon:Pidgeot,player-1,1|move:Razor Wind",
-            "move|mon:Pidgeot,player-2,1|name:Mirror Move|noanim",
-            "fail|mon:Pidgeot,player-2,1",
+            "move|mon:Pidgeot,player-2,1|name:Mirror Move|target:Pidgeot,player-1,1",
+            "move|mon:Pidgeot,player-2,1|name:Razor Wind|from:move:Mirror Move|noanim",
+            "prepare|mon:Pidgeot,player-2,1|move:Razor Wind",
             "residual",
             "turn|turn:7",
             "continue",
@@ -159,18 +161,17 @@ fn mirror_move_copies_targets_last_move() {
             "split|side:1",
             "damage|mon:Pidgeot,player-2,1|health:70/143",
             "damage|mon:Pidgeot,player-2,1|health:49/100",
-            "move|mon:Pidgeot,player-2,1|name:Mirror Move|target:Pidgeot,player-1,1",
-            "move|mon:Pidgeot,player-2,1|name:Razor Wind|from:move:Mirror Move|noanim",
-            "prepare|mon:Pidgeot,player-2,1|move:Razor Wind",
+            "move|mon:Pidgeot,player-2,1|name:Razor Wind",
+            "split|side:0",
+            "damage|mon:Pidgeot,player-1,1|health:66/143",
+            "damage|mon:Pidgeot,player-1,1|health:47/100",
             "residual",
             "turn|turn:8",
             "continue",
             "move|mon:Pidgeot,player-1,1|name:Mirror Move|noanim",
             "fail|mon:Pidgeot,player-1,1",
-            "move|mon:Pidgeot,player-2,1|name:Razor Wind",
-            "split|side:0",
-            "damage|mon:Pidgeot,player-1,1|health:66/143",
-            "damage|mon:Pidgeot,player-1,1|health:47/100",
+            "move|mon:Pidgeot,player-2,1|name:Mirror Move|noanim",
+            "fail|mon:Pidgeot,player-2,1",
             "residual",
             "turn|turn:9",
             "continue",

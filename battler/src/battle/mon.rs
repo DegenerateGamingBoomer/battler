@@ -258,25 +258,13 @@ pub struct MonMoveSlotData {
 
 impl MonMoveSlotData {
     pub fn from(context: &mut MonContext, move_slot: &MoveSlot) -> Result<Self> {
-        let mon_handle = context.mon_handle();
         let mov = context.battle().dex.moves.get_by_id(&move_slot.id)?;
         let name = mov.data.name.clone();
         let id = mov.id().clone();
         let category = mov.data.category;
         // Some moves may have a special target, depending on the user's type (e.g., Curse).
         let (target, typ) = core_battle_actions::run_in_using_move_state(context, |context| {
-            let target =
-                core_battle_effects::run_effect_event_with_options::<_, _, Option<MoveTarget>>(
-                    context,
-                    fxlang::BattleEvent::MoveTargetOverride,
-                    (),
-                    core_battle_effects::RunEffectEventOptions {
-                        effects: Vec::from_iter([AppliedEffectHandle::new(
-                            EffectHandle::InactiveMove(move_slot.id.clone()),
-                            AppliedEffectLocation::MonInactiveMove(mon_handle),
-                        )]),
-                    },
-                )
+            let target = Mon::move_target_override_in_using_move_state(context, &move_slot.id)
                 .unwrap_or(move_slot.target);
             let typ =
                 core_battle_actions::move_type_for_display(context, &id).unwrap_or(move_slot.typ);
@@ -2453,6 +2441,32 @@ impl Mon {
         }
         context.mon_mut().active_position = None;
         Ok(())
+    }
+
+    /// The target a move has when this Mon uses it, if an effect overrides the move's own (Curse
+    /// targets the user unless the user is a Ghost).
+    pub fn move_target_override(context: &mut MonContext, move_id: &Id) -> Option<MoveTarget> {
+        core_battle_actions::run_in_using_move_state(context, |context| {
+            Self::move_target_override_in_using_move_state(context, move_id)
+        })
+    }
+
+    fn move_target_override_in_using_move_state(
+        context: &mut MonContext,
+        move_id: &Id,
+    ) -> Option<MoveTarget> {
+        let mon_handle = context.mon_handle();
+        core_battle_effects::run_effect_event_with_options::<_, _, Option<MoveTarget>>(
+            context,
+            fxlang::BattleEvent::MoveTargetOverride,
+            (),
+            core_battle_effects::RunEffectEventOptions {
+                effects: Vec::from_iter([AppliedEffectHandle::new(
+                    EffectHandle::InactiveMove(move_id.clone()),
+                    AppliedEffectLocation::MonInactiveMove(mon_handle),
+                )]),
+            },
+        )
     }
 
     /// Sets the active move.

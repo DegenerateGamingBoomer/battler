@@ -97,16 +97,17 @@
         ],
         "on_after_use_item": ["add_volatile: $target $this.id", "$effect_state.activated = true"],
         "on_after_take_item": ["add_volatile: $target $this.id", "$effect_state.activated = true"],
-        "on_after_set_item": [
-          "remove_volatile: $target $this.id",
-          "$effect_state.activated = false"
-        ],
         "on_end": ["remove_volatile: $target $this.id"]
       }
     },
     "condition": {
       "callbacks": {
-        "on_modify_spe": ["chain_modify: 2", "return"]
+        "on_modify_spe": [
+          "# The volatile stays when a new item arrives (Trick); the boost needs no item.",
+          "require !$target.item and $target.effective_ability.is_defined else return",
+          "chain_modify: 2",
+          "return"
+        ]
       }
     }
   },
@@ -411,10 +412,14 @@
     "condition": {
       "duration": 1,
       "callbacks": {
-        "suppress_mon_ability": [
-          "if func_call(ability_has_flag: $mon.ability breakable):",
-          ["return true"]
-        ]
+        "suppress_mon_ability": {
+          "priority": 20,
+          "program": [
+            "# Mold Breaker also ignores breakable abilities that nothing else suppresses (Disguise), so it runs first; only Ability Shield protects (the held item: checking the effective item would ask about abilities again).",
+            "if func_call(ability_has_flag: $mon.ability breakable) and $mon.item != abilityshield:",
+            ["return true"]
+          ]
+        }
       }
     }
   },

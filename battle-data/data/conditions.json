@@ -430,7 +430,7 @@
           "# Still run events associated with the user preparing to hit the target, since they are locked into this move.",
           "run_event: PrepareHit"
         ],
-        "on_set_last_move": ["if $effect_state.duration > 1:", ["return false"]],
+        
         "on_lock_move": ["return $effect_state.move"],
         "on_move_aborted": ["remove_volatile: $user $effect_state.move"]
       }

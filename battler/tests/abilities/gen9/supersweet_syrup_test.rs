@@ -96,27 +96,28 @@ fn supersweet_syrup_drops_foe_evasion_on_start() {
     assert_logs_since_start_eq(&battle, &expected_logs);
 }
 
+/// The same team with Applin leading, so that Hydrapple first comes in later.
+fn applin_first() -> Result<TeamData> {
+    let mut team = team()?;
+    team.members.rotate_left(1);
+    Ok(team)
+}
+
 #[test]
 fn substitute_resists_supersweet_syrup() {
-    let mut battle = make_battle(0, team().unwrap(), team().unwrap()).unwrap();
+    let mut battle = make_battle(0, team().unwrap(), applin_first().unwrap()).unwrap();
     assert_matches::assert_matches!(battle.start(), Ok(()));
 
     assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0;pass"), Ok(()));
-    assert_matches::assert_matches!(
-        battle.set_player_choice("player-2", "switch 2;pass"),
-        Ok(())
-    );
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass;pass"), Ok(()));
     assert_matches::assert_matches!(battle.set_player_choice("player-1", "pass;pass"), Ok(()));
     assert_matches::assert_matches!(
-        battle.set_player_choice("player-2", "switch 0;pass"),
+        battle.set_player_choice("player-2", "switch 2;pass"),
         Ok(())
     );
 
     let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
         r#"[
-            "split|side:1",
-            ["switch", "player-2", "Applin"],
-            ["switch", "player-2", "Applin"],
             "move|mon:Hydrapple,player-1,1|name:Substitute|target:Hydrapple,player-1,1",
             "start|mon:Hydrapple,player-1,1|move:Substitute",
             "split|side:0",
@@ -137,4 +138,34 @@ fn substitute_resists_supersweet_syrup() {
     )
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
+}
+
+// Like Showdown, Supersweet Syrup activates once per battle, not again after switching out.
+#[test]
+fn supersweet_syrup_activates_once_per_battle() {
+    let mut battle = make_battle(0, team().unwrap(), team().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "pass;pass"), Ok(()));
+    assert_matches::assert_matches!(
+        battle.set_player_choice("player-2", "switch 2;pass"),
+        Ok(())
+    );
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "pass;pass"), Ok(()));
+    assert_matches::assert_matches!(
+        battle.set_player_choice("player-2", "switch 0;pass"),
+        Ok(())
+    );
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "split|side:1",
+            ["switch", "player-2", "Hydrapple"],
+            ["switch", "player-2", "Hydrapple"],
+            "residual",
+            "turn|turn:3"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 2, &expected_logs);
 }

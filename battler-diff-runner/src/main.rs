@@ -4,6 +4,9 @@
 //!
 //! - `{"op": "start", "seed": u32, "teams": [packed, packed]}` starts a Champions doubles battle.
 //! - `{"op": "choose", "choices": [p1, p2]}` makes Showdown-syntax choices (`""` for none).
+//! - `{"op": "transplant", "seed": u32, "state": {...}}` builds a battle from Showdown's serialized
+//!   battle (`battle.toJSON()`) at a turn boundary (spec P2), with fresh semantic streams from
+//!   `seed`.
 //!
 //! Every answer carries the draws and speed ties since the last answer, the new Showdown protocol
 //! lines (translated by `battler-showdown-compat`), both translated requests and the normalized
@@ -54,6 +57,7 @@ use battler_showdown_compat::{
         ConvertedTeam,
         convert_text,
     },
+    transplant,
 };
 use battler_test_utils::TestBattleBuilder;
 use semantic::SemanticRng;
@@ -80,6 +84,7 @@ const PLAYERS: [&str; 2] = ["p1", "p2"];
 enum Command {
     Start { seed: u32, teams: Vec<String> },
     Choose { choices: Vec<String> },
+    Transplant { seed: u32, state: Value },
 }
 
 struct Session {
@@ -97,16 +102,37 @@ fn semantic_rng<'b>(battle: &'b mut PublicCoreBattle) -> &'b mut SemanticRng {
 }
 
 impl Session {
+    const CONVERT: ConvertOptions = ConvertOptions {
+        default_level: 100,
+        force_level: None,
+    };
+
     fn start(seed: u32, teams: &[String]) -> Result<Self> {
         let data: &'static ChampionsDataStore<'static> = &CHAMPIONS;
-        let options = ConvertOptions {
-            default_level: 100,
-            force_level: None,
-        };
         let teams: Vec<ConvertedTeam> = teams
             .iter()
-            .map(|t| convert_text(data, t, options))
+            .map(|t| convert_text(data, t, Self::CONVERT))
             .collect::<Result<_>>()?;
+        let mut session = Self::new(seed, teams)?;
+        session.battle.start()?;
+        Ok(session)
+    }
+
+    /// A battle built from Showdown's serialized state at a turn boundary.
+    fn transplant(seed: u32, state: &Value) -> Result<Self> {
+        let data: &'static ChampionsDataStore<'static> = &CHAMPIONS;
+        let teams = transplant::teams(data, state, Self::CONVERT)?;
+        let mut session = Self::new(seed, teams)?;
+        transplant::apply_state(&mut session.battle, state).context("transplant")?;
+        session.translator.resume(&mut session.battle)?;
+        // The transplant's own log (the new turn) is not part of what is compared.
+        session.log_pos = session.battle.full_log().count();
+        Ok(session)
+    }
+
+    /// A battle that is not started yet.
+    fn new(seed: u32, teams: Vec<ConvertedTeam>) -> Result<Self> {
+        let data: &'static ChampionsDataStore<'static> = &CHAMPIONS;
         let mut builder = TestBattleBuilder::new()
             .with_battle_type(BattleType::Doubles)
             .with_seed(seed as u64)
@@ -124,9 +150,11 @@ impl Session {
         for rule in ["Team Preview", "Picked Team Size = Auto"] {
             builder = builder.with_rule(rule);
         }
-        let mut battle = builder.build(data)?;
-        battle.start()?;
-        let species = teams.iter().map(state::SpeciesNames::new).collect();
+        let battle = builder.build(data)?;
+        let species = teams
+            .iter()
+            .map(|team| state::SpeciesNames::new(team, &teams))
+            .collect();
         let translator = Translator::new(TranslatorConfig {
             players: PLAYERS.iter().map(|p| p.to_string()).collect(),
             teams,
@@ -192,6 +220,7 @@ impl Session {
             active_count: 2,
             multiple_requests,
             species: self.species[index].showdown_names(),
+            trap: request::trap_info(&mut self.battle, player)?,
         };
         Ok(
             request::translate(request.as_ref(), &info, &data, self.battle.ended())?
@@ -253,6 +282,12 @@ fn handle(session: &mut Option<Session>, line: &str) -> Result<Value> {
     match command {
         Command::Start { seed, teams } => {
             let mut new = Session::start(seed, &teams)?;
+            let report = new.report()?;
+            *session = Some(new);
+            Ok(report)
+        }
+        Command::Transplant { seed, state } => {
+            let mut new = Session::transplant(seed, &state)?;
             let report = new.report()?;
             *session = Some(new);
             Ok(report)

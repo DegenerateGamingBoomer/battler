@@ -133,6 +133,52 @@ impl Translator {
         }
     }
 
+    /// Prepares the translator for a battle it did not see start (a transplant): the players'
+    /// sides and names, each Pokémon's status and who seeded each Leech Seed, all of which the
+    /// battle's earlier log lines would have shown.
+    pub fn resume(&mut self, battle: &mut battler::PublicCoreBattle) -> Result<()> {
+        let players: Vec<(String, String, usize)> = battle
+            .internal
+            .players()
+            .map(|p| (p.id.clone(), p.name.clone(), p.side))
+            .collect();
+        for (id, name, side) in &players {
+            let shown = self.player(id)?.to_owned();
+            self.sides.insert(*side, shown.clone());
+            self.player_names.insert(shown, name.clone());
+        }
+        let handles: Vec<_> = battle.internal.all_mon_handles().collect();
+        let context = battle.internal.context();
+        let player_id = |index: usize| players[index].0.clone();
+        for handle in handles {
+            let mon = context.mon(handle)?;
+            let mon_ref = MonRef {
+                name: mon.name.clone(),
+                player: player_id(mon.player),
+                position: mon.active_position.map(|p| p + 1),
+            };
+            self.state(&mon_ref).status = match mon.status.as_ref().map(|s| s.as_ref()) {
+                Some("fnt") | None => None,
+                Some(status) => Some(status.to_owned()),
+            };
+            if let Some(seed) = mon
+                .volatile_state
+                .volatiles
+                .get(&battler::Id::from_known("leechseed"))
+                && let Some(seeder) = seed.source()
+            {
+                let seeder = context.mon(seeder)?;
+                let seeder_ref = MonRef {
+                    name: seeder.name.clone(),
+                    player: player_id(seeder.player),
+                    position: seed.source_position().map(|p| p + 1),
+                };
+                self.seeds.insert(mon_ref, seeder_ref);
+            }
+        }
+        Ok(())
+    }
+
     /// The translated lines so far.
     pub fn lines(&self) -> &[String] {
         &self.out

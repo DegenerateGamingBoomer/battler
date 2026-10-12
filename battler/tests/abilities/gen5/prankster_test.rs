@@ -185,3 +185,50 @@ fn moves_reflected_by_magic_bounce_are_not_prankster_boosted() {
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
 }
+
+fn liepard() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Liepard",
+                    "species": "Liepard",
+                    "ability": "No Ability",
+                    "moves": [
+                        "Tackle",
+                        "Encore"
+                    ],
+                    "nature": "Hardy",
+                    "level": 50
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+// Showdown records a move as its user's last move before it runs, so Encore reflected back at its
+// user sees Encore itself and fails.
+#[test]
+fn encore_reflected_by_magic_bounce_fails_against_its_user() {
+    let mut battle = make_battle(0, liepard().unwrap(), espeon().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 1"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass"), Ok(()));
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "move|mon:Liepard,player-1,1|name:Encore|noanim",
+            "activate|mon:Espeon,player-2,1|ability:Magic Bounce",
+            "move|mon:Espeon,player-2,1|name:Encore|from:ability:Magic Bounce|noanim",
+            "fail|mon:Espeon,player-2,1",
+            "residual",
+            "turn|turn:3"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 2, &expected_logs);
+}

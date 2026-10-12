@@ -149,10 +149,13 @@ fn status_id(mon: &Mon) -> String {
 pub struct SpeciesNames {
     by_name: HashMap<String, (String, String)>,
     display: HashMap<String, String>,
+    /// Showdown species ID by battler species ID, over every team in the battle (a transformed
+    /// Pokémon takes a species from the other team).
+    by_species: HashMap<String, String>,
 }
 
 impl SpeciesNames {
-    pub fn new(team: &ConvertedTeam) -> Self {
+    pub fn new(team: &ConvertedTeam, all_teams: &[ConvertedTeam]) -> Self {
         let by_name = team
             .sets
             .iter()
@@ -171,7 +174,16 @@ impl SpeciesNames {
             .iter()
             .map(|set| (to_id(&set.species), species_name(&set.species)))
             .collect();
-        Self { by_name, display }
+        let by_species = all_teams
+            .iter()
+            .flat_map(|team| team.sets.iter().zip(&team.species))
+            .map(|(set, resolved)| (to_id(&resolved.name), to_id(&set.species)))
+            .collect();
+        Self {
+            by_name,
+            display,
+            by_species,
+        }
     }
 
     /// Showdown's species name (not ID) by nickname.
@@ -195,9 +207,12 @@ impl SpeciesNames {
         let id = species.to_string();
         match self.by_name.get(&mon.name) {
             Some((battler, showdown)) if *battler == id => showdown.clone(),
-            _ => match gendered_species_name(&id, mon.gender == Gender::Female) {
-                Some(name) => to_id(name),
-                None => id,
+            _ => match self.by_species.get(&id) {
+                Some(showdown) if mon.volatile_state.transformed => showdown.clone(),
+                _ => match gendered_species_name(&id, mon.gender == Gender::Female) {
+                    Some(name) => to_id(name),
+                    None => id,
+                },
             },
         }
     }

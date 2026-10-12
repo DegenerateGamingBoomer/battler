@@ -2516,10 +2516,12 @@ fn revive(mut context: FunctionContext) -> Result<Value> {
 
 /// Applies drain effects (healing based on damage dealt).
 ///
-/// @param {[`ValueType::Mon`]} [target] The target Mon.
-/// @param {[`ValueType::Mon`]} [source] The source Mon.
-/// @param {[`ValueType::UFraction`]} damage The amount of damage healed.
+/// @param {[`ValueType::Mon`]} [target] The target Mon, which was drained.
+/// @param {[`ValueType::Mon`]} [source] The source Mon, which heals.
+/// @param {[`ValueType::UFraction`]} damage The amount of damage dealt.
+/// @flag ceil If set, the amount healed is rounded up (damage dealt to a Substitute).
 fn apply_drain(mut context: FunctionContext) -> Result<Value> {
+    let ceil = context.has_flag("ceil");
     let target_handle = context.target_handle_positional()?;
     let source_handle = context.source_handle_positional()?;
     let damage = context
@@ -2528,12 +2530,20 @@ fn apply_drain(mut context: FunctionContext) -> Result<Value> {
         .integer_u16()
         .wrap_error_with_message("invalid damage")?;
 
-    core_battle_actions::apply_drain(
-        &mut context.forward_to_applying_effect_context_with_source_and_target(
+    // Called from a condition (Substitute), the draining move is the source effect.
+    let effect_handle = match context.source_effect_handle()? {
+        Some(handle @ EffectHandle::ActiveMove(..)) => handle,
+        _ => context.effect_handle()?,
+    };
+    core_battle_actions::apply_drain_with_rounding(
+        &mut context.applying_effect_context(
+            effect_handle,
             Some(source_handle),
             target_handle,
+            None,
         )?,
         damage,
+        ceil,
     )
     .map(|val| Value::UFraction(val.into()))
 }
@@ -2744,19 +2754,23 @@ fn has_type_before_forced_types(mut context: FunctionContext) -> Result<Value> {
 ///
 /// @param {[`ValueType::Side`]} [side] The side to check.
 /// @param {[`ValueType::UFraction`]} position The position index.
+/// @flag or_exited If set, a Mon that fainted in the position and was not replaced counts.
 /// @returns {[`ValueType::Mon`] | [`ValueType::Undefined`]} The Mon at the position.
 fn mon_in_position(mut context: FunctionContext) -> Result<Option<Value>> {
+    let or_exited = context.has_flag("or_exited");
     let side_index = context.target_side_index_positional()?;
     let position = context
         .pop_front()
         .wrap_expectation("missing position")?
         .integer_usize()
         .wrap_error_with_message("invalid position")?;
-    Ok(Side::mon_in_position(
-        &mut context.battle_context_mut().side_context(side_index)?,
-        position,
-    )?
-    .map(|mon| Value::Mon(mon)))
+    let mut context = context.battle_context_mut().side_context(side_index)?;
+    let mon = if or_exited {
+        Side::active_or_exited_mon_in_position(&mut context, position)?
+    } else {
+        Side::mon_in_position(&mut context, position)?
+    };
+    Ok(mon.map(|mon| Value::Mon(mon)))
 }
 
 /// Disables a move for a Mon.

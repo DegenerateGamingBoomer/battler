@@ -613,8 +613,9 @@
     "effect": {
       "callbacks": {
         "on_start": [
-          "require !$effect_state.triggered else return",
-          "$effect_state.triggered = true",
+          "# Once per battle, even after switching out.",
+          "require !$target.effect_state.syrup_triggered else return",
+          "$target.effect_state.syrup_triggered = true",
           "log_ability",
           "foreach $target in func_call(adjacent_foes: $target):",
           ["boost: $target 'eva:-1'"]

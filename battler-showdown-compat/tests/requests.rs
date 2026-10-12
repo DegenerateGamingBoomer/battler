@@ -21,6 +21,7 @@ fn request_for(run: &mut Run, player: &str, index: usize) -> Option<Value> {
         active_count: 2,
         multiple_requests,
         species: Default::default(),
+        trap: battler_showdown_compat::request::trap_info(&mut run.battle, player).unwrap(),
     };
     translate(request.as_ref(), &info, &data, run.battle.ended()).unwrap()
 }

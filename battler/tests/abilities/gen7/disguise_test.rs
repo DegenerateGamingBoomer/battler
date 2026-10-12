@@ -211,3 +211,48 @@ fn transform_takes_on_mimikyu_forme_at_transformation() {
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
 }
+
+fn emboar() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Emboar",
+                    "species": "Emboar",
+                    "ability": "Mold Breaker",
+                    "moves": [
+                        "Flare Blitz"
+                    ],
+                    "nature": "Hardy",
+                    "level": 50
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+#[test]
+fn mold_breaker_ignores_disguise() {
+    let mut battle = make_battle(0, emboar().unwrap(), team().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass"), Ok(()));
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "move|mon:Emboar,player-1,1|name:Flare Blitz|target:Mimikyu,player-2,1",
+            "split|side:1",
+            "damage|mon:Mimikyu,player-2,1|health:160/220",
+            "damage|mon:Mimikyu,player-2,1|health:73/100",
+            "split|side:0",
+            "damage|mon:Emboar,player-1,1|from:Recoil|health:150/170",
+            "damage|mon:Emboar,player-1,1|from:Recoil|health:89/100",
+            "residual",
+            "turn|turn:2"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 1, &expected_logs);
+}

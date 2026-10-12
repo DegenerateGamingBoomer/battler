@@ -193,6 +193,16 @@ impl<'d> PublicCoreBattle<'d> {
         self.internal.start()
     }
 
+    /// Starts the battle for a transplant. See [`CoreBattle::start_transplant`].
+    pub fn start_transplant(&mut self) -> Result<()> {
+        self.internal.start_transplant()
+    }
+
+    /// Finishes a transplant into the start of `turn`. See [`CoreBattle::finish_transplant`].
+    pub fn finish_transplant(&mut self, turn: u64) -> Result<()> {
+        self.internal.finish_transplant(turn)
+    }
+
     /// Is the battle ready to continue?
     pub fn ready_to_continue(&mut self) -> Result<bool> {
         self.internal.ready_to_continue()
@@ -663,6 +673,78 @@ impl<'d> CoreBattle<'d> {
 
     pub fn turn(&self) -> u64 {
         self.turn
+    }
+}
+
+// Block for transplants: building a battle from a state described elsewhere (such as another
+// engine's serialized battle) without replaying its history.
+//
+// A transplant starts the battle silently, places Mons and patches their state directly, and
+// then ends the previous turn the way the battle itself would, which makes the pending request.
+impl<'d> CoreBattle<'d> {
+    /// Starts the battle for a transplant: no team preview, switch-ins, entry effects, random
+    /// draws or logs. The team each player was created with is the team in battle.
+    pub fn start_transplant(&mut self) -> Result<()> {
+        if self.started {
+            return Err(general_error("battle already started"));
+        }
+        Self::validate(&mut self.context())?;
+        self.started = true;
+        self.in_pre_battle = false;
+        self.mid_turn = true;
+        Ok(())
+    }
+
+    /// Places a Mon in an active position without any switch-in effects or logs.
+    ///
+    /// A fainted Mon keeps its position until it is replaced, but it is not active.
+    pub fn place_mon_for_transplant(
+        context: &mut MonContext,
+        position: usize,
+        fainted: bool,
+    ) -> Result<()> {
+        let mon_handle = context.mon_handle();
+        context
+            .player_mut()
+            .set_active_position(position, Some(mon_handle))?;
+        if fainted {
+            context.player_mut().set_active_position(position, None)?;
+            context.mon_mut().active = false;
+            context.mon_mut().active_position = None;
+            context.mon_mut().old_active_position = Some(position);
+        } else {
+            context.mon_mut().active = true;
+            context.mon_mut().active_position = Some(position);
+        }
+        Ok(())
+    }
+
+    /// Sets the order the next new effect state gets.
+    pub fn set_next_effect_order(&mut self, next_effect_order: u32) {
+        self.next_effect_order = next_effect_order;
+    }
+
+    /// The order the next new effect state gets.
+    pub fn peek_next_effect_order(&self) -> u32 {
+        self.next_effect_order
+    }
+
+    /// Finishes a transplant into the start of `turn` by ending the turn before it, as the battle
+    /// would: per-turn state moves on, moves are disabled or locked, and the request for `turn` is
+    /// made.
+    ///
+    /// Per-turn state must describe the end of the previous turn (for example, a Mon's active
+    /// turns are one fewer than they will be at the request).
+    pub fn finish_transplant(&mut self, turn: u64) -> Result<()> {
+        if turn == 0 {
+            return Err(general_error("cannot transplant into turn 0"));
+        }
+        self.turn = turn - 1;
+        let mut context = self.context();
+        context.clear_context_cache();
+        Self::next_turn(&mut context)?;
+        context.battle_mut().mid_turn = false;
+        Ok(())
     }
 }
 
@@ -2362,7 +2444,28 @@ impl<'d> CoreBattle<'d> {
     ) -> Result<Option<MonHandle>> {
         let mov = context.battle().dex.moves.get_by_id(move_id)?;
         let tracks_target = mov.data.advanced_targeting.tracks_target;
+        let smart_target = mov.data.advanced_targeting.smart_target;
         let move_target = mov.data.target.clone();
+        drop(mov);
+
+        // A move that picks its own targets (Dragon Darts) keeps the chosen one only while it can
+        // still be hit, even an ally, and otherwise picks a random one.
+        if smart_target && let Some(target) = target {
+            let mut context = context.mon_context(mon)?;
+            if let Some(chosen) = Mon::get_target(&mut context, target)?
+                && context.as_battle_context().mon(chosen)?.hp > 0
+            {
+                return Ok(Some(chosen));
+            }
+            return Self::random_target(context.as_battle_context_mut(), mon, move_target);
+        }
+
+        // A move that this Mon uses on itself (Curse, unless the user is a Ghost) needs no target.
+        if Mon::move_target_override(&mut context.mon_context(mon)?, move_id)
+            == Some(MoveTarget::User)
+        {
+            return Ok(Some(mon));
+        }
 
         if tracks_target {
             if let Some(original_target) = original_target {

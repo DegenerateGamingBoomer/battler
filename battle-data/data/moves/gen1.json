@@ -3009,7 +3009,8 @@
           ["log_activate: with_target damage"],
           "# Some move effects still apply.",
           "apply_recoil_damage: $damage",
-          "apply_drain: $source $target $damage",
+          "# The drained Pokémon is the target; its attacker heals (rounding up, unlike a hit).",
+          "apply_drain: $target $source $damage ceil",
           "run_event_on_move: AfterSubstituteDamage",
           "run_event: AfterSubstituteDamage use_source_effect",
           "return 0"

@@ -748,7 +748,8 @@
           [
             "$move.base_power = 0",
             "$move.hit_effect = func_call(hit_effect)",
-            "$move.hit_effect.heal_percent = 1/2",
+            "# Half of the target's HP, rounded down.",
+            "$move.hit_effect.heal_percent = expr(func_call(floor: expr($target.base_max_hp / 2)) / $target.base_max_hp)",
             "$move.effect_state.infiltrates = true"
           ]
         ]

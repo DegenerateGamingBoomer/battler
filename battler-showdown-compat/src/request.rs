@@ -4,7 +4,10 @@
 //! the object Showdown sends (`active` with move details, `forceSwitch`, `teamPreview`, `wait`, and
 //! `side.pokemon`). The request ID (`rqid`) is added by the caller if it wants one.
 
-use anyhow::Result;
+use anyhow::{
+    Context,
+    Result,
+};
 use battler::{
     MonBattleData,
     PlayerBattleData,
@@ -65,6 +68,154 @@ pub struct SideInfo {
     /// Showdown's species name by nickname, for formes battler folds into their base species
     /// (cosmetic formes). Empty if unknown.
     pub species: ahash::HashMap<String, String>,
+    /// What Showdown reveals about trapping (see [`trap_info`]).
+    pub trap: TrapInfo,
+}
+
+/// What Showdown's requests reveal about trapping, by active position.
+///
+/// Showdown keeps a trap from an ability (Shadow Tag, Arena Trap, Magnet Pull) hidden from the
+/// last active Pokémon, and marks it `maybeTrapped` when a foe's species could have such an
+/// ability, so that cancelling a switch reveals nothing (`sim/battle.ts` `endTurn`,
+/// `sim/pokemon.ts` `getMoveRequestData`).
+#[derive(Debug, Default, Clone)]
+pub struct TrapInfo {
+    /// Positions trapped by something visible (Block, Mean Look, binding moves, Ingrain, No
+    /// Retreat, Octolock, Fairy Lock), as opposed to an ability.
+    pub visible: Vec<usize>,
+    /// Positions a foe could trap with a trapping ability of its species or its current one.
+    pub maybe: Vec<usize>,
+}
+
+const VISIBLE_TRAPS: [&str; 5] = [
+    "trapped",
+    "partiallytrapped",
+    "ingrain",
+    "noretreat",
+    "octolock",
+];
+
+/// Whether a trapping ability would trap `mon` (Showdown's `onFoeMaybeTrapPokemon`).
+fn ability_may_trap(
+    context: &mut battler::battle::Context,
+    ability: &str,
+    mon: battler::battle::MonHandle,
+) -> Result<bool> {
+    let mut context = context.mon_context(mon)?;
+    Ok(match ability {
+        "shadowtag" => {
+            context
+                .mon()
+                .volatile_state
+                .ability_slot
+                .ability
+                .id
+                .as_ref()
+                != "shadowtag"
+        }
+        "arenatrap" => battler::battle::mon_states::is_grounded(&mut context),
+        "magnetpull" => battler::battle::mon_states::has_type(&mut context, battler::Type::Steel),
+        _ => false,
+    })
+}
+
+/// [`TrapInfo`] for a player's active Pokémon.
+pub fn trap_info(battle: &mut battler::PublicCoreBattle, player: &str) -> Result<TrapInfo> {
+    let mut info = TrapInfo::default();
+    let core = &mut battle.internal;
+    let player_index = core
+        .players
+        .iter()
+        .position(|p| p.id == player)
+        .with_context(|| format!("no player {player}"))?;
+    let side = core.players[player_index].side;
+    let positions = core.players[player_index].total_active_positions();
+    let actives: Vec<(usize, battler::battle::MonHandle)> = (0..positions)
+        .filter_map(|i| {
+            core.players[player_index]
+                .active_mon_handle(i)
+                .map(|h| (i, h))
+        })
+        .collect();
+    let foes: Vec<battler::battle::MonHandle> = core
+        .players
+        .iter()
+        .filter(|p| p.side != side)
+        .flat_map(|p| p.active_mon_handles().cloned().collect::<Vec<_>>())
+        .collect();
+    let fairy_lock = core
+        .field
+        .pseudo_weathers
+        .contains_key(&battler::Id::from_known("fairylock"));
+    let mut context = core.context();
+    for (position, handle) in actives {
+        let mon = context.mon(handle)?;
+        if mon.hp == 0 {
+            continue;
+        }
+        if fairy_lock
+            || VISIBLE_TRAPS.iter().any(|v| {
+                mon.volatile_state
+                    .volatiles
+                    .contains_key(&battler::Id::from(*v))
+            })
+        {
+            info.visible.push(position);
+        }
+        // A Pokémon immune to trapping (Ghost) is never marked.
+        if battler::battle::mon_states::has_type(
+            &mut context.mon_context(handle)?,
+            battler::Type::Ghost,
+        ) {
+            continue;
+        }
+        let item = context.mon(handle)?.item.clone();
+        let escapes = item.as_ref().is_some_and(|i| i.as_ref() == "shedshell")
+            || context
+                .mon(handle)?
+                .volatile_state
+                .ability_slot
+                .ability
+                .id
+                .as_ref()
+                == "runaway";
+        let mut maybe = false;
+        for foe in &foes {
+            let foe_mon = context.mon(*foe)?;
+            if foe_mon.hp == 0 {
+                continue;
+            }
+            let current = foe_mon.volatile_state.ability_slot.ability.id.to_string();
+            let species = context
+                .battle()
+                .dex
+                .species
+                .get_by_id(&foe_mon.volatile_state.species)?;
+            let mut abilities: Vec<String> = species
+                .data
+                .abilities
+                .iter()
+                .chain(species.data.hidden_ability.iter())
+                .map(|a| crate::names::to_id(a))
+                .collect();
+            drop(species);
+            abilities.dedup();
+            // The foe's own ability (the event Shed Shell and Run Away answer), then every ability
+            // its species could have (which they do not).
+            if !escapes && ability_may_trap(&mut context, &current, handle)? {
+                maybe = true;
+            }
+            for ability in abilities {
+                if ability_may_trap(&mut context, &ability, handle)? {
+                    maybe = true;
+                }
+            }
+        }
+        if maybe {
+            info.maybe.push(position);
+        }
+    }
+    Ok(info)
 }
 
 /// The species Showdown shows in the Pokémon's details: its base species, which changes on
@@ -225,8 +376,24 @@ pub fn translate(
                                 "id": m.id.to_string(),
                             })).collect::<Vec<_>>());
                         }
-                        if r.trapped || (r.locked_into_move && !locked_into_struggle) {
-                            entry["trapped"] = json!(true);
+                        // Showdown hides an ability's trap from the last active Pokémon and marks
+                        // it as maybe trapped instead (see `TrapInfo`).
+                        let hard_locked = r.locked_into_move && !locked_into_struggle;
+                        let position = mon.player_active_position.unwrap_or(0);
+                        let last_active = !actives.iter().any(|other| {
+                            other.player_active_position.unwrap_or(0) > position && other.hp > 0
+                        });
+                        let can_switch_in = player.mons.iter().any(|m| !m.active && m.hp > 0);
+                        if hard_locked || !last_active {
+                            if (r.trapped || hard_locked) && (hard_locked || can_switch_in) {
+                                entry["trapped"] = json!(true);
+                            }
+                        } else if can_switch_in {
+                            if r.trapped && side_info.trap.visible.contains(&position) {
+                                entry["trapped"] = json!(true);
+                            } else if side_info.trap.maybe.contains(&position) {
+                                entry["maybeTrapped"] = json!(true);
+                            }
                         }
                         // Without a usable move, the only option is Struggle, which also rules out
                         // Mega Evolution.

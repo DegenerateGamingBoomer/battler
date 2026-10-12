@@ -7,7 +7,10 @@
 // Usage:
 //   cargo build --release -p battler-diff-runner
 //   node compat/diff/driver.js [--battles N] [--start K] [--scenarios [filter]] [--out DIR]
-//                              [--verbose] [--battle K]
+//                              [--verbose] [--battle K] [--transplant [TURNS]]
+//
+// --transplant: plays each battle on Showdown alone and, at every turn boundary, transplants its
+// serialized state into battler (spec P2) and compares TURNS turns (default 3) from there.
 //
 // Output: a summary on stdout and, in --out (default compat/diff/out, gitignored), one JSON line
 // per battle in battles.jsonl plus summary.json.
@@ -41,6 +44,7 @@ function parseArgs(argv) {
     else if (a === '--verbose') args.verbose = true;
     else if (a === '--scenarios') args.scenarios = (argv[i + 1] && !argv[i + 1].startsWith('--')) ? argv[++i] : '';
     else if (a === '--merge') args.merge = argv[++i].split(',').map(d => path.resolve(d));
+    else if (a === '--transplant') args.transplant = (argv[i + 1] && /^\d+$/.test(argv[i + 1])) ? Number(argv[++i]) : 3;
     else throw new Error(`unknown argument ${a}`);
   }
   return args;
@@ -139,13 +143,16 @@ function randomChoice(request, prng) {
     const hasAlly = request.active.length > 1 && alive((i ^ 1) + 1);
     const switches = active.trapped ? [] : range(1, pokemon.length).filter(j =>
       !pokemon[j - 1].active && !chosen.includes(j) && alive(j));
-    const moves = active.moves.map((m, k) => ({slot: k + 1, target: m.target, disabled: m.disabled}))
-      .filter(m => !m.disabled && (m.target !== 'adjacentAlly' || hasAlly));
+    const usable = active.moves.map((m, k) => ({slot: k + 1, target: m.target, disabled: m.disabled}))
+      .filter(m => !m.disabled);
+    const moves = usable.filter(m => m.target !== 'adjacentAlly' || hasAlly);
     if (switches.length && (!moves.length || prng.random() < 0.1)) {
       const t = prng.sample(switches);
       chosen.push(t);
       return `switch ${t}`;
     }
+    // Only a move that needs an ally left (Encore into Helping Hand): Showdown still takes it.
+    if (!moves.length && usable.length) return `move ${usable[0].slot}${request.active.length > 1 ? ` -${(i ^ 1) + 1}` : ''}`;
     if (!moves.length) return 'move 1';
     const m = prng.sample(moves);
     let s = `move ${m.slot}`;
@@ -171,34 +178,10 @@ function snapshotRequests(battle) {
   return battle.sides.map(s => (s.activeRequest ? JSON.parse(JSON.stringify(s.activeRequest)) : null));
 }
 
-/**
- * Plays one battle on both engines. `plan` gives the choices: a function (request, side index,
- * step) → choice string. Returns the per-battle record.
- */
-async function playBattle(runner, {name, seed, teams, choose, fallback, done, maxSteps = 200, verbose}) {
-  const record = {name, seed, teams, steps: [], turns: 0, outcome: 'ended', divergence: null, drawDiffs: [], protocolDiffs: [], requestDiffs: []};
-  const semantic = new SemanticRandom(seed);
-  const battle = new Battle({formatid: FORMAT, seed: [1, 2, 3, 4]});
-  hooks.attach(battle, semantic);
-  const started = await runner.send({op: 'start', seed, teams});
-  if (!started.ok) {
-    record.outcome = 'setup-error';
-    record.error = started.error;
-    return record;
-  }
-  try {
-    battle.setPlayer('p1', {name: 'p1', team: teams[0]});
-    battle.setPlayer('p2', {name: 'p2', team: teams[1]});
-  } catch (e) {
-    record.outcome = 'showdown-error';
-    record.error = String(e.stack || e);
-    return record;
-  }
-  let logPos = 0;
-  let current = started;
-  const comparedTurns = new Set();
-
-  const compare = (bt, stepIndex, turn, choices) => {
+/** A comparison of one decision step: draws, normalized state, protocol and requests. */
+function makeComparer(battle, semantic, verbose) {
+  let logPos = battle.log.length;
+  return (bt, stepIndex, turn, choices, {skipProtocol = false} = {}) => {
     const sd = semantic.take();
     const log = normalizeLog(battle.log.slice(logPos));
     logPos = battle.log.length;
@@ -209,8 +192,10 @@ async function playBattle(runner, {name, seed, teams, choose, fallback, done, ma
     if (bt.rawDraws) step.rawDraws = bt.rawDraws;
     const state = diffJson(normalize(battle), bt.state);
     if (state.length) step.state = state;
-    const protocol = bt.translateError ? {translateError: bt.translateError} : diffProtocol(log, bt.protocol || []);
-    if (protocol) step.protocol = protocol;
+    if (!skipProtocol) {
+      const protocol = bt.translateError ? {translateError: bt.translateError} : diffProtocol(log, bt.protocol || []);
+      if (protocol) step.protocol = protocol;
+    }
     const showdownRequests = snapshotRequests(battle);
     const requests = diffJson(showdownRequests, bt.requests);
     if (requests.length) {
@@ -232,16 +217,14 @@ async function playBattle(runner, {name, seed, teams, choose, fallback, done, ma
     }
     return step;
   };
+}
 
-  // Team preview.
-  let step = compare(current, 0, 0, null);
-  record.steps.push(step);
-  if (step.state || step.requests) {
-    record.outcome = 'diverged';
-    record.divergence = {step: 0, turn: 0, kind: step.state ? 'state' : 'request'};
-    return record;
-  }
-
+/**
+ * Plays decision steps on both engines from where they are, comparing after each, until the battle
+ * ends, `done` says so, or the engines diverge. Fills `record` (steps, outcome, divergence, turns).
+ */
+async function playSteps(runner, battle, record, compare, {choose, fallback, done, maxSteps = 200}) {
+  const comparedTurns = new Set();
   for (let i = 1; i <= maxSteps && !battle.ended; i++) {
     if (done && done(battle)) break;
     const turn = battle.turn;
@@ -253,6 +236,7 @@ async function playBattle(runner, {name, seed, teams, choose, fallback, done, ma
         if (!fallback) {
           record.outcome = 'showdown-rejected';
           record.error = `Showdown rejected p${k + 1} '${c}': ${error}`;
+          record.turns = comparedTurns.size;
           return record;
         }
         // A scripted choice that no longer fits the battle: play a random legal one instead.
@@ -261,6 +245,7 @@ async function playBattle(runner, {name, seed, teams, choose, fallback, done, ma
         if (choices[k] && !battle.sides[k].choose(choices[k])) {
           record.outcome = 'showdown-rejected';
           record.error = `Showdown rejected fallback p${k + 1} '${choices[k]}'`;
+          record.turns = comparedTurns.size;
           return record;
         }
       }
@@ -270,10 +255,10 @@ async function playBattle(runner, {name, seed, teams, choose, fallback, done, ma
     } catch (e) {
       record.outcome = 'showdown-error';
       record.error = String(e.stack || e);
-      return record;
+      break;
     }
-    current = await runner.send({op: 'choose', choices});
-    step = compare(current, i, turn, choices);
+    const current = await runner.send({op: 'choose', choices});
+    const step = compare(current, i, turn, choices);
     if (fallbacks.length) step.fallbacks = fallbacks;
     record.steps.push(step);
     if (step.tieAffected) {
@@ -302,10 +287,129 @@ async function playBattle(runner, {name, seed, teams, choose, fallback, done, ma
       break;
     }
   }
-  if (record.outcome === 'ended' && !battle.ended) record.outcome = 'step-limit';
+  if (record.outcome === 'ended' && !battle.ended && !(done && done(battle))) record.outcome = 'step-limit';
   record.turns = comparedTurns.size;
+  return record;
+}
+
+function newRecord(fields) {
+  return {...fields, steps: [], turns: 0, outcome: 'ended', divergence: null, drawDiffs: [], protocolDiffs: [], requestDiffs: []};
+}
+
+/**
+ * Plays one battle on both engines. `plan` gives the choices: a function (request, side index,
+ * step) → choice string. Returns the per-battle record.
+ */
+async function playBattle(runner, {name, seed, teams, choose, fallback, done, maxSteps = 200, verbose}) {
+  const record = newRecord({name, seed, teams});
+  const semantic = new SemanticRandom(seed);
+  const battle = new Battle({formatid: FORMAT, seed: [1, 2, 3, 4]});
+  hooks.attach(battle, semantic);
+  const started = await runner.send({op: 'start', seed, teams});
+  if (!started.ok) {
+    record.outcome = 'setup-error';
+    record.error = started.error;
+    return record;
+  }
+  try {
+    battle.setPlayer('p1', {name: 'p1', team: teams[0]});
+    battle.setPlayer('p2', {name: 'p2', team: teams[1]});
+  } catch (e) {
+    record.outcome = 'showdown-error';
+    record.error = String(e.stack || e);
+    return record;
+  }
+  const compare = makeComparer(battle, semantic, verbose);
+
+  // Team preview.
+  const step = compare(started, 0, 0, null);
+  record.steps.push(step);
+  if (step.state || step.requests) {
+    record.outcome = 'diverged';
+    record.divergence = {step: 0, turn: 0, kind: step.state ? 'state' : 'request'};
+    return record;
+  }
+  await playSteps(runner, battle, record, compare, {choose, fallback, done, maxSteps});
   record.winner = battle.winner;
   return record;
+}
+
+/** Showdown's serialized battle, without the harness's own fields. */
+function serialize(battle) {
+  const {semantic} = battle;
+  const rng = battle.prng.rng;
+  delete battle.semantic;
+  battle.prng.rng = {getSeed: () => '0,0,0,0', next() { throw new Error('unclassified raw PRNG draw'); }};
+  try {
+    return battle.toJSON();
+  } finally {
+    battle.semantic = semantic;
+    battle.prng.rng = rng;
+  }
+}
+
+/**
+ * Transplants Showdown's battle at its current turn boundary into a new battler battle (and a
+ * restored Showdown battle), then plays `turns` turns on both with fresh semantic streams and
+ * random choices, comparing after every step.
+ */
+async function playSegment(runner, source, {name, seed, turns, chooser, verbose}) {
+  const startTurn = source.turn;
+  const state = serialize(source);
+  const record = newRecord({name: `${name}@${startTurn}`, seed, startTurn});
+  const semantic = new SemanticRandom(seed);
+  const battle = Battle.fromJSON(JSON.stringify(state));
+  hooks.attach(battle, semantic);
+  const transplanted = await runner.send({op: 'transplant', seed, state});
+  if (!transplanted.ok) {
+    record.outcome = 'transplant-error';
+    record.error = transplanted.error;
+    return record;
+  }
+  const compare = makeComparer(battle, semantic, verbose);
+  // The transplanted position itself, before any choice (no protocol lines on either side).
+  const step = compare(transplanted, 0, startTurn, null, {skipProtocol: true});
+  record.steps.push(step);
+  if (step.state || step.requests) {
+    record.outcome = 'diverged';
+    record.divergence = {step: 0, turn: startTurn, kind: step.state ? 'state' : 'request'};
+    record.turns = 1;
+    return record;
+  }
+  await playSteps(runner, battle, record, compare, {
+    choose: request => randomChoice(request, chooser),
+    done: b => b.turn >= startTurn + turns,
+  });
+  return record;
+}
+
+/**
+ * Plays a Showdown battle with random choices and, at every turn boundary, transplants it into
+ * battler and compares a few turns from there (spec P2). Returns one record per segment.
+ */
+async function transplantBattle(runner, {idx, name, seed, teams, turns, verbose, maxSteps = 200}) {
+  const source = new Battle({formatid: FORMAT, seed: [1, 2, 3, 4]});
+  hooks.attach(source, new SemanticRandom(seed));
+  source.setPlayer('p1', {name: 'p1', team: teams[0]});
+  source.setPlayer('p2', {name: 'p2', team: teams[1]});
+  const chooser = new PRNG([idx & 0xffff, 5, 7, 11]);
+  const records = [];
+  for (let i = 0; i < maxSteps && !source.ended; i++) {
+    source.semantic.take();
+    if (source.requestState === 'move' && source.turn >= 1 && !source.queue.list.length) {
+      const segmentSeed = (seed ^ Math.imul(source.turn + 1, 0x9E3779B1)) >>> 0;
+      records.push(await playSegment(runner, source, {
+        name, seed: segmentSeed, turns, verbose,
+        chooser: new PRNG([idx & 0xffff, source.turn & 0xffff, 13, 17]),
+      }));
+    }
+    for (const side of source.sides) {
+      const c = randomChoice(side.activeRequest, chooser);
+      if (c && !side.choose(c)) throw new Error(`source battle rejected '${c}': ${side.choice.error}`);
+    }
+    source.commitChoices();
+  }
+  return records;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -324,10 +428,14 @@ function divergenceKey(record) {
 }
 
 function summarize(records) {
-  const s = {battles: records.length, outcomes: {}, comparedTurns: 0, divergedTurns: 0, byKind: {}, protocolFirst: {}, drawFirst: {}};
+  const s = {battles: records.length, outcomes: {}, comparedTurns: 0, divergedTurns: 0, byKind: {}, protocolFirst: {}, drawFirst: {}, transplantErrors: {}};
   for (const r of records) {
     s.outcomes[r.outcome] = (s.outcomes[r.outcome] || 0) + 1;
     s.comparedTurns += r.turns;
+    if (r.outcome === 'transplant-error') {
+      const key = String(r.error).split('\n')[0].replace(/p\d: "[^"]*": /, '').slice(0, 140);
+      (s.transplantErrors[key] = s.transplantErrors[key] || []).push(r.name);
+    }
     if (r.outcome === 'diverged') {
       s.divergedTurns++;
       const key = divergenceKey(r);
@@ -357,6 +465,10 @@ function printSummary(s) {
   const sorted = obj => Object.entries(obj).sort((a, b) => b[1].length - a[1].length);
   console.log(`battles: ${s.battles}  outcomes: ${JSON.stringify(s.outcomes)}`);
   console.log(`compared turns: ${s.comparedTurns}  diverged: ${s.divergedTurns}  rate: ${(100 * s.divergenceRate).toFixed(2)}%`);
+  if (Object.keys(s.transplantErrors || {}).length) {
+    console.log('transplant errors:');
+    for (const [k, v] of sorted(s.transplantErrors).slice(0, 40)) console.log(`  ${String(v.length).padStart(4)}  ${k}   [${v.slice(0, 3).join(' ')}]`);
+  }
   console.log('state divergences by first difference:');
   for (const [k, v] of sorted(s.byKind).slice(0, 40)) console.log(`  ${String(v.length).padStart(4)}  ${k}   [${v.slice(0, 3).join(' ')}]`);
   console.log('first draw-log difference per battle (categories):');
@@ -407,6 +519,20 @@ async function main() {
       records.push(record);
       out.write(JSON.stringify(record) + '\n');
     }
+  } else if (args.transplant) {
+    const indices = args.battle !== null ? [args.battle] : range(args.start, args.start + args.battles - 1);
+    for (const idx of indices) {
+      const seed = 1000003 * (idx + 1) >>> 0;
+      const {teams} = makeTeams(seed);
+      const segments = await transplantBattle(runner, {
+        idx, name: `battle-${String(idx).padStart(5, '0')}`, seed, teams, turns: args.transplant, verbose: args.verbose,
+      });
+      for (const record of segments) {
+        records.push(record);
+        out.write(JSON.stringify(record) + '\n');
+      }
+      if ((idx - args.start + 1) % 25 === 0) process.stderr.write(`${idx - args.start + 1} battles, ${records.length} segments\n`);
+    }
   } else {
     const indices = args.battle !== null ? [args.battle] : range(args.start, args.start + args.battles - 1);
     for (const idx of indices) {
@@ -437,4 +563,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = {makeTeams, randomChoice, playBattle};
+module.exports = {makeTeams, randomChoice, playBattle, transplantBattle};

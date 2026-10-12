@@ -806,8 +806,9 @@
           "$reflected_move.effect_state.reflected = true",
           "$reflected_move.effect_state.prankster = false",
           "use_active_move: $target $reflected_move $source use_effect_as_source_effect",
-          "$move.force_try_hit_result = stop",
-          "return stop"
+          "# The reflected move fails for its user, silently (Stomping Tantrum doubles next turn).",
+          "$move.force_try_hit_result = stopfail",
+          "return stopfail"
         ],
         "on_side_try_hit_side": [
           "require $source.side != $side else return",
@@ -818,7 +819,7 @@
           "$reflected_move.effect_state.reflected = true",
           "$reflected_move.effect_state.prankster = false",
           "use_active_move: $effect_state.target $reflected_move $source use_effect_as_source_effect",
-          "return stop"
+          "return stopfail"
         ]
       }
     }
@@ -938,7 +939,7 @@
           "require !!func_call(take_item: $target dry_run) else return",
           "chain_modify: 3/2"
         ],
-        "on_after_hit": ["require $source.hp != 0 else return", "take_item: $target"]
+        "on_after_hit": ["take_item: $target"]
       }
     }
   },

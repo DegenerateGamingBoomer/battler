@@ -25,3 +25,5 @@ recorded here with the file in `third_party/pokemon-showdown` that defines it (p
 | Run Away | Also prevents all trapping. | `abilities.ts` |
 | Unseen Fist | Contact moves go through Protect at 0.25x damage and log `-zbroken`. battler's existing `weakenthroughprotection` flag already behaves this way; only the log differs. | `abilities.ts` `unseenfist` |
 | Curse (non-Ghost) | Fails when none of the three stat changes can apply. | `moves.ts` `curse` |
+| Dragon Darts | When Ally Switch moves the user into the position it chose, the first dart hits the user and the second its ally. | `sim/battle.ts` `getTarget` (`smartTarget`) |
+| Two-turn moves | The move is the user's last move from its charging turn on (Encore, Mirror Move, Instruct see it). | `sim/battle-actions.ts` `runMove` (`moveUsed`) |

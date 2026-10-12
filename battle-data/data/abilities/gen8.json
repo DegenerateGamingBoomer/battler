@@ -5,8 +5,9 @@
     "effect": {
       "callbacks": {
         "on_start": [
-          "require !$effect_state.boosted else return",
-          "$effect_state.boosted = true",
+          "# Once per battle, even after switching out.",
+          "require !$target.effect_state.sword_boost else return",
+          "$target.effect_state.sword_boost = true",
           "boost: $target 'atk:1'"
         ]
       }
@@ -18,8 +19,9 @@
     "effect": {
       "callbacks": {
         "on_start": [
-          "require !$effect_state.boosted else return",
-          "$effect_state.boosted = true",
+          "# Once per battle, even after switching out.",
+          "require !$target.effect_state.shield_boost else return",
+          "$target.effect_state.shield_boost = true",
           "boost: $target 'def:1'"
         ]
       }
