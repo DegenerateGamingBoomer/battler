@@ -22,7 +22,8 @@ fn drowzee() -> Result<TeamData> {
                     "species": "Drowzee",
                     "ability": "Insomnia",
                     "moves": [
-                        "Hypnosis"
+                        "Hypnosis",
+                        "Yawn"
                     ],
                     "nature": "Hardy",
                     "level": 50
@@ -58,6 +59,26 @@ fn insomnia_resists_sleep() {
     let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
         r#"[
             "move|mon:Drowzee,player-1,1|name:Hypnosis|noanim",
+            "immune|mon:Drowzee,player-2,1|from:ability:Insomnia",
+            "residual",
+            "turn|turn:2"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 1, &expected_logs);
+}
+
+#[test]
+fn insomnia_resists_yawn() {
+    let mut battle = make_battle(0, drowzee().unwrap(), drowzee().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 1"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass"), Ok(()));
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "move|mon:Drowzee,player-1,1|name:Yawn|noanim",
             "immune|mon:Drowzee,player-2,1|from:ability:Insomnia",
             "residual",
             "turn|turn:2"

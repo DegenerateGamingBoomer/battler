@@ -656,6 +656,7 @@ mod moves {
         mod obstruct_test;
         mod octolock_test;
         mod poltergeist_test;
+        mod scale_shot_test;
         mod shell_side_arm_test;
         mod snipe_shot_test;
         mod steel_roller_test;

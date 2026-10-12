@@ -1095,6 +1095,7 @@
     "pp": 5,
     "target": "AllAdjacentFoes",
     "flags": ["BypassSubstitute", "Mirror", "Protect", "Sound"],
+    "user_effect_after_move": true,
     "user_effect": {
       "boosts": {
         "def": -1

@@ -141,7 +141,8 @@ function randomChoice(request, prng) {
   return request.active.map((active, i) => {
     if (!alive(i + 1) || pokemon[i].commanding) return 'pass';
     const hasAlly = request.active.length > 1 && alive((i ^ 1) + 1);
-    const switches = active.trapped ? [] : range(1, pokemon.length).filter(j =>
+    // A Pokémon that may be trapped (by an ability Showdown keeps hidden) does not try to switch.
+    const switches = active.trapped || active.maybeTrapped ? [] : range(1, pokemon.length).filter(j =>
       !pokemon[j - 1].active && !chosen.includes(j) && alive(j));
     const usable = active.moves.map((m, k) => ({slot: k + 1, target: m.target, disabled: m.disabled}))
       .filter(m => !m.disabled);

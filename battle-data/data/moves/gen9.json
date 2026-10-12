@@ -247,6 +247,8 @@
         "on_slot_start": ["request_mon_selection: $source revive"],
         "on_select": [
           "revive: $selected expr($selected.max_hp / 2)",
+        "# A Mon revived where it fainted switches back in once the queued actions run.",
+        "queue_switch_back_in: $selected",
           "remove_slot_condition: $mon.side $mon.position $this.id"
         ]
       }

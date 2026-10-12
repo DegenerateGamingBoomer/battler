@@ -278,6 +278,11 @@ pub struct MoveData {
     pub user_effect: Option<HitEffect>,
     /// Chance of the user effect occurring.
     pub user_effect_chance: Option<Fraction<u16>>,
+    /// Apply the user effect once after the move, if it succeeded, instead of with its hits.
+    ///
+    /// Fainted targets are processed first, so the effect fails if no foe is left.
+    #[serde(default)]
+    pub user_effect_after_move: bool,
     /// Secondary effects applied to the target.
     #[serde(default)]
     pub secondary_effects: Vec<SecondaryEffectData>,

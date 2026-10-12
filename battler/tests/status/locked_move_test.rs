@@ -11,6 +11,7 @@ use battler_test_utils::{
     LogMatch,
     TestBattleBuilder,
     assert_logs_since_turn_eq,
+    get_controlled_rng_for_battle,
     static_local_data_store,
 };
 
@@ -40,6 +41,7 @@ fn make_battle(seed: u64, team_1: TeamData, team_2: TeamData) -> Result<PublicCo
     TestBattleBuilder::new()
         .with_battle_type(BattleType::Singles)
         .with_seed(seed)
+        .with_controlled_rng(true)
         .with_team_validation(false)
         .with_pass_allowed(true)
         .with_speed_sort_tie_resolution(CoreBattleEngineSpeedSortTieResolution::Keep)
@@ -128,6 +130,48 @@ fn thrash_locks_move_and_confuses_user() {
             "damage|mon:Blissey,player-1,1|from:Confusion|health:87/100",
             "residual",
             "turn|turn:4"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 1, &expected_logs);
+}
+
+#[test]
+fn thrash_lock_ends_without_confusion_when_blocked_before_last_turn() {
+    let mut team_2 = blissey().unwrap();
+    team_2.members[0].moves = Vec::from_iter(["Protect".to_owned()]);
+    let mut battle = make_battle(0, blissey().unwrap(), team_2).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+    // Every draw returns 1, so the lock lasts three turns.
+    get_controlled_rng_for_battle(&mut battle)
+        .unwrap()
+        .set_constant(Some(1));
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 0"), Ok(()));
+
+    assert_matches::assert_matches!(battle.request_for_player("player-1"), Ok(Some(Request::Turn(request))) => {
+        assert_eq!(request.active[0].moves.len(), 2);
+        assert!(!request.active[0].locked_into_move);
+    });
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "move|mon:Blissey,player-1,1|name:Thrash|target:Blissey,player-2,1",
+            "split|side:1",
+            "damage|mon:Blissey,player-2,1|health:236/315",
+            "damage|mon:Blissey,player-2,1|health:75/100",
+            "residual",
+            "turn|turn:2",
+            "continue",
+            "move|mon:Blissey,player-2,1|name:Protect|target:Blissey,player-2,1",
+            "singleturn|mon:Blissey,player-2,1|move:Protect",
+            "move|mon:Blissey,player-1,1|name:Thrash|noanim",
+            "activate|mon:Blissey,player-2,1|move:Protect",
+            "residual",
+            "turn|turn:3"
         ]"#,
     )
     .unwrap();

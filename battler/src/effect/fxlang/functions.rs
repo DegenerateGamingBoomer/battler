@@ -63,6 +63,8 @@ use crate::{
         SelectReason,
         Side,
         SideEffectContext,
+        SwitchAction,
+        SwitchActionInput,
         core_battle_actions,
         core_battle_effects,
         core_battle_logs,
@@ -320,6 +322,7 @@ pub fn run_function(
         "primal_reversion" => primal_reversion(context).map(|val| Some(val)),
         "prioritize_move" => prioritize_move(context).map(|()| None),
         "pseudo_weather_effect_state" => pseudo_weather_effect_state(context),
+        "queue_switch_back_in" => queue_switch_back_in(context).map(|val| Some(val)),
         "random" => random(context).map(|val| Some(val)),
         "random_target" => random_target(context),
         "read_event_state_value" => read_event_state_value(context),
@@ -1547,6 +1550,33 @@ fn draw_site<'a>(site: &'a Option<(String, String)>) -> DrawSite<'a> {
         Some((effect, event)) => DrawSite::Effect { effect, event },
         None => DrawSite::Engine("effect"),
     }
+}
+
+/// Queues a Mon that is out of battle to switch back into the position it last left, if no other
+/// Mon has taken that position since (a Mon revived where it fainted). The switch runs after every
+/// action already queued.
+///
+/// @param {[`ValueType::Mon`]} [mon] The Mon to switch in.
+/// @returns {[`ValueType::Boolean`]} Whether the switch was queued.
+fn queue_switch_back_in(mut context: FunctionContext) -> Result<Value> {
+    let target_handle = context.target_handle_positional()?;
+    let mut context = context.mon_context(target_handle)?;
+    if context.mon().active || context.mon().exited.is_some() {
+        return Ok(Value::Boolean(false));
+    }
+    let Some(position) = context.player().active_or_exited_position(&target_handle) else {
+        return Ok(Value::Boolean(false));
+    };
+    BattleQueue::add_action(
+        context.as_battle_context_mut(),
+        Action::Switch(SwitchAction::new(SwitchActionInput {
+            instant: true,
+            mon: target_handle,
+            switching_out: target_handle,
+            position,
+        })),
+    )?;
+    Ok(Value::Boolean(true))
 }
 
 /// Generates a random number.

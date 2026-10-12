@@ -358,9 +358,18 @@ pub fn translate(
                     let from_request = turn.active.iter().find(|r| r.team_position == mon.player_team_position);
                     let mut entry = json!({"moves": moves(from_request.map(|r| r.moves.as_slice()).unwrap_or(&mon.moves))});
                     // Showdown still describes a fainted Pokémon left in its slot, including whether
-                    // it could Mega Evolve.
-                    if from_request.is_none() && mon.can_mega_evolve {
-                        entry["canMegaEvo"] = json!(true);
+                    // it could Mega Evolve, and Struggle when none of its moves is usable.
+                    if from_request.is_none() {
+                        if mon.moves.iter().all(|m| m.disabled || m.pp == 0) {
+                            entry["moves"] = json!([{
+                                "move": "Struggle",
+                                "id": "struggle",
+                                "target": "randomNormal",
+                                "disabled": false,
+                            }]);
+                        } else if mon.can_mega_evolve {
+                            entry["canMegaEvo"] = json!(true);
+                        }
                     }
                     if let Some(r) = from_request {
                         // battler locks a Pokémon without usable moves into Struggle; Showdown

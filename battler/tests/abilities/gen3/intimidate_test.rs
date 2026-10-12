@@ -155,7 +155,7 @@ fn substitute_resists_intimidate() {
             ["switch", "player-1", "Mightyena"],
             ["switch", "player-1", "Mightyena"],
             "activate|mon:Mightyena,player-1,1|ability:Intimidate",
-            "fail|mon:Swampert,player-2,1|what:unboost|from:move:Substitute",
+            "immune|mon:Swampert,player-2,1",
             "unboost|mon:Mightyena,player-2,2|stat:atk|by:1|from:ability:Intimidate|of:Mightyena,player-1,1",
             "residual",
             "turn|turn:3"
@@ -163,4 +163,38 @@ fn substitute_resists_intimidate() {
     )
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
+}
+
+#[test]
+fn intimidate_against_substitute_does_not_trigger_defiant() {
+    let mut team_2 = team().unwrap();
+    team_2.members[0].ability = "Defiant".to_owned();
+    let mut battle = make_battle(0, team().unwrap(), team_2).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_matches::assert_matches!(
+        battle.set_player_choice("player-1", "pass;switch 2"),
+        Ok(())
+    );
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "move 0;pass"), Ok(()));
+    assert_matches::assert_matches!(
+        battle.set_player_choice("player-1", "switch 1;pass"),
+        Ok(())
+    );
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass;pass"), Ok(()));
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "split|side:0",
+            ["switch", "player-1", "Mightyena"],
+            ["switch", "player-1", "Mightyena"],
+            "activate|mon:Mightyena,player-1,1|ability:Intimidate",
+            "immune|mon:Swampert,player-2,1",
+            "unboost|mon:Mightyena,player-2,2|stat:atk|by:1|from:ability:Intimidate|of:Mightyena,player-1,1",
+            "residual",
+            "turn|turn:3"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 2, &expected_logs);
 }

@@ -49,6 +49,8 @@ fn make_battle(seed: u64, team_1: TeamData, team_2: TeamData) -> Result<PublicCo
         .build(static_local_data_store())
 }
 
+// Mummy replaces Sheer Force during the first Low Sweep, so (as in Showdown, which checks the
+// user's ability after the move) Life Orb still damages the user.
 #[test]
 fn sheer_force_cancels_secondary_effects() {
     let mut team = conkeldurr().unwrap();
@@ -69,6 +71,9 @@ fn sheer_force_cancels_secondary_effects() {
             "damage|mon:Conkeldurr,player-2,1|health:37/100",
             "abilityend|mon:Conkeldurr,player-1,1|ability:Sheer Force|from:ability:Mummy|of:Conkeldurr,player-2,1",
             "abilitystart|mon:Conkeldurr,player-1,1|ability:Mummy|from:ability:Mummy|of:Conkeldurr,player-2,1",
+            "split|side:0",
+            "damage|mon:Conkeldurr,player-1,1|from:item:Life Orb|health:149/165",
+            "damage|mon:Conkeldurr,player-1,1|from:item:Life Orb|health:91/100",
             "move|mon:Conkeldurr,player-2,1|name:Recover|target:Conkeldurr,player-2,1",
             "split|side:1",
             "heal|mon:Conkeldurr,player-2,1|health:143/165",
@@ -82,8 +87,8 @@ fn sheer_force_cancels_secondary_effects() {
             "damage|mon:Conkeldurr,player-2,1|health:42/100",
             "unboost|mon:Conkeldurr,player-2,1|stat:spe|by:1",
             "split|side:0",
-            "damage|mon:Conkeldurr,player-1,1|from:item:Life Orb|health:149/165",
-            "damage|mon:Conkeldurr,player-1,1|from:item:Life Orb|health:91/100",
+            "damage|mon:Conkeldurr,player-1,1|from:item:Life Orb|health:133/165",
+            "damage|mon:Conkeldurr,player-1,1|from:item:Life Orb|health:81/100",
             "residual",
             "turn|turn:3"
         ]"#,

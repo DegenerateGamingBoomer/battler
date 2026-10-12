@@ -208,6 +208,11 @@
     "effect": {
       "callbacks": {
         "on_update": ["if $mon.status == slp:", ["cure_status: $mon"]],
+        "on_add_volatile": [
+          "# Yawn would put the Pokémon to sleep.",
+          "if $volatile.id == yawn:",
+          ["log_immune: $target from_effect", "return stopfail"]
+        ],
         "on_set_status": [
           "require $status.id == slp else return",
           "if $effect.is_move and !$effect.is_move_secondary:",
@@ -343,7 +348,10 @@
           [
             "if !$activated:",
             ["log_activate: with_target", "$activated = true"],
-            "boost: $mon 'atk:-1'"
+            "if func_call(has_volatile: $mon substitute):",
+            ["log_immune: $mon"],
+            "else:",
+            ["boost: $mon 'atk:-1'"]
           ]
         ]
       }
@@ -1050,6 +1058,11 @@
     "effect": {
       "callbacks": {
         "on_update": ["if $mon.status == slp:", ["cure_status: $mon"]],
+        "on_add_volatile": [
+          "# Yawn would put the Pokémon to sleep.",
+          "if $volatile.id == yawn:",
+          ["log_immune: $target from_effect", "return stopfail"]
+        ],
         "on_set_status": [
           "require $status.id == slp else return",
           "if $effect.is_move and !$effect.is_move_secondary:",

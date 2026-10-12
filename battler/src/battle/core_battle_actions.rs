@@ -1176,6 +1176,17 @@ fn use_active_move_internal(
 
     let outcome = MoveOutcome::from(result);
 
+    if outcome.succeeded() && context.active_move().data.user_effect_after_move {
+        let mon_handle = context.mon_handle();
+        let mut context = context.hit_self_active_move_context();
+        if context.hit_effect().is_some() {
+            move_hit(
+                &mut context,
+                &mut hit_targets_state_from_targets([mon_handle]),
+            )?;
+        }
+    }
+
     if context.mon().hp == 0 {
         let mon_handle = context.mon_handle();
         let effect_handle = context.effect_handle();
@@ -1194,11 +1205,12 @@ fn use_active_move_internal(
         );
     }
 
-    // Effects after the move on its user only apply if the move did something.
-    if outcome.succeeded()
-        && !context.active_move().ignore_all_secondary_effects
-        && context.mon().active
-    {
+    // Effects after the move on its user only apply if the move did something. Sheer Force skips
+    // them only while the user still has it (Mummy can replace it during the move).
+    let sheer_force = context.active_move().ignore_all_secondary_effects
+        && mon_states::effective_ability(context.as_mon_context_mut())
+            .is_some_and(|ability| ability.id.as_ref() == "sheerforce");
+    if outcome.succeeded() && !sheer_force && context.mon().active {
         core_battle_effects::run_active_move_event_with_input::<_, ()>(
             context,
             fxlang::BattleEvent::AfterMoveSecondaryEffectsUser,
@@ -3403,6 +3415,21 @@ pub fn can_boost(context: &mut MonContext, boosts: BoostTable) -> Result<bool> {
     Ok(Mon::cap_boosts(context, boosts).non_zero_iter().count() > 0)
 }
 
+/// Counts the Mons left on the sides opposing the target.
+fn foe_mons_left(context: &mut ApplyingEffectContext) -> Result<usize> {
+    let side = context.target().side;
+    let mut count = 0;
+    for foe_side in context
+        .battle()
+        .side_indices()
+        .filter(|index| *index != side)
+        .collect::<Vec<_>>()
+    {
+        count += Side::mons_left(&mut context.as_battle_context_mut().side_context(foe_side)?)?;
+    }
+    Ok(count)
+}
+
 /// Boosts the stats of a Mon.
 pub fn boost(
     context: &mut ApplyingEffectContext,
@@ -3410,10 +3437,7 @@ pub fn boost(
     is_secondary: bool,
     is_self: bool,
 ) -> Result<EventResult> {
-    if !context.target().active
-        || context.target().hp == 0
-        || Side::mons_left(context.target_context()?.as_side_context_mut())? == 0
-    {
+    if !context.target().active || context.target().hp == 0 || foe_mons_left(context)? == 0 {
         return Ok(EventResult::Fail);
     }
 
@@ -3543,6 +3567,10 @@ fn apply_user_effect(
     context: &mut ActiveMoveContext,
     targets: &mut [HitTargetState],
 ) -> Result<()> {
+    if !context.is_secondary() && context.active_move().data.user_effect_after_move {
+        return Ok(());
+    }
+
     let mon_handle = context.mon_handle();
     let mut context = context.hit_self_active_move_context();
     if context.hit_effect().is_none() {

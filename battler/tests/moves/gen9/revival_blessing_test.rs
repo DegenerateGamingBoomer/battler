@@ -205,3 +205,48 @@ fn revival_blessing_randomall_revives_fainted_mon() {
     );
     assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass;pass"), Ok(()));
 }
+
+#[test]
+fn revival_blessing_switches_mon_back_into_its_empty_position() {
+    // The switch is queued last, but the queue is sorted again before the next move.
+    let mut team_1 = team().unwrap();
+    team_1.members.truncate(2);
+    let mut battle = make_battle(0, team_1, team().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "pass;pass"), Ok(()));
+    assert_matches::assert_matches!(
+        battle.set_player_choice("player-2", "move 1,2;pass"),
+        Ok(())
+    );
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0;pass"), Ok(()));
+    assert_matches::assert_matches!(
+        battle.set_player_choice("player-2", "move 2,1;pass"),
+        Ok(())
+    );
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "select 1"), Ok(()));
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "move|mon:Pawmot,player-1,1|name:Revival Blessing|target:Pawmot,player-1,1",
+            "itemend|mon:Pawmot,player-1,1|item:Leppa Berry|eat",
+            "restorepp|mon:Pawmot,player-1,1|move:Revival Blessing|by:1|from:item:Leppa Berry",
+            "continue",
+            "revive|mon:Quaxly,player-1|from:move:Revival Blessing|of:Pawmot,player-1,1",
+            "split|side:0",
+            "sethp|mon:Quaxly,player-1|health:57/115",
+            "sethp|mon:Quaxly,player-1|health:50/100",
+            "split|side:0",
+            ["switch", "player-1", "Quaxly"],
+            ["switch", "player-1", "Quaxly"],
+            "move|mon:Pawmot,player-2,1|name:Brick Break|target:Pawmot,player-1,1",
+            "split|side:0",
+            "damage|mon:Pawmot,player-1,1|health:109/250",
+            "damage|mon:Pawmot,player-1,1|health:44/100",
+            "residual",
+            "turn|turn:3"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 2, &expected_logs);
+}
