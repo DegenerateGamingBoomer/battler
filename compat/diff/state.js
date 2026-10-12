@@ -10,6 +10,9 @@ const toID = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 function volatileState(id, state) {
   const out = {};
   if (typeof state.duration === 'number') out.duration = state.duration;
+  // Showdown restarts a fixed two-turn counter at each use of a rampage move; the turns left are
+  // in `trueDuration`, which battler keeps as the duration.
+  if (id === 'lockedmove' && typeof state.trueDuration === 'number') out.duration = state.trueDuration;
   switch (id) {
   case 'confusion': out.time = state.time; break;
   case 'substitute': out.hp = state.hp; break;

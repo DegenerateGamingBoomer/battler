@@ -1190,7 +1190,20 @@ where
     let mut duration_decreased = HashSet::new();
 
     let event_state = fxlang::EventState::default();
-    for callback_handle in callbacks {
+    let mut callbacks = callbacks.into_iter().peekable();
+    while let Some(callback_handle) = callbacks.next() {
+        // Weather affects every Mon in a single step, so Mons faint once all of them are affected.
+        let more_of_same_weather = matches!(
+            callback_handle.applied_effect_handle.location,
+            AppliedEffectLocation::MonWeather(_)
+        ) && callbacks.peek().is_some_and(|next| {
+            matches!(
+                next.applied_effect_handle.location,
+                AppliedEffectLocation::MonWeather(_)
+            ) && next.applied_effect_handle.effect_handle
+                == callback_handle.applied_effect_handle.effect_handle
+        });
+
         if let Some(id) = callback_handle.applied_effect_handle.effect_handle.try_id() {
             if let Some(id) = context
                 .as_battle_context_mut()
@@ -1304,7 +1317,9 @@ where
 
         // Mons that faint to a residual effect faint before the next one, which may end the
         // battle.
-        CoreBattle::faint_messages(context.battle_context_mut())?;
+        if !more_of_same_weather {
+            CoreBattle::faint_messages(context.battle_context_mut())?;
+        }
     }
     Ok(())
 }

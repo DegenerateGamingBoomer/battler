@@ -556,7 +556,8 @@
           "require func_call(can_boost: $target 'atk:-1')",
           "$atk = func_call(get_stat: $target atk unmodified)",
           "$boosted = func_call(boost: $target 'atk:-1')",
-          "$healed = func_call(heal: $source $atk) > 0",
+          "# The target is the source of the healing (Liquid Ooze).",
+          "$healed = func_call(heal: $source $atk $target) > 0",
           "return $boosted or $healed"
         ]
       }

@@ -869,6 +869,9 @@
           "require $effect_state.force_ended or !$target.is_choice_locked"
         ],
         "on_before_move": [
+          "# The lock ends once nothing locks the Mon anymore (the Choice item was removed).",
+          "if !$user.is_choice_locked:",
+          ["remove_volatile: $user $this.id", "return"],
           "if !$user.effective_item and $move.id != $effect_state.move and $move.id != struggle:",
           ["log_fail: $user from_effect", "return stopfail"]
         ],

@@ -21,11 +21,12 @@
     "effect": {
       "callbacks": {
         "on_after_damage": [
-          "# Move damage is handled together after secondary effects.",
-          "require !$effect.is_move and $effect.id != confusion else return",
+          "# Move damage is handled together after secondary effects, and residual damage at the end of the residual phase.",
+          "require !$effect.is_move and $effect.id != confusion and !$battle.in_residual else return",
           "$original_hp = $target.hp + $damage",
           "activate_ability: $original_hp"
         ],
+        "on_emergency_exit": ["activate_ability: $original_hp"],
         "on_after_move_secondary_effects_damage": [
           "require $damage != 0 else return",
           "activate_ability: $original_hp"

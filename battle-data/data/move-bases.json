@@ -35,6 +35,8 @@
           "priority": 3,
           "program": [
             "require func_call(move_has_flag: $move protect) else return",
+            "# Some protections do not block status moves.",
+            "require $move.category != status or !$effect_state.source_effect.is_defined or !([kingsshield, obstruct, silktrap, burningbulwark] has $effect_state.source_effect.id) else return",
             "if $report:",
             ["log_activate: with_target"],
             "activate_applying_effect: $this no_forward",

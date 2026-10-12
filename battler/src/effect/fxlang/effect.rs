@@ -724,6 +724,12 @@ pub enum BattleEvent {
     /// Runs on the effect and in the context of an applying effect on a Mon.
     #[string = "Effectiveness"]
     Effectiveness,
+    /// Runs at the end of the residual phase for a Mon that fell to half of its HP or less during
+    /// it.
+    ///
+    /// Runs in the context of a Mon.
+    #[string = "EmergencyExit"]
+    EmergencyExit,
     /// Runs when an effect ends.
     ///
     /// Runs on the effect.
@@ -1554,6 +1560,7 @@ impl BattleEvent {
             Self::DragOut => CommonCallbackType::MonResult as u32,
             Self::Duration => CommonCallbackType::ApplyingEffectModifier as u32,
             Self::Effectiveness => CommonCallbackType::ApplyingEffectModifier as u32,
+            Self::EmergencyExit => CommonCallbackType::MonVoid as u32,
             Self::Eat => CommonCallbackType::MonVoid as u32,
             Self::EatItem => CommonCallbackType::ApplyingEffectVoid as u32,
             Self::End => CommonCallbackType::EffectVoid as u32,
@@ -1774,6 +1781,7 @@ impl BattleEvent {
                 ("type", ValueType::Type, true),
                 ("index", ValueType::UFraction, true),
             ],
+            Self::EmergencyExit => &[("original_hp", ValueType::UFraction, true)],
             Self::ForceEffectiveness => &[("modifier", ValueType::Fraction, true)],
             Self::ForceTeraType => &[("type", ValueType::Type, true)],
             Self::ModifyAccuracy => &[("acc", ValueType::UFraction, true)],

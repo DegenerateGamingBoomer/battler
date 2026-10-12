@@ -84,3 +84,46 @@ fn liquid_ooze_damages_attacker_on_drain() {
     .unwrap();
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
 }
+
+fn sinistcha() -> Result<TeamData> {
+    serde_json::from_str(
+        r#"{
+            "members": [
+                {
+                    "name": "Sinistcha",
+                    "species": "Sinistcha",
+                    "ability": "No Ability",
+                    "moves": [
+                        "Strength Sap"
+                    ],
+                    "nature": "Hardy",
+                    "level": 50
+                }
+            ]
+        }"#,
+    )
+    .wrap_error()
+}
+
+#[test]
+fn liquid_ooze_damages_strength_sap_user() {
+    let mut battle = make_battle(0, sinistcha().unwrap(), swalot().unwrap()).unwrap();
+    assert_matches::assert_matches!(battle.start(), Ok(()));
+
+    assert_matches::assert_matches!(battle.set_player_choice("player-1", "move 0"), Ok(()));
+    assert_matches::assert_matches!(battle.set_player_choice("player-2", "pass"), Ok(()));
+
+    let expected_logs = serde_json::from_str::<Vec<LogMatch>>(
+        r#"[
+            "move|mon:Sinistcha,player-1,1|name:Strength Sap|target:Swalot,player-2,1",
+            "unboost|mon:Swalot,player-2,1|stat:atk|by:1",
+            "split|side:0",
+            "damage|mon:Sinistcha,player-1,1|from:ability:Liquid Ooze|of:Swalot,player-2,1|health:53/131",
+            "damage|mon:Sinistcha,player-1,1|from:ability:Liquid Ooze|of:Swalot,player-2,1|health:41/100",
+            "residual",
+            "turn|turn:2"
+        ]"#,
+    )
+    .unwrap();
+    assert_logs_since_turn_eq(&battle, 1, &expected_logs);
+}

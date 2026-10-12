@@ -904,8 +904,9 @@ fn emergency_exit_activates_between_hazards() {
     assert_logs_since_turn_eq(&battle, 1, &expected_logs);
 }
 
+// Like Showdown, Emergency Exit checks HP once all residual effects (and items) have run.
 #[test]
-fn emergency_exit_activates_between_residuals() {
+fn emergency_exit_activates_after_residuals() {
     let mut team = pikachu_team().unwrap();
     team.members[1].item = Some("Sticky Barb".to_owned());
     let mut battle = make_battle(0, BattleType::Doubles, golisopod_team().unwrap(), team).unwrap();
@@ -962,13 +963,13 @@ fn emergency_exit_activates_between_residuals() {
                 "split|side:0",
                 "damage|mon:Golisopod,player-1,1|from:status:Bad Poison|health:55/135",
                 "damage|mon:Golisopod,player-1,1|from:status:Bad Poison|health:41/100",
-                "activate|mon:Golisopod,player-1,1|ability:Emergency Exit",
                 "split|side:0",
                 "damage|mon:Incineroar,player-1,2|from:move:Bind|health:56/155",
                 "damage|mon:Incineroar,player-1,2|from:move:Bind|health:37/100",
                 "split|side:0",
                 "damage|mon:Golisopod,player-1,1|from:item:Sticky Barb|health:39/135",
-                "damage|mon:Golisopod,player-1,1|from:item:Sticky Barb|health:29/100"
+                "damage|mon:Golisopod,player-1,1|from:item:Sticky Barb|health:29/100",
+                "activate|mon:Golisopod,player-1,1|ability:Emergency Exit"
             ]"#,
     )
     .unwrap();

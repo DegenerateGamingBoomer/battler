@@ -316,6 +316,8 @@ pub struct CoreBattle<'d> {
     started: bool,
     in_pre_battle: bool,
     in_residual: bool,
+    /// HP of the active Mons when the residual phase started, for Emergency Exit.
+    residual_mon_hps: Vec<(MonHandle, u16)>,
     ending: bool,
     ended: bool,
     next_effect_order: u32,
@@ -431,6 +433,7 @@ impl<'d> CoreBattle<'d> {
             started: false,
             in_pre_battle: false,
             in_residual: false,
+            residual_mon_hps: Vec::new(),
             ending: false,
             ended: false,
             next_effect_order: 0,
@@ -1564,6 +1567,13 @@ impl<'d> CoreBattle<'d> {
                 context.battle_mut().in_residual = true;
                 Self::clear_all_active_moves(context)?;
                 Self::update_speed(context)?;
+                context.battle_mut().residual_mon_hps = context
+                    .battle()
+                    .all_active_mon_handles()
+                    .collect::<Vec<_>>()
+                    .into_iter()
+                    .map(|mon| Ok((mon, context.mon(mon)?.hp)))
+                    .collect::<Result<Vec<_>>>()?;
                 core_battle_effects::run_event_with_options::<_, _, ()>(
                     context,
                     fxlang::BattleEvent::Residual,
@@ -1704,6 +1714,23 @@ impl<'d> CoreBattle<'d> {
             .is_none_or(|action| action.independent())
         {
             Self::update(context)?;
+
+            // Mons that fell to half of their HP during the residual phase can switch out
+            // (Emergency Exit), after items like berries activate.
+            let residual_mon_hps = core::mem::take(&mut context.battle_mut().residual_mon_hps);
+            for (mon, original_hp) in residual_mon_hps {
+                let mut context = context.mon_context(mon)?;
+                let hp = context.mon().hp as u32;
+                let max_hp = context.mon().max_hp as u32;
+                if hp > 0 && 2 * hp <= max_hp && 2 * original_hp as u32 > max_hp {
+                    core_battle_effects::run_event_with_input::<_, _, ()>(
+                        &mut context,
+                        fxlang::BattleEvent::EmergencyExit,
+                        original_hp as u64,
+                    );
+                }
+            }
+
             core_battle_effects::run_event_for_each_active_mon_with_effect(
                 &mut context
                     .effect_context(EffectHandle::Condition(Id::from_known("update")), None)?,

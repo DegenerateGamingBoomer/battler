@@ -1740,13 +1740,16 @@
     "pp": 15,
     "target": "Normal",
     "flags": ["Contact", "Mirror", "Protect", "Slicing"],
-    "secondary_effects": [
-      {
-        "target": {
-          "side_condition": "stealthrock"
-        }
+    "secondary_effects": [{}],
+    "effect": {
+      "callbacks": {
+        "on_after_hit": [
+          "# Always on the user's foe side, and blocked by Sheer Force like a secondary effect.",
+          "require !$move.ignore_all_secondary_effects and $source.hp > 0 else return",
+          "add_side_condition: $source.foe_side stealthrock"
+        ]
       }
-    ]
+    }
   },
   "springtidestorm": {
     "name": "Springtide Storm",
@@ -2017,13 +2020,16 @@
     "pp": 15,
     "target": "Normal",
     "flags": ["Contact", "Mirror", "Protect", "Slicing"],
-    "secondary_effects": [
-      {
-        "target": {
-          "side_condition": "spikes"
-        }
+    "secondary_effects": [{}],
+    "effect": {
+      "callbacks": {
+        "on_after_hit": [
+          "# Always on the user's foe side, and blocked by Sheer Force like a secondary effect.",
+          "require !$move.ignore_all_secondary_effects and $source.hp > 0 else return",
+          "add_side_condition: $source.foe_side spikes"
+        ]
       }
-    ]
+    }
   },
   "bleakwindstorm": {
     "name": "Bleakwind Storm",

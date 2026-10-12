@@ -682,6 +682,7 @@ mod moves {
         mod ivy_cudgel_test;
         mod last_respects_test;
         mod order_up_test;
+        mod psychic_noise_test;
         mod rage_fist_test;
         mod raging_bull_test;
         mod revival_blessing_test;

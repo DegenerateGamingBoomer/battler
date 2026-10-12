@@ -669,7 +669,8 @@
     "effect": {
       "callbacks": {
         "on_source_base_power": [
-          "if $move.recoil_percent > 0 or func_call(move_has_flag: $move crashdamage):",
+          "# Struggle's recoil is not move recoil.",
+          "if ($move.recoil_percent > 0 and $move.id != struggle) or func_call(move_has_flag: $move crashdamage):",
           ["chain_modify: 4915/4096", "return"]
         ]
       }

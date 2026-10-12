@@ -567,6 +567,7 @@
     "condition": {
       "duration": 5,
       "callbacks": {
+        "on_duration": ["if $effect.id == psychicnoise:", ["return 2"]],
         "on_start": ["log_start"],
         "on_disable_move": [
           "foreach $move_slot in $mon.move_slots:",

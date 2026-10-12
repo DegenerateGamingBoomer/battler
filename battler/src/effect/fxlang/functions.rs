@@ -2464,6 +2464,7 @@ fn clamp_number(mut context: FunctionContext) -> Result<Value> {
 ///
 /// @param {[`ValueType::Mon`]} [mon] The Mon to heal.
 /// @param {[`ValueType::UFraction`]} amount The amount to heal.
+/// @param {[`ValueType::Mon`]} [source] The source of the healing, if not the effect's source.
 /// @returns {[`ValueType::UFraction`]} The actual amount healed.
 fn heal(mut context: FunctionContext) -> Result<Value> {
     let primary_effect = context.primary_effect();
@@ -2473,12 +2474,25 @@ fn heal(mut context: FunctionContext) -> Result<Value> {
         .wrap_expectation("missing damage")?
         .integer_u16()
         .wrap_error_with_message("invalid damage")?;
-    core_battle_actions::heal(
-        &mut context.forward_to_applying_effect_context_with_target(mon_handle)?,
-        damage,
-        primary_effect,
-    )
-    .map(|val| Value::UFraction(val.into()))
+    let source_handle = match context.front().map(|val| val.value_type()) {
+        Some(ValueType::Mon) => Some(
+            context
+                .pop_front()
+                .wrap_expectation("missing source mon")?
+                .mon_handle()
+                .wrap_error_with_message("invalid source mon")?,
+        ),
+        _ => None,
+    };
+    let mut context = match source_handle {
+        Some(source_handle) => context.forward_to_applying_effect_context_with_source_and_target(
+            Some(source_handle),
+            mon_handle,
+        )?,
+        None => context.forward_to_applying_effect_context_with_target(mon_handle)?,
+    };
+    core_battle_actions::heal(&mut context, damage, primary_effect)
+        .map(|val| Value::UFraction(val.into()))
 }
 
 /// Revives a fainted Mon.
